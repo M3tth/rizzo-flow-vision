@@ -28,7 +28,7 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     backend = SparkBackend.load(args.model, bits=args.bits)
     engine = Engine(backend)
-    request = Request.model_validate_json(Path("examples/ticket.json").read_text())
+    request = Request.model_validate_json(Path("examples/ticket.json").read_text(encoding="utf-8"))
     _, jobs = compile_request(backend.tokenizer, request, 8192)
     job = jobs[0]
     cache = backend._prefill(job.tokens[:-1])

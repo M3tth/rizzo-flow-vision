@@ -8,13 +8,12 @@ Rizzo Flow: versione locale del pattern di **Jev** (TypeSafe, "System One": stat
 decisioni tipizzate con probabilità, zero generazione di testo), ispirata a **SemIf**
 (`~/Git-projects/SemIf`, commit `ca3ba65`). Nessun training: si leggono i logit delle sole lettere
 di risposta in un forward pass. Modello: **XHToken/Spark-X2.5-4B** (architettura `spark2_5`, pesi
-originali, rev. `0bcb356…`) su **MLX / Apple Silicon** (sviluppo su M4 Pro 24 GiB). Precisione
+originali, rev. `0bcb356…`) su **MLX** (backend Metal, CUDA o CPU; sviluppo su M4 Pro 24 GiB). Precisione
 BF16 di default; Q8/Q4 quantizzati in memoria (affine, group size 64). Config d'uso normale: **Q8**.
 `config.MODELS` elenca i checkpoint supportati: `4b` (default) e `1.7b` (XHToken/Spark-X2.5-1.7B, rev.
 `14d6e83…`, stessa architettura/tokenizer/contesto 1M, ~3.4 GB). CLI: `--size 4b|1.7b` su
 `download/decide/serve/evaluate`; `backend.load` riconosce il checkpoint da `hidden_size`
-(`config.identify`) e l'ID servito diventa `rizzo-spark-x2.5-1.7b-q8`. **Il supporto 1.7B è stato
-aggiunto senza eseguire alcun test, né unitario né sul modello** (richiesta esplicita dell'utente).
+(`config.identify`) e l'ID servito diventa `rizzo-spark-x2.5-1.7b-q8`. Il 1.7B è stato provato solo su Windows/CUDA (sezione in fondo): funziona ma è molto meno accurato.
 
 README, doc e messaggi all'utente sono in italiano; codice, commenti e docstring in inglese.
 Repository pubblico: <https://github.com/Rizzo-AI-Academy/rizzo-flow> (remote `origin` via SSH, branch `main`;
@@ -23,9 +22,10 @@ il README pubblico è in inglese, quello italiano storico è in `docs/README.it.
 ## Comandi
 
 ```bash
-uv sync --extra mlx --extra test --locked        # setup
+uv sync --extra mlx --extra test --locked        # setup Apple; --extra cuda (NVIDIA) o --extra cpu altrove
+.venv/bin/rizzo devices                           # backend rilevato; su Windows gli eseguibili sono in .venv/Scripts/
 .venv/bin/rizzo download                          # pesi (~8 GB) in models/Spark-X2.5-4B
-.venv/bin/pytest -q                               # 29 test, ~1 s, nessun peso richiesto
+.venv/bin/pytest -q                               # 41 test, ~1 s, nessun peso richiesto
 .venv/bin/pytest tests/test_compat.py::test_systemone_wire_shape   # test singolo
 .venv/bin/ruff check src tests scripts && .venv/bin/ruff format --check src tests scripts
 .venv/bin/rizzo serve --bits 8                    # API + playground su 127.0.0.1:8017
@@ -198,11 +198,49 @@ il rumore (1 riga ≈ 1.4 punti); candidata preferita `i` (NLL e stabilità migl
 più robusto a testo che imita i delimitatori; usa `json.dumps` senza `sort_keys` per conservare
 l'ordine delle chiavi dell'utente).
 
-**Non fatto:** l'held-out non è mai stato eseguito (`prompt_lab.py held v2-current,i-systemA-json-mcq`);
-il prompt spedito è ancora v2. Per adottare la variante: portare `SYSTEM_A`, `json_state`, `mcq`
-in `prompts.py`, incrementare `PROMPT_VERSION` a v3, rieseguire test e smoke, rilanciare
-`semif_compare.py` in una nuova directory di output e aggiornare i README. I numeri dev non sono
-un risultato: sono serviti a scegliere.
+**Adottata `a-text-all` (scelta dell'utente, 21 settembre 2026):** `prompts.py` spedisce ora
+`SYSTEM_A` + `text_state` + `mcq`, `PROMPT_VERSION = "spark-decisions-v3"` (le calibrazioni v2 non
+valgono più). `prompt_lab.py` contiene il v2 per esteso, così `v2-current` resta riproducibile.
+Verificato su Windows/CUDA (sotto): test unitari, smoke 4B Q8 0.95 (NLL 0.428, identico al lab).
+
+**Non fatto:** l'held-out non è mai stato eseguito (`prompt_lab.py held v2-current,a-text-all`);
+`semif_compare.py` non è stato rilanciato con v3, quindi **tutti i numeri SemIf pubblicati
+(0.758 / 0.706) e i report in `results/` sono ancora del prompt v2**; i README vanno aggiornati
+quando esisteranno i numeri v3. I numeri dev non sono un risultato: sono serviti a scegliere.
+
+### Windows + CUDA (provato il 21 settembre 2026, RTX 5060 Ti 16 GB, prompt v3)
+
+**Scelta del backend (per tutti gli utenti).** I tre runtime sono sempre MLX, cambia il pacchetto
+di calcolo: extra `mlx` (Apple/Metal), `cuda` (`mlx-cuda-13`, Windows/Linux), `cpu` (`mlx-cpu`).
+`cuda` e `cpu` sono dichiarati in conflitto in `[tool.uv]` (stessi file); `nvidia-nccl-cu13` è
+limitato a Linux con `override-dependencies` perché uv legge i metadati del wheel Linux.
+`runtime.py`: `prepare()` (chiamata da `__init__.py`; su Windows stub del modulo solo-Unix
+`resource` importato da `mlx-lm` + DLL `nvidia/cu13`, `nvidia/cudnn` nel `PATH`), `resolve()` per
+`--device auto|gpu|mlx|cuda|cpu` (default `auto`: GPU se l'installazione ne ha una), errori con il
+comando di installazione, `rizzo devices`. `metadata` riporta `device` (gpu/cpu) e `backend`
+(mlx/cuda/cpu), entrambi nel fingerprint. File letti/scritti sempre in UTF-8.
+`tests/conftest.py` imposta `MLX_ENABLE_TF32=0` (solo nei test) e `tests/test_runtime.py` copre la
+selezione con un MLX finto. `.claude/launch.json` usa `uv run --no-sync rizzo serve --bits 8`
+(cross-platform; `--no-sync` perché un sync senza extra toglierebbe il backend).
+Prove solo su GPU (scelta dell'utente: il backend `mlx-cpu` su i7-7700K impiega ~185 s per 8
+token con l'1.7B Q8, inutilizzabile; l'extra `cpu` è dichiarato ma non validato sui modelli reali).
+CUDA su Linux e l'extra `mlx` dopo queste modifiche **non sono stati provati** (nessun Mac qui).
+
+- `pytest`: 41/41 (TF32 disattivato da `conftest.py`); con TF32 attivo 4 test di `test_mlx.py` falliscono
+  per arrotondamento (Δ logit ≤ 8e-4 contro tolleranze 1e-4/2e-4 tarate su Metal).
+- 4B, `examples/ticket.json` (4 domande) a caldo, shared/direct: BF16 223/386 ms (picco 10.5 GiB),
+  Q8 ~310/425 ms (6.9 GiB), Q4 305/403 ms (4.9 GiB); caricamento ~21 s. Risposte tutte corrette.
+  Smoke Q8: 0.95 (NLL 0.428), mediana 103 ms; perturbazioni 9/9. Con prompt v2 lo smoke era 0.90.
+- 1.7B: BF16 104/186 ms, Q8 ~140/205 ms, Q4 137/203 ms; caricamento ~9.5 s. **Qualità scarsa:**
+  smoke Q8 0.45 (v2: 0.35), perturbazioni 5/9. Con `allow_abstain: true` sceglie quasi sempre
+  "cannot determine" (sul ticket: D 0.76; senza astensione A 0.9999) → usarlo con
+  `allow_abstain: false` o via `/v1/systemone`; anche lì sbaglia (`team=billing` 0.997 sul ticket).
+- Server uvicorn reale: `/v1/systemone`, `/v1/decisions`, 422 sugli input invalidi, regge pause
+  di 15 s. La prima richiesta dopo l'avvio paga la compilazione JIT dei kernel (fino a ~48 s la
+  prima volta in assoluto, poi in cache su disco).
+- Limite MLX-CUDA/Windows: il processo va in abort quando termina un `threading.Thread` che ha
+  eseguito inferenza (quindi `TestClient` con pesi reali crasha alla seconda richiesta) e ogni
+  processo CUDA esce con codice 127 alla chiusura. `rizzo serve` non ne è colpito.
 
 ### Da fare
 - Lato SemIf del confronto sullo stesso Mac: serve scaricare `Qwen/Qwen3.5-4B` (~9 GB, rev.

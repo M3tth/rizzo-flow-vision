@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .config import RUNTIME_REVISION, identify
 from .prompts import PROMPT_VERSION, Compiled, canonical
+from .runtime import resolve
 
 
 def quantize_model(model, bits):
@@ -74,18 +75,17 @@ class SparkBackend:
         self.prefill_chunk = prefill_chunk
 
     @classmethod
-    def load(cls, path, bits=None, device="gpu", batch_size=4, prefill_chunk=512):
-        import mlx.core as mx
-        from spark_mlx_llm import load
-
+    def load(cls, path, bits=None, device="auto", batch_size=4, prefill_chunk=512):
         path = Path(path).resolve()
         if not path.is_dir():
             raise ValueError(f"Model not found at {path}. Run `rizzo download` first.")
         if bits not in (None, 4, 8):
             raise ValueError("Supported precisions: BF16, 8-bit, 4-bit")
-        if device not in ("gpu", "cpu"):
-            raise ValueError("Device must be gpu or cpu")
-        mx.set_default_device(mx.gpu if device == "gpu" else mx.cpu)
+        target, backend = resolve(device)
+        import mlx.core as mx
+        from spark_mlx_llm import load
+
+        mx.set_default_device(target)
         mx.set_cache_limit(256 * 1024**2)
         started = time.perf_counter()
         # Hash checkpoint contents once at startup for auditability and calibration binding.
@@ -101,7 +101,7 @@ class SparkBackend:
                 hashes[file.name] = hashlib.file_digest(stream, "sha256").hexdigest()
         if not any(name.endswith(".safetensors") for name in hashes):
             raise ValueError("Model directory contains no safetensors weights")
-        config = json.loads((path / "config.json").read_text())
+        config = json.loads((path / "config.json").read_text(encoding="utf-8"))
         if config.get("model_type") != "spark2_5":
             raise ValueError("Only the Spark2.5 architecture is supported")
         spec = identify(config)
@@ -124,7 +124,8 @@ class SparkBackend:
             "source_files": hashes,
             "precision": f"q{bits}" if bits else "bf16",
             "quantization_group_size": 64 if bits else None,
-            "device": device,
+            "device": "cpu" if backend == "cpu" else "gpu",
+            "backend": backend,
             "mlx": mx.__version__,
             "mlx_lm": importlib.metadata.version("mlx-lm"),
             "prompt_version": PROMPT_VERSION,

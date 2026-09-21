@@ -11,15 +11,26 @@ di avere probabilità calibrate o qualità superiore a SemIf.
 circa 304 ms di mediana nello smoke Q8 e picco MLX di 4.88 GiB. Risultati, errori e limiti
 sono documentati in [results/README.md](../results/README.md).
 
-## Avvio su Apple Silicon
+## Avvio
+
+Scegli la riga adatta alla tua macchina (è l'unico passo che dipende dalla piattaforma):
 
 ```bash
-uv sync --extra mlx --extra test --locked
-.venv/bin/rizzo download
-.venv/bin/rizzo decide examples/ticket.json
-.venv/bin/rizzo decide examples/numeric.json --bits 8
-.venv/bin/rizzo serve --bits 8
+uv sync --locked --extra mlx      # Mac con Apple Silicon (GPU Metal)
+uv sync --locked --extra cuda     # Windows o Linux con GPU NVIDIA (driver CUDA 13)
+uv sync --locked --extra cpu      # Windows o Linux senza GPU: molto lento, ultima spiaggia
+source .venv/bin/activate         # macOS / Linux
+.venv\Scripts\activate           # Windows
+rizzo devices                     # mostra il backend rilevato: mlx, cuda o cpu
+rizzo download
+rizzo decide examples/ticket.json
+rizzo decide examples/numeric.json --bits 8
+rizzo serve --bits 8              # --device auto|mlx|cuda|cpu, default auto
 ```
+
+Provato su Apple Silicon (tutti i risultati pubblicati) e su Windows 10 + RTX 5060 Ti. CUDA su
+Linux non è stato provato; il backend CPU installa e passa i test unitari ma nell'unico tentativo
+(i7-7700K, 1.7B a 8 bit) ha impiegato circa 3 minuti per 8 token.
 
 Il download richiede circa 8 GB. Il modello viene salvato in `models/Spark-X2.5-4B`.
 BF16 è la precisione predefinita; `--bits 8` e `--bits 4` quantizzano i pesi in memoria.

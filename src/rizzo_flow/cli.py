@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from .config import DEFAULT_SIZE, MODELS, download_model
+from .runtime import DEVICES
 
 
 def write_json(value, destination):
@@ -12,14 +13,18 @@ def write_json(value, destination):
         path = Path(destination)
         path.parent.mkdir(parents=True, exist_ok=True)
         # Results are create-only; never silently overwrite benchmark evidence.
-        with path.open("x") as stream:
+        with path.open("x", encoding="utf-8") as stream:
             stream.write(text)
     else:
         print(text, end="")
 
 
 def read_jsonl(path):
-    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+    return [
+        json.loads(line)
+        for line in Path(path).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 def main():
@@ -31,6 +36,7 @@ def main():
     schema = commands.add_parser("schema", help="Print the JSON Schema for requests")
     schema.add_argument("--output")
     schema.add_argument("--response", action="store_true", help="Print the output schema")
+    commands.add_parser("devices", help="Show which compute backends this install can use")
     fit = commands.add_parser("calibrate", help="Fit temperatures on separate labeled logit rows")
     fit.add_argument("input", type=Path)
     fit.add_argument("--fingerprint", required=True)
@@ -40,7 +46,12 @@ def main():
         p.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
         p.add_argument("--model", type=Path, help="Checkpoint directory; overrides --size")
         p.add_argument("--bits", type=int, choices=(4, 8))
-        p.add_argument("--device", choices=("gpu", "cpu"), default="gpu")
+        p.add_argument(
+            "--device",
+            choices=DEVICES,
+            default="auto",
+            help="auto = GPU if this install has one, else CPU; mlx = Apple GPU; cuda = NVIDIA GPU",
+        )
         p.add_argument("--batch-size", type=int, default=4)
         # --max-tokens is the former name, kept as an alias.
         p.add_argument(
@@ -66,6 +77,11 @@ def main():
         if args.command == "download":
             print(download_model(args.destination, args.size))
             return
+        if args.command == "devices":
+            from .runtime import describe
+
+            write_json(describe(), None)
+            return
         if args.command == "schema":
             from .responses import Response
             from .schema import Request
@@ -87,7 +103,7 @@ def main():
         if args.command == "decide":
             from .schema import Request
 
-            request = Request.model_validate_json(args.input.read_text())
+            request = Request.model_validate_json(args.input.read_text(encoding="utf-8"))
         backend = SparkBackend.load(
             args.model or MODELS[args.size].path,
             bits=args.bits,

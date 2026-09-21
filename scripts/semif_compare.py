@@ -19,12 +19,16 @@ from pathlib import Path
 
 
 def read(path):
-    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+    return [
+        json.loads(line)
+        for line in Path(path).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 def write(path, value):
     # Create-only, like every other benchmark artifact in this project.
-    with Path(path).open("x") as stream:
+    with Path(path).open("x", encoding="utf-8") as stream:
         if isinstance(value, list):
             stream.writelines(json.dumps(row, allow_nan=False) + "\n" for row in value)
         else:

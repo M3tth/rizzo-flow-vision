@@ -10,12 +10,33 @@ requires-python = ">=3.11"
 dependencies = ["pydantic>=2.11,<3", "fastapi>=0.115,<1", "uvicorn>=0.34,<1"]
 
 [project.optional-dependencies]
+# Pick exactly one runtime. All three are MLX: only the compute backend package differs.
+# mlx  = Apple Silicon (Metal) · cuda = NVIDIA GPU on Windows/Linux · cpu = any Windows/Linux PC.
 mlx = [
   "mlx==0.32.2",
   "mlx-lm==0.31.3",
   "spark-mlx-llm @ git+https://github.com/XHToken/Spark-MLX-LLM.git@de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
 ]
+cuda = [
+  "mlx==0.32.2",
+  "mlx-cuda-13==0.32.2; sys_platform != 'darwin'",
+  "mlx-lm==0.31.3",
+  "spark-mlx-llm @ git+https://github.com/XHToken/Spark-MLX-LLM.git@de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+]
+cpu = [
+  "mlx==0.32.2",
+  "mlx-cpu==0.32.2; sys_platform != 'darwin'",
+  "mlx-lm==0.31.3",
+  "spark-mlx-llm @ git+https://github.com/XHToken/Spark-MLX-LLM.git@de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+]
 test = ["pytest>=8.4,<10", "httpx>=0.28,<1", "ruff>=0.12"]
+
+[tool.uv]
+# mlx-cuda-13 and mlx-cpu ship the same library files, so they cannot share an environment.
+conflicts = [[{ extra = "cuda" }, { extra = "cpu" }]]
+# Only the Linux wheel of mlx-cuda-13 needs NCCL, which has no Windows build; uv reads one
+# wheel's metadata for every platform, so restrict it by hand.
+override-dependencies = ["nvidia-nccl-cu13; sys_platform == 'linux'"]
 
 [project.scripts]
 rizzo = "rizzo_flow.cli:main"

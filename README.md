@@ -17,7 +17,7 @@
 <p>
 <img src="https://img.shields.io/badge/models-Spark--X2.5%204B%20·%201.7B-blue" alt="Spark-X2.5 4B and 1.7B" />
 <img src="https://img.shields.io/badge/native%20context-1M%20tokens-blue" alt="1M-token native context" />
-<img src="https://img.shields.io/badge/runtime-MLX%20·%20Apple%20Silicon-blue" alt="MLX on Apple Silicon" />
+<img src="https://img.shields.io/badge/runtime-MLX%20·%20Metal%20%7C%20CUDA%20%7C%20CPU-blue" alt="MLX on Metal, CUDA or CPU" />
 <img src="https://img.shields.io/badge/latency-~250%20ms%20%2F%20decision%20(Q8%2C%20M4%20Pro)-brightgreen" alt="about 250 ms per decision" />
 <img src="https://img.shields.io/badge/memory-~5%20GiB%20(Q8)-brightgreen" alt="about 5 GiB at 8 bit" />
 <img src="https://img.shields.io/badge/license-Apache--2.0-brightgreen" alt="Apache-2.0 license" />
@@ -49,7 +49,7 @@ TypeSafe API can point at `localhost` by changing one URL.
 
 <sub>🦔 <b>The built-in playground</b> — one support ticket, two questions answered in parallel in <b>484 ms</b>:
 one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</b>.<br />
-Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English · <a href="#quickstart-apple-silicon">run it yourself ↓</a></sub>
+Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English · <a href="#quickstart">run it yourself ↓</a></sub>
 </div>
 
 ---
@@ -216,52 +216,113 @@ What is true *today* in this repository, so you can plan around it:
 
 ---
 
-## Quickstart (Apple Silicon)
+## Quickstart
 
-You need a Mac with Apple Silicon, Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/).
+Rizzo Flow runs on macOS, Windows and Linux. You need Python ≥ 3.11, git and
+[uv](https://docs.astral.sh/uv/). **The only platform-specific step is the install**: you pick one
+compute backend (`mlx`, `cuda` or `cpu`) and activate the environment. From step 2 onwards every
+command is identical on every system, and the backend is detected automatically.
 
-**1 · Install**
+**1 · Install — copy the block for your machine**
+
+<details open>
+<summary><b>🍎 macOS — Apple Silicon (Metal GPU)</b></summary>
 
 ```bash
 git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
 cd rizzo-flow
-uv sync --extra mlx --extra test --locked
+uv sync --locked --extra mlx
+source .venv/bin/activate
 ```
+</details>
+
+<details open>
+<summary><b>🪟 Windows — NVIDIA GPU (PowerShell)</b></summary>
+
+```powershell
+git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
+cd rizzo-flow
+uv sync --locked --extra cuda
+.venv\Scripts\activate
+```
+
+Needs a recent NVIDIA driver (CUDA 13; check with `nvidia-smi`). No CUDA toolkit install is
+required: the libraries come with the Python packages and Rizzo Flow finds them by itself. If
+PowerShell refuses to run the activation script, run
+`Set-ExecutionPolicy -Scope Process RemoteSigned` first, or skip activation (see below).
+</details>
+
+<details open>
+<summary><b>🐧 Linux — NVIDIA GPU</b></summary>
+
+```bash
+git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
+cd rizzo-flow
+uv sync --locked --extra cuda
+source .venv/bin/activate
+```
+</details>
+
+<details>
+<summary><b>🐢 Windows or Linux without a GPU (CPU only — very slow, last resort)</b></summary>
+
+Same as above with `uv sync --locked --extra cpu`. See the status table before choosing this.
+</details>
+
+Check what was detected — this works the same everywhere:
+
+```bash
+rizzo devices        # → "available": ["cuda", "cpu"], "auto_selects": "cuda"   (or mlx / cpu)
+```
+
+Prefer not to activate the environment? Prefix any command with `uv run --no-sync`, on any system:
+`uv run --no-sync rizzo serve --bits 8`. (`--no-sync` matters: a plain `uv run` would re-sync the
+environment without your backend extra and remove it.)
+
+| Extra | Hardware | Status |
+| --- | --- | --- |
+| `mlx` | Apple Silicon | reference platform: every published result (M4 Pro) |
+| `cuda` | NVIDIA GPU, Windows / Linux | tested on Windows 10 + RTX 5060 Ti 16 GB (4B Q8: 4 questions in ~310 ms warm). Linux not tried. The very first request compiles GPU kernels and can take up to a minute; later runs reuse them |
+| `cpu` | any x86-64 / ARM PC | **installs and passes the unit tests, but was impractically slow in our only attempt** (Windows, i7-7700K: ~3 minutes for an 8-token forward pass of the 1.7B at 8 bit). Treat as a last resort |
+
+All three are the same [MLX](https://github.com/ml-explore/mlx) runtime with a different compute
+backend, so prompts, API and results format are identical. `cuda` and `cpu` cannot be installed
+together. Add `--extra test` if you want to run the test suite.
 
 **2 · Download a model** — pick one; weights go to `models/` (git-ignored):
 
 ```bash
-.venv/bin/rizzo download                 # Spark-X2.5-4B   · ~8 GB   · default
-.venv/bin/rizzo download --size 1.7b     # Spark-X2.5-1.7B · ~3.4 GB · smaller and faster
+rizzo download                 # Spark-X2.5-4B   · ~8 GB   · default
+rizzo download --size 1.7b     # Spark-X2.5-1.7B · ~3.4 GB · smaller and faster
 ```
 
 | `--size` | Checkpoint | Weights | Status |
 | --- | --- | ---: | --- |
 | `4b` (default) | [XHToken/Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) | ~8 GB | every result in this README |
-| `1.7b` | [XHToken/Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) | ~3.4 GB | wired in, **not run or benchmarked yet** |
+| `1.7b` | [XHToken/Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) | ~3.4 GB | runs, ~2× faster, **much less accurate** (below) |
 
 Both are the same Spark2.5 architecture with the same tokenizer and native 1M-token context, at
-pinned revisions. Expect the smaller model to be faster and less accurate; we have not measured
-either claim yet, and the 1.7B path has not been exercised end to end.
+pinned revisions. The only measurement of the 1.7B so far (CUDA, 8 bit, prompt v3, our own 20-decision
+smoke set): accuracy 0.45 against 0.95 for the 4B, at about half the latency. With abstention
+enabled it picks "cannot determine" almost every time; use it with `"allow_abstain": false` (the
+Jev-compatible endpoint always does) and check it on your own data before relying on it.
 
 **3 · Start the backend**
 
 ```bash
-.venv/bin/rizzo serve --bits 8                 # 4B, 8 bit, ~5 GiB
-.venv/bin/rizzo serve --size 1.7b --bits 8     # 1.7B
+rizzo serve --bits 8                 # 4B, 8 bit, ~5 GiB
+rizzo serve --size 1.7b --bits 8     # 1.7B
 ```
 
 Loading takes a few seconds; the server is ready when it prints
 `Uvicorn running on http://127.0.0.1:8017`. Useful flags: `--bits 4|8` (omit for BF16),
-`--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--ctx` (context limit in tokens, default 8192),
+`--device auto|mlx|cuda|cpu` (default `auto`: the GPU if the install has one), `--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--ctx` (context limit in tokens, default 8192),
 `--model /path/to/checkpoint` (overrides `--size`), `--calibration fit.json`.
 Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compatible endpoints.
 
 **4 · Open the playground**
 
-```bash
-open http://127.0.0.1:8017/playground
-```
+Open <http://127.0.0.1:8017/playground> in your browser.
 
 Pick an example from the **Examples…** menu (or write your own state and questions), press
 **Run** or `Cmd/Ctrl + Enter` — or click the hedgehog — and read the probabilities, the timings and
@@ -278,12 +339,21 @@ curl http://127.0.0.1:8017/v1/systemone \
        "questions": {"is_urgent": {"type": "noul", "instructions": "Does this convey urgency?"}}}'
 ```
 
-No server needed for one-off runs: `.venv/bin/rizzo decide examples/ticket.json --bits 8`.
+On Windows PowerShell, where `curl` quoting differs, the same call is:
+
+```powershell
+$body = @{ state = "Help! My payouts have been failing for 3 days."; model = "rizzo-latest"
+           questions = @{ is_urgent = @{ type = "noul"; instructions = "Does this convey urgency?" } }
+         } | ConvertTo-Json -Depth 5
+Invoke-RestMethod http://127.0.0.1:8017/v1/systemone -Method Post -ContentType "application/json" -Body $body |
+  ConvertTo-Json -Depth 6
+```
+
+No server needed for one-off runs: `rizzo decide examples/ticket.json --bits 8`.
 
 BF16 is the default precision; `--bits 8` / `--bits 4` quantize in memory (affine, group size 64).
-Quantization changes probabilities: compare on your own workload. The runtime is
-[MLX](https://github.com/ml-explore/mlx); `--device cpu` exists but is untested, and CUDA is not
-supported yet.
+Quantization changes probabilities: compare on your own workload. So does the backend: Metal and
+CUDA round differently, and a calibration is bound to the backend it was fitted on.
 
 ### Playground
 
@@ -376,8 +446,10 @@ compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*
 | …plus longer guidance (rules, abstention, "order is arbitrary") | 0.79–0.81 | 0.80–0.82 | 2–3 | 0.90–0.95 |
 
 A plain-text multiple-choice question and a short, decision-focused system prompt both help and
-reduce position bias; longer instructions do not. **The held-out half has not been run and the
-shipped prompt is still v2** — these numbers chose a candidate, they do not prove it.
+reduce position bias; longer instructions do not. The shipped prompt is now the
+second row (`a-text-all`, `spark-decisions-v3`). **The held-out half has not been run, and every
+other number in this README was measured with prompt v2** — the dev numbers chose a candidate,
+they do not prove it.
 Exact prompts, every variant and the per-family numbers: [docs/prompt-lab.md](docs/prompt-lab.md) (Italian).
 
 ---
@@ -390,8 +462,8 @@ per primitive, and bound to a fingerprint of weights, tokenizer, precision, runt
 version:
 
 ```bash
-.venv/bin/rizzo calibrate calibration.jsonl --fingerprint MODEL_HASH --output calibration-fit.json
-.venv/bin/rizzo serve --bits 8 --calibration calibration-fit.json
+rizzo calibrate calibration.jsonl --fingerprint MODEL_HASH --output calibration-fit.json
+rizzo serve --bits 8 --calibration calibration-fit.json
 ```
 
 You need labelled data from your own domain, a separate calibration set, and a held-out test. The
@@ -404,17 +476,17 @@ evaluator reports accuracy, NLL, Brier, ECE and coverage.
   [results/README.md](results/README.md)).
 - Residual position bias; permutation debiasing is not implemented.
 - 26 options per question (Jev: 255; SemIf: 16). Beyond that you need two stages.
-- Apple Silicon / MLX only, one resident model, concurrent requests are serialized.
+- MLX runtime only (Metal, CUDA or CPU backend), one resident model, concurrent requests are serialized.
 - English is strongest; an Italian boolean flipped between BF16 and 8 bit in our smoke set.
 - Localhost by default; no rate limiting; not hardened for public exposure.
 
 ## Development
 
 ```bash
-.venv/bin/pytest -q                                   # 29 tests, no weights needed
-.venv/bin/ruff check src tests scripts
-.venv/bin/rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/local-smoke.json
-.venv/bin/python scripts/semif_compare.py --system rizzo --semif ../SemIf --bits 8 --output results/local-semif
+pytest -q                         # 41 tests, no weights needed
+ruff check src tests scripts
+rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/local-smoke.json
+python scripts/semif_compare.py --system rizzo --semif ../SemIf --bits 8 --output results/local-semif
 ```
 
 Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (Italian).

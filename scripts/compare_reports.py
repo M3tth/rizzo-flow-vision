@@ -53,8 +53,8 @@ if __name__ == "__main__":
     parser.add_argument("--output")
     args = parser.parse_args()
     report = compare(
-        json.loads(args.reference.read_text()),
-        json.loads(args.candidate.read_text()),
+        json.loads(args.reference.read_text(encoding="utf-8")),
+        json.loads(args.candidate.read_text(encoding="utf-8")),
         args.perturbations,
     )
     write_json(report, args.output)
