@@ -183,7 +183,7 @@ La cache dello stato viene scartata alla fine della richiesta; non conserva evid
 Le richieste concorrenti condividono un lock per evitare picchi di memoria e interferenze GPU.
 
 `mode: "direct"` nella richiesta disattiva la condivisione come riferimento di verifica.
-`--batch-size 1` riduce la memoria e mantiene il riuso del prefisso. `--max-tokens` cambia
+`--batch-size 1` riduce la memoria e mantiene il riuso del prefisso. `--ctx` (prima `--max-tokens`) cambia
 il limite per domanda (default 8192); input oltre il limite vengono rifiutati, mai troncati.
 Il limite di cache MLX inattiva è 256 MiB: non limita memoria dei pesi o cache KV attive.
 

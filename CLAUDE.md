@@ -66,6 +66,11 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
   i suffissi vanno in microbatch (`--batch-size`, default 4, max 16) ordinati per lunghezza con
   padding a destra; si legge l'ultima posizione reale. Cache scartata a fine richiesta.
   `mode: "direct"` disattiva il riuso (riferimento di verifica).
+- **Contesto.** `--ctx` (alias storico `--max-tokens`, default 8192) è il limite di token per domanda
+  (state + domanda): guardia, non prenotazione di memoria. KV ≈ 36 KiB/token nel 4B (9 layer su 36 a
+  attenzione piena; gli sliding sono fissi, 54 MiB), × `--batch-size` durante i microbatch perché
+  `branch_cache` replica il prefisso. Lo `state` ha inoltre un tetto fisso di 256 KB in `schema.py`
+  (~60k token). 1M token = ~36 GiB di sola cache.
 - **Proiezione selettiva.** `selected_logits` moltiplica l'hidden state solo per le righe di
   vocabolario delle lettere ammesse (anche con pesi quantizzati): delta 0 rispetto al vocabolario
   pieno.

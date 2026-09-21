@@ -54,9 +54,7 @@ def render_question(instruction: str, descriptions: list[str]) -> str:
     return "\n" + json.dumps(payload, ensure_ascii=False)
 
 
-def compile_request(
-    tokenizer, request: Request, max_tokens: int
-) -> tuple[list[int], list[Compiled]]:
+def compile_request(tokenizer, request: Request, ctx: int) -> tuple[list[int], list[Compiled]]:
     state_text = render_state(request.state)
     compiled = []
     state_prefix = None
@@ -78,9 +76,9 @@ def compile_request(
             messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         tokens = tokenizer.encode(prompt, add_special_tokens=False)
-        if not tokens or len(tokens) > max_tokens:
+        if not tokens or len(tokens) > ctx:
             raise ValueError(
-                f"Question {key}: {len(tokens)} tokens exceeds limit {max_tokens}; no truncation"
+                f"Question {key}: {len(tokens)} tokens exceeds the context limit {ctx} (--ctx); no truncation"
             )
         slots = []
         for letter in string.ascii_uppercase[: len(cs)]:

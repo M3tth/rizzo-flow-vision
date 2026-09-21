@@ -42,7 +42,15 @@ def main():
         p.add_argument("--bits", type=int, choices=(4, 8))
         p.add_argument("--device", choices=("gpu", "cpu"), default="gpu")
         p.add_argument("--batch-size", type=int, default=4)
-        p.add_argument("--max-tokens", type=int, default=8192)
+        # --max-tokens is the former name, kept as an alias.
+        p.add_argument(
+            "--ctx",
+            "--max-tokens",
+            dest="ctx",
+            type=int,
+            default=8192,
+            help="Context limit in tokens per question (state + question); longer inputs are rejected",
+        )
         p.add_argument("--calibration", type=Path)
         if name == "serve":
             p.add_argument("--host", default="127.0.0.1")
@@ -87,7 +95,7 @@ def main():
             batch_size=args.batch_size,
         )
         calibration = Calibration.from_file(args.calibration) if args.calibration else None
-        engine = Engine(backend, max_tokens=args.max_tokens, calibration=calibration)
+        engine = Engine(backend, ctx=args.ctx, calibration=calibration)
         if args.command == "decide":
             write_json(engine.decide(request), args.output)
         elif args.command == "evaluate":

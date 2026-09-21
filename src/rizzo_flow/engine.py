@@ -10,11 +10,11 @@ from .schema import Request
 
 
 class Engine:
-    def __init__(self, backend, max_tokens=8192, calibration=None):
-        if max_tokens < 1:
-            raise ValueError("max_tokens must be positive")
+    def __init__(self, backend, ctx=8192, calibration=None):
+        if ctx < 1:
+            raise ValueError("ctx must be positive")
         self.backend = backend
-        self.max_tokens = max_tokens
+        self.ctx = ctx
         self.calibration = calibration
         if calibration and calibration.fingerprint != backend.metadata["fingerprint"]:
             raise ValueError(
@@ -30,7 +30,7 @@ class Engine:
         started = time.perf_counter()
         with self._lock:
             acquired = time.perf_counter()
-            prefix, jobs = compile_request(self.backend.tokenizer, request, self.max_tokens)
+            prefix, jobs = compile_request(self.backend.tokenizer, request, self.ctx)
             encoded = time.perf_counter()
             logits, timing = self.backend.score(prefix, jobs, request.mode)
             answers = {}

@@ -204,7 +204,10 @@ is what makes the "prefill a large state once, ask many cheap questions" pattern
 
 What is true *today* in this repository, so you can plan around it:
 
-- The per-question token limit defaults to **8,192** and is raised with `--max-tokens`.
+- The context limit per question (state + question) defaults to **8,192** tokens and is set with
+  `--ctx`. It is a guard, not a reservation: the KV cache grows only with the tokens you actually
+  send, about **36 KiB per token** for the 4B model (only 9 of its 36 layers keep full attention),
+  multiplied by `--batch-size` while questions run. Use `--batch-size 1` for long states.
 - A request's `state` is capped at **256 KB** of JSON (roughly 60k tokens). Inputs over a limit
   are **rejected, never truncated**.
 - The longest states we have measured are **~2,000 tokens** (the 37×21 systems benchmark below).
@@ -250,7 +253,7 @@ either claim yet, and the 1.7B path has not been exercised end to end.
 
 Loading takes a few seconds; the server is ready when it prints
 `Uvicorn running on http://127.0.0.1:8017`. Useful flags: `--bits 4|8` (omit for BF16),
-`--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--max-tokens`,
+`--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--ctx` (context limit in tokens, default 8192),
 `--model /path/to/checkpoint` (overrides `--size`), `--calibration fit.json`.
 Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compatible endpoints.
 

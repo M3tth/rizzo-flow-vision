@@ -64,7 +64,7 @@ def test_shared_prefix_and_state_mutation(payload):
 
 def test_limits_reject_without_truncation(payload):
     with pytest.raises(ValueError, match="no truncation"):
-        Engine(FakeBackend(), max_tokens=10).decide(payload)
+        Engine(FakeBackend(), ctx=10).decide(payload)
 
 
 def test_api_and_all_input_validation(payload):
