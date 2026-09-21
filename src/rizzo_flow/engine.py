@@ -1,6 +1,7 @@
 """Thread-safe long-lived model service with deterministic postprocessing."""
 
 import time
+from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 
 from .decisions import decode
@@ -21,6 +22,10 @@ class Engine:
                 "Calibration was fitted for a different model/runtime/prompt configuration"
             )
         self._lock = Lock()
+        # All model work runs on one thread that lives as long as the process. Web servers call
+        # decide() from short-lived pool threads, and MLX's CUDA backend aborts the process when
+        # a thread that ran computations exits.
+        self._worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="rizzo-inference")
 
     def decide(self, request: Request | dict) -> dict:
         # Re-validate a serialized snapshot, also protecting mutable Pydantic objects.
@@ -32,7 +37,9 @@ class Engine:
             acquired = time.perf_counter()
             prefix, jobs = compile_request(self.backend.tokenizer, request, self.ctx)
             encoded = time.perf_counter()
-            logits, timing = self.backend.score(prefix, jobs, request.mode)
+            logits, timing = self._worker.submit(
+                self.backend.score, prefix, jobs, request.mode
+            ).result()
             answers = {}
             for job in jobs:
                 question = request.questions[job.id]

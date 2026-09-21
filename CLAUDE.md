@@ -238,9 +238,14 @@ CUDA su Linux e l'extra `mlx` dopo queste modifiche **non sono stati provati** (
 - Server uvicorn reale: `/v1/systemone`, `/v1/decisions`, 422 sugli input invalidi, regge pause
   di 15 s. La prima richiesta dopo l'avvio paga la compilazione JIT dei kernel (fino a ~48 s la
   prima volta in assoluto, poi in cache su disco).
-- Limite MLX-CUDA/Windows: il processo va in abort quando termina un `threading.Thread` che ha
-  eseguito inferenza (quindi `TestClient` con pesi reali crasha alla seconda richiesta) e ogni
-  processo CUDA esce con codice 127 alla chiusura. `rizzo serve` non ne è colpito.
+- Limite MLX-CUDA/Windows: il processo va in abort (exit `3221226505`, nessun traceback) quando
+  termina un thread che ha eseguito inferenza. Colpiva anche `rizzo serve`: con richieste
+  concorrenti (demo Snake, playground) uvicorn usa più thread di lavoro e ne elimina gli inattivi →
+  crash dopo pochi minuti. **Fix:** `Engine` esegue `backend.score` su un solo thread dedicato
+  (`ThreadPoolExecutor(max_workers=1)`) che vive quanto il processo; verificato con raffiche di 6
+  richieste + pause di 12 s (prima moriva al primo giro). Resta l'uscita con codice 127 alla
+  chiusura di ogni processo CUDA (innocua) — e chi chiama `backend.score` direttamente da thread
+  propri di breve vita, fuori da `Engine`, resta esposto.
 
 ### Da fare
 - Lato SemIf del confronto sullo stesso Mac: serve scaricare `Qwen/Qwen3.5-4B` (~9 GB, rev.
