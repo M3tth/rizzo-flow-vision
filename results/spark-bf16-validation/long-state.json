@@ -1,0 +1,478 @@
+{
+  "dataset_sha256": "fb1af50450c753486061f7b589f50ab78e9393cd5fc5b8b962553132d2e9db15",
+  "summary": {
+    "requests": 1,
+    "repeats": 2,
+    "warmup_excluded": true,
+    "latency_seconds": {
+      "median": 3.0486315625021234,
+      "p95": 3.0503752499935217
+    },
+    "labeled_decision_coverage": null,
+    "status_accuracy": null,
+    "categorical": {
+      "rows": 0,
+      "accuracy": null,
+      "accepted_accuracy": null,
+      "nll": null,
+      "brier": null,
+      "ece_10_bins": null,
+      "reliability_bins": []
+    },
+    "numeric": {
+      "rows": 0,
+      "answered": 0,
+      "mae_on_answered": null,
+      "rmse_on_answered": null
+    },
+    "mode_comparison": {
+      "decisions": 4,
+      "changed_argmaxes": 0,
+      "max_probability_delta": 0.014678074070376468
+    }
+  },
+  "rows": [
+    {
+      "id": "long-shared-state",
+      "expected": {},
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "bf16",
+          "quantization_group_size": null,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v1",
+          "fingerprint": "02f1538136424435a952980e6d19681912c7dce2d7fb25b10ad272d5f757c896",
+          "load_seconds": 5.453254708962049
+        },
+        "mode": "shared",
+        "answers": {
+          "needs_access_support": {
+            "type": "boolean",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "false": 0.006978166676624432,
+              "true": 0.004796019142460401,
+              "__insufficient__": 0.9882258141809152
+            },
+            "option_logits": {
+              "false": -3.328125,
+              "true": -3.703125,
+              "__insufficient__": 1.625
+            },
+            "legend": {
+              "false": "The proposition is contradicted by the evidence.",
+              "true": "The proposition is supported by the evidence.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.9882258141809152,
+              "entropy_nats": 0.07196157179971276,
+              "concentration": 0.9344977545381778,
+              "unavailable_probability": 0.9882258141809152
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "probability_true_given_available": 0.4073334000459302,
+            "prompt_sha256": "49225d288a75720b8822851ef966a9a074c343d224e8d0b6d89e780dcb7fa84f",
+            "input_tokens": 1757
+          },
+          "queue": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.7741167188186119,
+              "billing": 0.0003386959968898417,
+              "sales": 0.0002637767076009588,
+              "__insufficient__": 0.22528080847689738
+            },
+            "option_logits": {
+              "access": -0.890625,
+              "billing": -8.625,
+              "sales": -8.875,
+              "__insufficient__": -2.125
+            },
+            "legend": {
+              "access": "Problemi di login, password o accesso all'account.",
+              "billing": "Problemi con fatture, addebiti o pagamenti.",
+              "sales": "Richieste di acquisto di nuovi prodotti.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.7741167188186119,
+              "entropy_nats": 0.5388393092186287,
+              "concentration": 0.6113096003771248,
+              "unavailable_probability": 0.22528080847689738
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "028ebff6af82e1fedc9e623b4314ca7cf816f5cd92b7d3ceba8f315752a5ff95",
+            "input_tokens": 1780
+          },
+          "urgency": {
+            "type": "score",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 0.00710648950713389,
+              "1": 0.010339881220954144,
+              "2": 0.0585794165624801,
+              "__insufficient__": 0.9239742127094318
+            },
+            "option_logits": {
+              "0": -4.8125,
+              "1": -4.4375,
+              "2": -2.703125,
+              "__insufficient__": 0.05517578125
+            },
+            "legend": {
+              "0": "Nessuna scadenza e nessuna attività bloccata.",
+              "1": "Attività rallentata, ma esiste una soluzione temporanea.",
+              "2": "Attività bloccata con una scadenza entro oggi.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.9239742127094318,
+              "entropy_nats": 0.3216965873284464,
+              "concentration": 0.7679449643951735,
+              "unavailable_probability": 0.9239742127094318
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": null,
+            "prompt_sha256": "a6ccb61dcf2a8cb35bc1c1eeeda72e554afccabc0fa36266c6aba9fad5ec88e5",
+            "input_tokens": 1792
+          },
+          "deadline_hours": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 3.997965684901977e-06,
+              "1": 9.496000841934518e-07,
+              "2": 3.7557411890769416e-06,
+              "__below_range__": 9.496000841934518e-07,
+              "__above_range__": 2.775138233915403e-05,
+              "__insufficient__": 0.9999625957106185
+            },
+            "option_logits": {
+              "0": -10.625,
+              "1": -12.0625,
+              "2": -10.6875,
+              "__below_range__": -12.0625,
+              "__above_range__": -8.6875,
+              "__insufficient__": 1.8046875
+            },
+            "legend": {
+              "0": "Approximately 1 hours: La scadenza è tra un'ora.",
+              "1": "Approximately 4 hours: La scadenza è tra quattro ore.",
+              "2": "Approximately 8 hours: La scadenza è tra otto ore.",
+              "__below_range__": "The value is below 1 hours.",
+              "__above_range__": "The value is above 8 hours.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999625957106185,
+              "entropy_nats": 0.0004515251478954809,
+              "concentration": 0.9997479990168044,
+              "unavailable_probability": 0.9999912966930419
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 8.0
+            },
+            "support": [
+              1.0,
+              8.0
+            ],
+            "unit": "hours",
+            "range_probabilities": {
+              "below": 9.496000841934518e-07,
+              "above": 2.775138233915403e-05
+            },
+            "prompt_sha256": "0cafbb6a401c72bdc0e430e0704f5b264ad11a79e504e3b580cf30a7913812e9",
+            "input_tokens": 1836
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 2.9883246250101365,
+          "prefill_seconds": 2.032240375003312,
+          "shared_prefix_tokens": 1659,
+          "evaluated_tokens_including_padding": 2367,
+          "logical_input_tokens": 7165,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 9394069232,
+          "queue_seconds": 1.167005393654108e-06,
+          "compile_seconds": 0.06099287496181205,
+          "total_seconds": 3.0503752499935217
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 2.9883246250101365,
+          "prefill_seconds": 2.032240375003312,
+          "shared_prefix_tokens": 1659,
+          "evaluated_tokens_including_padding": 2367,
+          "logical_input_tokens": 7165,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 9394069232,
+          "queue_seconds": 1.167005393654108e-06,
+          "compile_seconds": 0.06099287496181205,
+          "total_seconds": 3.0503752499935217
+        },
+        {
+          "inference_seconds": 2.9956180000444874,
+          "prefill_seconds": 2.0392067500506528,
+          "shared_prefix_tokens": 1659,
+          "evaluated_tokens_including_padding": 2367,
+          "logical_input_tokens": 7165,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 9394070336,
+          "queue_seconds": 9.160139597952366e-07,
+          "compile_seconds": 0.05021575000137091,
+          "total_seconds": 3.046887875010725
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "bf16",
+          "quantization_group_size": null,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v1",
+          "fingerprint": "02f1538136424435a952980e6d19681912c7dce2d7fb25b10ad272d5f757c896",
+          "load_seconds": 5.453254708962049
+        },
+        "mode": "direct",
+        "answers": {
+          "needs_access_support": {
+            "type": "boolean",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "false": 0.008527215654617734,
+              "true": 0.00586066389735731,
+              "__insufficient__": 0.9856121204480249
+            },
+            "option_logits": {
+              "false": -3.171875,
+              "true": -3.546875,
+              "__insufficient__": 1.578125
+            },
+            "legend": {
+              "false": "The proposition is contradicted by the evidence.",
+              "true": "The proposition is supported by the evidence.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.9856121204480249,
+              "entropy_nats": 0.08503256557939338,
+              "concentration": 0.9226000232689171,
+              "unavailable_probability": 0.9856121204480249
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "probability_true_given_available": 0.4073334000459302,
+            "prompt_sha256": "49225d288a75720b8822851ef966a9a074c343d224e8d0b6d89e780dcb7fa84f",
+            "input_tokens": 1757
+          },
+          "queue": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.7594386447482354,
+              "billing": 0.0003495830169255493,
+              "sales": 0.00030850592963297546,
+              "__insufficient__": 0.23990326630520611
+            },
+            "option_logits": {
+              "access": -0.81640625,
+              "billing": -8.5,
+              "sales": -8.625,
+              "__insufficient__": -1.96875
+            },
+            "legend": {
+              "access": "Problemi di login, password o accesso all'account.",
+              "billing": "Problemi con fatture, addebiti o pagamenti.",
+              "sales": "Richieste di acquisto di nuovi prodotti.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.7594386447482354,
+              "entropy_nats": 0.5567218248404324,
+              "concentration": 0.598410092074027,
+              "unavailable_probability": 0.23990326630520611
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "028ebff6af82e1fedc9e623b4314ca7cf816f5cd92b7d3ceba8f315752a5ff95",
+            "input_tokens": 1780
+          },
+          "urgency": {
+            "type": "score",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 0.007868265712533493,
+              "1": 0.012186608333275959,
+              "2": 0.047451715167887376,
+              "__insufficient__": 0.9324934107863031
+            },
+            "option_logits": {
+              "0": -4.75,
+              "1": -4.3125,
+              "2": -2.953125,
+              "__insufficient__": 0.0250244140625
+            },
+            "legend": {
+              "0": "Nessuna scadenza e nessuna attività bloccata.",
+              "1": "Attività rallentata, ma esiste una soluzione temporanea.",
+              "2": "Attività bloccata con una scadenza entro oggi.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.9324934107863031,
+              "entropy_nats": 0.30164236343742495,
+              "concentration": 0.7824110290734003,
+              "unavailable_probability": 0.9324934107863031
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": null,
+            "prompt_sha256": "a6ccb61dcf2a8cb35bc1c1eeeda72e554afccabc0fa36266c6aba9fad5ec88e5",
+            "input_tokens": 1792
+          },
+          "deadline_hours": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 4.390897364248711e-06,
+              "1": 1.110192714796771e-06,
+              "2": 4.1248663414485e-06,
+              "__below_range__": 1.181793993232138e-06,
+              "__above_range__": 2.8632247488200092e-05,
+              "__insufficient__": 0.999960560002098
+            },
+            "option_logits": {
+              "0": -10.5625,
+              "1": -11.9375,
+              "2": -10.625,
+              "__below_range__": -11.875,
+              "__above_range__": -8.6875,
+              "__insufficient__": 1.7734375
+            },
+            "legend": {
+              "0": "Approximately 1 hours: La scadenza è tra un'ora.",
+              "1": "Approximately 4 hours: La scadenza è tra quattro ore.",
+              "2": "Approximately 8 hours: La scadenza è tra otto ore.",
+              "__below_range__": "The value is below 1 hours.",
+              "__above_range__": "The value is above 8 hours.",
+              "__insufficient__": "The supplied evidence is insufficient, missing, or conflicting; no substantive option can be supported."
+            },
+            "uncertainty": {
+              "top_probability": 0.999960560002098,
+              "entropy_nats": 0.00047562008450240193,
+              "concentration": 0.999734551376638,
+              "unavailable_probability": 0.9999903740435794
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 8.0
+            },
+            "support": [
+              1.0,
+              8.0
+            ],
+            "unit": "hours",
+            "range_probabilities": {
+              "below": 1.181793993232138e-06,
+              "above": 2.8632247488200092e-05
+            },
+            "prompt_sha256": "0cafbb6a401c72bdc0e430e0704f5b264ad11a79e504e3b580cf30a7913812e9",
+            "input_tokens": 1836
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 9.027191458037123,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 7165,
+          "logical_input_tokens": 7165,
+          "batches": 4,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 8774465838,
+          "queue_seconds": 1.374981366097927e-06,
+          "compile_seconds": 0.05251929204678163,
+          "total_seconds": 9.07984070898965
+        }
+      }
+    }
+  ]
+}

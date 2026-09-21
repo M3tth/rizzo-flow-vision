@@ -1,0 +1,177 @@
+{
+  "reference_dataset_sha256": "bfd2f948642d1bdf249995ccba71315cb83a85d49bf7f0ba3be262e80c4cd7e2",
+  "candidate_dataset_sha256": "abbbd248c9116294be92af5b003b6f1f8c78563f0418bef08715eb6faaaa0050",
+  "summary": {
+    "decisions": 9,
+    "changed_argmaxes": 1,
+    "changed_statuses": 1,
+    "max_probability_delta": 0.7136719156359326
+  },
+  "rows": [
+    {
+      "id": "paid-irrelevant",
+      "question": "paid",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 9.403579743338941e-05,
+      "reference_probabilities": {
+        "false": 1.5217954444375293e-05,
+        "true": 0.9999829645200853,
+        "__insufficient__": 1.8175254702394592e-06
+      },
+      "candidate_probabilities": {
+        "false": 2.026223595006547e-05,
+        "true": 0.9998889287226519,
+        "__insufficient__": 9.080904139801944e-05
+      }
+    },
+    {
+      "id": "unpaid-irrelevant",
+      "question": "paid",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 0.009346646873899411,
+      "reference_probabilities": {
+        "false": 0.999959619790046,
+        "true": 3.3737000641290866e-05,
+        "__insufficient__": 6.643209312641553e-06
+      },
+      "candidate_probabilities": {
+        "false": 0.9906129729161466,
+        "true": 0.002141711265141866,
+        "__insufficient__": 0.007245315818711546
+      }
+    },
+    {
+      "id": "payment-unknown-irrelevant",
+      "question": "paid",
+      "changed_argmax": true,
+      "changed_status": true,
+      "max_probability_delta": 0.7136719156359326,
+      "reference_probabilities": {
+        "false": 0.705482984221468,
+        "true": 0.010587392455614316,
+        "__insufficient__": 0.28392962332291777
+      },
+      "candidate_probabilities": {
+        "false": 0.0009769732907692794,
+        "true": 0.0014214877503805933,
+        "__insufficient__": 0.9976015389588503
+      }
+    },
+    {
+      "id": "login-reordered",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 9.418708382397263e-06,
+      "reference_probabilities": {
+        "access": 0.9999891817950186,
+        "billing": 2.70523082047082e-06,
+        "sales": 2.8512923073848046e-07,
+        "__insufficient__": 7.827844930162809e-06
+      },
+      "candidate_probabilities": {
+        "sales": 2.242703246137585e-06,
+        "billing": 1.2123939202868083e-05,
+        "access": 0.9999838867385067,
+        "__insufficient__": 1.746619044288733e-06
+      }
+    },
+    {
+      "id": "login-irrelevant",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 0.3593818981217941,
+      "reference_probabilities": {
+        "access": 0.9999891817950186,
+        "billing": 2.70523082047082e-06,
+        "sales": 2.8512923073848046e-07,
+        "__insufficient__": 7.827844930162809e-06
+      },
+      "candidate_probabilities": {
+        "access": 0.6406072836732245,
+        "billing": 4.1014345107149256e-05,
+        "sales": 3.583793535505607e-06,
+        "__insufficient__": 0.3593481181881329
+      }
+    },
+    {
+      "id": "refund-reordered",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 1.544336325362742e-06,
+      "reference_probabilities": {
+        "access": 1.4165481318131092e-06,
+        "billing": 0.9999976173947767,
+        "sales": 1.5893229566183287e-07,
+        "__insufficient__": 8.071247959117852e-07
+      },
+      "candidate_probabilities": {
+        "sales": 1.7032686210245748e-06,
+        "billing": 0.9999975496688336,
+        "access": 1.58428660773152e-07,
+        "__insufficient__": 5.886338845806284e-07
+      }
+    },
+    {
+      "id": "refund-irrelevant",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 2.0018649020541686e-05,
+      "reference_probabilities": {
+        "access": 1.4165481318131092e-06,
+        "billing": 0.9999976173947767,
+        "sales": 1.5893229566183287e-07,
+        "__insufficient__": 8.071247959117852e-07
+      },
+      "candidate_probabilities": {
+        "access": 1.3313471780605223e-06,
+        "billing": 0.999977662700758,
+        "sales": 1.8017824742908583e-07,
+        "__insufficient__": 2.082577381645347e-05
+      }
+    },
+    {
+      "id": "purchase-reordered",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 6.722968251504646e-05,
+      "reference_probabilities": {
+        "access": 6.9075245558480585e-06,
+        "billing": 6.97635266777834e-05,
+        "sales": 0.9999132785598414,
+        "__insufficient__": 1.005038892502333e-05
+      },
+      "candidate_probabilities": {
+        "sales": 0.9999805082423564,
+        "billing": 9.080380218463899e-06,
+        "access": 7.453629977370869e-07,
+        "__insufficient__": 9.666014427422161e-06
+      }
+    },
+    {
+      "id": "purchase-irrelevant",
+      "question": "route",
+      "changed_argmax": false,
+      "changed_status": false,
+      "max_probability_delta": 0.0001319625128005893,
+      "reference_probabilities": {
+        "access": 6.9075245558480585e-06,
+        "billing": 6.97635266777834e-05,
+        "sales": 0.9999132785598414,
+        "__insufficient__": 1.005038892502333e-05
+      },
+      "candidate_probabilities": {
+        "access": 8.528537649980669e-06,
+        "billing": 6.708214483287613e-05,
+        "sales": 0.9997823764157915,
+        "__insufficient__": 0.00014201290172561262
+      }
+    }
+  ]
+}

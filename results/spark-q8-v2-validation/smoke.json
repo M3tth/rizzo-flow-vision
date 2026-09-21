@@ -1,0 +1,3912 @@
+{
+  "dataset_sha256": "1c99deedbc2b40e0c73ed48b633b8aa9e4e8315d598351389a0ce1479b2d4482",
+  "summary": {
+    "requests": 17,
+    "repeats": 1,
+    "warmup_excluded": true,
+    "decisions_per_second": 2.6989714356074765,
+    "latency_seconds": {
+      "median": 0.2853647909942083,
+      "p95": 1.3543218749691732
+    },
+    "labeled_decision_coverage": 0.85,
+    "status_accuracy": 0.9,
+    "categorical": {
+      "rows": 20,
+      "accuracy": 0.9,
+      "accepted_accuracy": 0.8823529411764706,
+      "nll": 0.7032388871807319,
+      "brier": 0.1840248639153288,
+      "ece_10_bins": 0.06773953011001813,
+      "reliability_bins": [
+        {
+          "lower": 0.6,
+          "count": 2,
+          "accuracy": 0.5,
+          "mean_top_probability": 0.6413853663375139
+        },
+        {
+          "lower": 0.8,
+          "count": 1,
+          "accuracy": 1,
+          "mean_top_probability": 0.8353996693613421
+        },
+        {
+          "lower": 0.9,
+          "count": 17,
+          "accuracy": 0.9411764705882353,
+          "mean_top_probability": 0.9945540905227457
+        }
+      ]
+    },
+    "numeric": {
+      "rows": 7,
+      "by_type_unit_and_support": {
+        "{\"support\":[0,2],\"type\":\"score\",\"unit\":null}": {
+          "rows": 3,
+          "answered": 3,
+          "mae_on_answered": 0.01446689472890124,
+          "rmse_on_answered": 0.025013712279495524
+        },
+        "{\"support\":[0.0,100.0],\"type\":\"numeric\",\"unit\":\"percent\"}": {
+          "rows": 4,
+          "answered": 4,
+          "mae_on_answered": 0.0025551329058519853,
+          "rmse_on_answered": 0.0042737299259570545
+        }
+      }
+    },
+    "mode_comparison": {
+      "decisions": 20,
+      "changed_argmaxes": 0,
+      "max_probability_delta": 0.05057327645871501,
+      "median_seconds": {
+        "shared": 0.2853647909942083,
+        "direct": 0.29353879200061783
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "paid",
+      "expected": {
+        "paid": {
+          "label": "true",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 8.753953188884904e-06,
+              "true": 0.9999909271840896,
+              "__insufficient__": 3.1886272159654377e-07
+            },
+            "option_logits": {
+              "false": -11.5625,
+              "true": 0.08349609375,
+              "__insufficient__": -14.875
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999909271840896,
+              "entropy_nats": 0.00011579106848676073,
+              "concentration": 0.9998946024273703,
+              "unavailable_probability": 3.1886272159654377e-07
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": true,
+            "probability_true_given_available": 0.9999912460440198,
+            "prompt_sha256": "2df2e87d5588b71195c56d97a99e3173ab778c812efcd3249ba5d40c61b6362c",
+            "input_tokens": 182
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.27942679199622944,
+          "prefill_seconds": 0.11773216602159664,
+          "shared_prefix_tokens": 69,
+          "evaluated_tokens_including_padding": 182,
+          "logical_input_tokens": 182,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4612740238,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0014195410185493529,
+          "total_seconds": 0.281213584006764
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.27942679199622944,
+          "prefill_seconds": 0.11773216602159664,
+          "shared_prefix_tokens": 69,
+          "evaluated_tokens_including_padding": 182,
+          "logical_input_tokens": 182,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4612740238,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0014195410185493529,
+          "total_seconds": 0.281213584006764
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 7.995908754223177e-06,
+              "true": 0.9999917128402908,
+              "__insufficient__": 2.912509550823866e-07
+            },
+            "option_logits": {
+              "false": -11.75,
+              "true": -0.013427734375,
+              "__insufficient__": -15.0625
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999917128402908,
+              "entropy_nats": 0.00010651481164169029,
+              "concentration": 0.999903046040227,
+              "unavailable_probability": 2.912509550823866e-07
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": true,
+            "probability_true_given_available": 0.999992004088917,
+            "prompt_sha256": "2df2e87d5588b71195c56d97a99e3173ab778c812efcd3249ba5d40c61b6362c",
+            "input_tokens": 182
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.25426987500395626,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 182,
+          "logical_input_tokens": 182,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4690538306,
+          "queue_seconds": 9.589712135493755e-07,
+          "compile_seconds": 0.0013242080458439887,
+          "total_seconds": 0.2556343339965679
+        }
+      }
+    },
+    {
+      "id": "unpaid",
+      "expected": {
+        "paid": {
+          "label": "false",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.9998285840123889,
+              "true": 0.00016668742921467305,
+              "__insufficient__": 4.728558396436391e-06
+            },
+            "option_logits": {
+              "false": -0.92578125,
+              "true": -9.625,
+              "__insufficient__": -13.1875
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9998285840123889,
+              "entropy_nats": 0.001679461343774243,
+              "concentration": 0.9984712884052933,
+              "unavailable_probability": 4.728558396436391e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": false,
+            "probability_true_given_available": 0.00016668821740964306,
+            "prompt_sha256": "69616c924de2b1ec19944e94d50bcc51871a75107560813c1d5e9021e731967d",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2807074579759501,
+          "prefill_seconds": 0.1183274170034565,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4615683298,
+          "queue_seconds": 1.00000761449337e-06,
+          "compile_seconds": 0.0014566250029020011,
+          "total_seconds": 0.28254937496967614
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.2807074579759501,
+          "prefill_seconds": 0.1183274170034565,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4615683298,
+          "queue_seconds": 1.00000761449337e-06,
+          "compile_seconds": 0.0014566250029020011,
+          "total_seconds": 0.28254937496967614
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.999838337749761,
+              "true": 0.0001572027514406868,
+              "__insufficient__": 4.4594987982592754e-06
+            },
+            "option_logits": {
+              "false": -0.9921875,
+              "true": -9.75,
+              "__insufficient__": -13.3125
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999838337749761,
+              "entropy_nats": 0.0015933699593785936,
+              "concentration": 0.9985496521604448,
+              "unavailable_probability": 4.4594987982592754e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": false,
+            "probability_true_given_available": 0.00015720345248929426,
+            "prompt_sha256": "69616c924de2b1ec19944e94d50bcc51871a75107560813c1d5e9021e731967d",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.25694141699932516,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4698361414,
+          "queue_seconds": 1.1669471859931946e-06,
+          "compile_seconds": 0.0013792079989798367,
+          "total_seconds": 0.25835995795205235
+        }
+      }
+    },
+    {
+      "id": "payment-unknown",
+      "expected": {
+        "paid": {
+          "label": "__insufficient__",
+          "status": "insufficient_evidence"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.999603326753446,
+              "true": 0.0003799781708816364,
+              "__insufficient__": 1.669507567237022e-05
+            },
+            "option_logits": {
+              "false": -0.875,
+              "true": -8.75,
+              "__insufficient__": -11.875
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999603326753446,
+              "entropy_nats": 0.003572725870286898,
+              "concentration": 0.9967479647668803,
+              "unavailable_probability": 1.669507567237022e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": false,
+            "probability_true_given_available": 0.00037998451475186455,
+            "prompt_sha256": "4cbea9e9ba0c662a85af61502aba5b0c03d116f672efc5a6f913510e4353a8a5",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.28088887501508,
+          "prefill_seconds": 0.1181712499819696,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4617414404,
+          "queue_seconds": 1.2090313248336315e-06,
+          "compile_seconds": 0.0013976659975014627,
+          "total_seconds": 0.28277158399578184
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.28088887501508,
+          "prefill_seconds": 0.1181712499819696,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4617414404,
+          "queue_seconds": 1.2090313248336315e-06,
+          "compile_seconds": 0.0013976659975014627,
+          "total_seconds": 0.28277158399578184
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.9995826715875473,
+              "true": 0.0003997640077780452,
+              "__insufficient__": 1.7564404674771296e-05
+            },
+            "option_logits": {
+              "false": -0.92578125,
+              "true": -8.75,
+              "__insufficient__": -11.875
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9995826715875473,
+              "entropy_nats": 0.0037375730724196277,
+              "concentration": 0.9965979143770994,
+              "unavailable_probability": 1.7564404674771296e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": false,
+            "probability_true_given_available": 0.0003997710295181848,
+            "prompt_sha256": "4cbea9e9ba0c662a85af61502aba5b0c03d116f672efc5a6f913510e4353a8a5",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2572603749576956,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4698360218,
+          "queue_seconds": 1.4170072972774506e-06,
+          "compile_seconds": 0.0014262080076150596,
+          "total_seconds": 0.25873066700296476
+        }
+      }
+    },
+    {
+      "id": "login",
+      "expected": {
+        "route": {
+          "label": "access",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.9999891817950186,
+              "billing": 2.70523082047082e-06,
+              "sales": 2.8512923073848046e-07,
+              "__insufficient__": 7.827844930162809e-06
+            },
+            "option_logits": {
+              "access": -1.5546875,
+              "billing": -14.375,
+              "sales": -16.625,
+              "__insufficient__": -13.3125
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999891817950186,
+              "entropy_nats": 0.00014183548757970102,
+              "concentration": 0.9998976873227233,
+              "unavailable_probability": 7.827844930162809e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "288dfaac38222848ed89c5f4dff7c5814f3e0be711cdca016f16257b6047823b",
+            "input_tokens": 184
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.28023400000529364,
+          "prefill_seconds": 0.117570833011996,
+          "shared_prefix_tokens": 67,
+          "evaluated_tokens_including_padding": 184,
+          "logical_input_tokens": 184,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4620862651,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0017675000126473606,
+          "total_seconds": 0.2824104999890551
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.28023400000529364,
+          "prefill_seconds": 0.117570833011996,
+          "shared_prefix_tokens": 67,
+          "evaluated_tokens_including_padding": 184,
+          "logical_input_tokens": 184,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4620862651,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0017675000126473606,
+          "total_seconds": 0.2824104999890551
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.9999891403728058,
+              "billing": 2.8350574407958645e-06,
+              "sales": 3.180846293038595e-07,
+              "__insufficient__": 7.706485123953003e-06
+            },
+            "option_logits": {
+              "access": -1.2890625,
+              "billing": -14.0625,
+              "sales": -16.25,
+              "__insufficient__": -13.0625
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999891403728058,
+              "entropy_nats": 0.00014256378039952003,
+              "concentration": 0.9998971619705036,
+              "unavailable_probability": 7.706485123953003e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "288dfaac38222848ed89c5f4dff7c5814f3e0be711cdca016f16257b6047823b",
+            "input_tokens": 184
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.25366574997315183,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 184,
+          "logical_input_tokens": 184,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4696756826,
+          "queue_seconds": 1.4579854905605316e-06,
+          "compile_seconds": 0.0016152090393006802,
+          "total_seconds": 0.2553215000079945
+        }
+      }
+    },
+    {
+      "id": "refund",
+      "expected": {
+        "route": {
+          "label": "billing",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 1.4165481318131092e-06,
+              "billing": 0.9999976173947767,
+              "sales": 1.5893229566183287e-07,
+              "__insufficient__": 8.071247959117852e-07
+            },
+            "option_logits": {
+              "access": -13.375,
+              "billing": 0.09228515625,
+              "sales": -15.5625,
+              "__insufficient__": -13.9375
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999976173947767,
+              "entropy_nats": 3.527150411432765e-05,
+              "concentration": 0.9999745569879648,
+              "unavailable_probability": 8.071247959117852e-07
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "billing",
+            "prompt_sha256": "d4c0ef802d42bf5426ad20f7d4e24d383d3e89ebf5f76f0d51a003e0056299c8",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2808449580334127,
+          "prefill_seconds": 0.11797174997627735,
+          "shared_prefix_tokens": 69,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4621358374,
+          "queue_seconds": 1.0409858077764511e-06,
+          "compile_seconds": 0.0017046669963747263,
+          "total_seconds": 0.2829415829619393
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.2808449580334127,
+          "prefill_seconds": 0.11797174997627735,
+          "shared_prefix_tokens": 69,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4621358374,
+          "queue_seconds": 1.0409858077764511e-06,
+          "compile_seconds": 0.0017046669963747263,
+          "total_seconds": 0.2829415829619393
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 1.2778717551656525e-06,
+              "billing": 0.9999979448872818,
+              "sales": 1.3468669208396832e-07,
+              "__insufficient__": 6.42554271094441e-07
+            },
+            "option_logits": {
+              "access": -13.375,
+              "billing": 0.1953125,
+              "sales": -15.625,
+              "__insufficient__": -14.0625
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999979448872818,
+              "entropy_nats": 3.068843775919124e-05,
+              "concentration": 0.9999778629715161,
+              "unavailable_probability": 6.42554271094441e-07
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "billing",
+            "prompt_sha256": "d4c0ef802d42bf5426ad20f7d4e24d383d3e89ebf5f76f0d51a003e0056299c8",
+            "input_tokens": 186
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.25665466603823006,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 186,
+          "logical_input_tokens": 186,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4699379270,
+          "queue_seconds": 1.0830117389559746e-06,
+          "compile_seconds": 0.0015857500256970525,
+          "total_seconds": 0.25828766700578853
+        }
+      }
+    },
+    {
+      "id": "purchase",
+      "expected": {
+        "route": {
+          "label": "sales",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 6.9075245558480585e-06,
+              "billing": 6.97635266777834e-05,
+              "sales": 0.9999132785598414,
+              "__insufficient__": 1.005038892502333e-05
+            },
+            "option_logits": {
+              "access": -13.125,
+              "billing": -10.8125,
+              "sales": -1.2421875,
+              "__insufficient__": -12.75
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999132785598414,
+              "entropy_nats": 0.0009521227625261558,
+              "concentration": 0.999313188606093,
+              "unavailable_probability": 1.005038892502333e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "sales",
+            "prompt_sha256": "0a877829a0d5096f900eed132985f3396a692b414714b731cdcf4fd134ebaa63",
+            "input_tokens": 189
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2809112500399351,
+          "prefill_seconds": 0.1176137090078555,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 189,
+          "logical_input_tokens": 189,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4622401946,
+          "queue_seconds": 1.0830117389559746e-06,
+          "compile_seconds": 0.0016402089968323708,
+          "total_seconds": 0.2830015000072308
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.2809112500399351,
+          "prefill_seconds": 0.1176137090078555,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 189,
+          "logical_input_tokens": 189,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4622401946,
+          "queue_seconds": 1.0830117389559746e-06,
+          "compile_seconds": 0.0016402089968323708,
+          "total_seconds": 0.2830015000072308
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 7.126709480628032e-06,
+              "billing": 8.156087096564082e-05,
+              "sales": 0.99990157136264,
+              "__insufficient__": 9.741056913845395e-06
+            },
+            "option_logits": {
+              "access": -13.0625,
+              "billing": -10.625,
+              "sales": -1.2109375,
+              "__insufficient__": -12.75
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.99990157136264,
+              "entropy_nats": 0.0010631179259750997,
+              "concentration": 0.9992331225201578,
+              "unavailable_probability": 9.741056913845395e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "sales",
+            "prompt_sha256": "0a877829a0d5096f900eed132985f3396a692b414714b731cdcf4fd134ebaa63",
+            "input_tokens": 189
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2582458750111982,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 189,
+          "logical_input_tokens": 189,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4702871378,
+          "queue_seconds": 1.167005393654108e-06,
+          "compile_seconds": 0.0016336250118911266,
+          "total_seconds": 0.25992537499405444
+        }
+      }
+    },
+    {
+      "id": "cosmetic",
+      "expected": {
+        "severity": {
+          "label": "0",
+          "value": 0,
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.9999748152993428,
+              "1": 2.0623328220225774e-05,
+              "2": 1.5903003105327334e-06,
+              "__insufficient__": 2.971072126255987e-06
+            },
+            "option_logits": {
+              "0": -1.1484375,
+              "1": -11.9375,
+              "2": -14.5,
+              "__insufficient__": -13.875
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999748152993428,
+              "entropy_nats": 0.00030673592401973473,
+              "concentration": 0.9997787368017771,
+              "unavailable_probability": 2.971072126255987e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 2.3803999564690843e-05,
+            "statistics_given_available": {
+              "mean": 2.3803999564690843e-05,
+              "stddev": 0.005194616733232873,
+              "median": 0,
+              "anchor_quantiles": {
+                "p10": 0,
+                "p90": 0
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 1.1901999782345422e-05,
+            "prompt_sha256": "936a43bf6400f7144220af0e1f95997d1bbadf7480ebfe0777aea29084f6384c",
+            "input_tokens": 199
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2827761659864336,
+          "prefill_seconds": 0.11772750003729016,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 199,
+          "logical_input_tokens": 199,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4637164518,
+          "queue_seconds": 1.1249794624745846e-06,
+          "compile_seconds": 0.002109416003804654,
+          "total_seconds": 0.2853647909942083
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.2827761659864336,
+          "prefill_seconds": 0.11772750003729016,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 199,
+          "logical_input_tokens": 199,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4637164518,
+          "queue_seconds": 1.1249794624745846e-06,
+          "compile_seconds": 0.002109416003804654,
+          "total_seconds": 0.2853647909942083
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.9999778459957054,
+              "1": 1.834282341980261e-05,
+              "2": 1.3287496718526784e-06,
+              "__insufficient__": 2.4824312028781585e-06
+            },
+            "option_logits": {
+              "0": -1.03125,
+              "1": -11.9375,
+              "2": -14.5625,
+              "__insufficient__": -13.9375
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999778459957054,
+              "entropy_nats": 0.0002722241893298193,
+              "concentration": 0.9998036317560219,
+              "unavailable_probability": 2.4824312028781585e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 2.100037489549388e-05,
+            "statistics_given_available": {
+              "mean": 2.100037489549388e-05,
+              "stddev": 0.004863891427707772,
+              "median": 0,
+              "anchor_quantiles": {
+                "p10": 0,
+                "p90": 0
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 1.050018744774694e-05,
+            "prompt_sha256": "936a43bf6400f7144220af0e1f95997d1bbadf7480ebfe0777aea29084f6384c",
+            "input_tokens": 199
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.29179591697175056,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 199,
+          "logical_input_tokens": 199,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4720651034,
+          "queue_seconds": 1.249951310455799e-06,
+          "compile_seconds": 0.0016927500255405903,
+          "total_seconds": 0.29353879200061783
+        }
+      }
+    },
+    {
+      "id": "workaround",
+      "expected": {
+        "severity": {
+          "label": "1",
+          "value": 1,
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.0008608240187545876,
+              "1": 0.9542035374954085,
+              "2": 0.044151849297436124,
+              "__insufficient__": 0.0007837891884008528
+            },
+            "option_logits": {
+              "0": -7.1875,
+              "1": -0.1767578125,
+              "2": -3.25,
+              "__insufficient__": -7.28125
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9542035374954085,
+              "entropy_nats": 0.19417104396470575,
+              "concentration": 0.8599351988939431,
+              "unavailable_probability": 0.0007837891884008528
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.0433249829318911,
+            "statistics_given_available": {
+              "mean": 1.0433249829318911,
+              "stddev": 0.20777614706927178,
+              "median": 1,
+              "anchor_quantiles": {
+                "p10": 1,
+                "p90": 1
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.5216624914659456,
+            "prompt_sha256": "0f573cd7aeed35e32735cf6919d7f59ae8edd4b793b40a5c91cf64095df69abc",
+            "input_tokens": 202
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.28275224997196347,
+          "prefill_seconds": 0.11828566703479737,
+          "shared_prefix_tokens": 75,
+          "evaluated_tokens_including_padding": 202,
+          "logical_input_tokens": 202,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4640546285,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0017503330018371344,
+          "total_seconds": 0.2849161670310423
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.28275224997196347,
+          "prefill_seconds": 0.11828566703479737,
+          "shared_prefix_tokens": 75,
+          "evaluated_tokens_including_padding": 202,
+          "logical_input_tokens": 202,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4640546285,
+          "queue_seconds": 1.0840012691915035e-06,
+          "compile_seconds": 0.0017503330018371344,
+          "total_seconds": 0.2849161670310423
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.0009110700041842208,
+              "1": 0.9636533611325755,
+              "2": 0.0347260268305487,
+              "__insufficient__": 0.0007095420326915393
+            },
+            "option_logits": {
+              "0": -7.125,
+              "1": -0.1611328125,
+              "2": -3.484375,
+              "__insufficient__": -7.375
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9636533611325755,
+              "entropy_nats": 0.16388974278772547,
+              "concentration": 0.8817785404137903,
+              "unavailable_probability": 0.0007095420326915393
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.0338389669957908,
+            "statistics_given_available": {
+              "mean": 1.0338389669957908,
+              "stddev": 0.18578838801106495,
+              "median": 1,
+              "anchor_quantiles": {
+                "p10": 1,
+                "p90": 1
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.5169194834978954,
+            "prompt_sha256": "0f573cd7aeed35e32735cf6919d7f59ae8edd4b793b40a5c91cf64095df69abc",
+            "input_tokens": 202
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2917511250125244,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 202,
+          "logical_input_tokens": 202,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4728936018,
+          "queue_seconds": 1.125037670135498e-06,
+          "compile_seconds": 0.0017074579955078661,
+          "total_seconds": 0.29351124999811873
+        }
+      }
+    },
+    {
+      "id": "blocking",
+      "expected": {
+        "severity": {
+          "label": "2",
+          "value": 2,
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 9.080139917796658e-06,
+              "1": 3.373681255818607e-05,
+              "2": 0.9999540450351364,
+              "__insufficient__": 3.138012387695575e-06
+            },
+            "option_logits": {
+              "0": -12.4375,
+              "1": -11.125,
+              "2": -0.828125,
+              "__insufficient__": -13.5
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999540450351364,
+              "entropy_nats": 0.0005385190127189144,
+              "concentration": 0.999611540645463,
+              "unavailable_probability": 3.138012387695575e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.999948102744752,
+            "statistics_given_available": {
+              "mean": 1.999948102744752,
+              "stddev": 0.008369880449914574,
+              "median": 2,
+              "anchor_quantiles": {
+                "p10": 2,
+                "p90": 2
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.999974051372376,
+            "prompt_sha256": "90bef8cf8c202f030392532280a91e80200141f9533c0b6c162d52df0aa92f22",
+            "input_tokens": 203
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.2826435000170022,
+          "prefill_seconds": 0.11801691597793251,
+          "shared_prefix_tokens": 76,
+          "evaluated_tokens_including_padding": 203,
+          "logical_input_tokens": 203,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4639496070,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.0017797090113162994,
+          "total_seconds": 0.2848342920187861
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.2826435000170022,
+          "prefill_seconds": 0.11801691597793251,
+          "shared_prefix_tokens": 76,
+          "evaluated_tokens_including_padding": 203,
+          "logical_input_tokens": 203,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4639496070,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.0017797090113162994,
+          "total_seconds": 0.2848342920187861
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "severity": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 1.0909964508325455e-05,
+              "1": 3.807951778779239e-05,
+              "2": 0.9999472401348589,
+              "__insufficient__": 3.7703828450202757e-06
+            },
+            "option_logits": {
+              "0": -12.3125,
+              "1": -11.0625,
+              "2": -0.88671875,
+              "__insufficient__": -13.375
+            },
+            "legend": {
+              "0": "Cosmetic only: all functions work.",
+              "1": "A function is broken but a working workaround exists.",
+              "2": "The essential function is blocked and no workaround exists.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999472401348589,
+              "entropy_nats": 0.0006119905694119623,
+              "concentration": 0.9995585421202193,
+              "unavailable_probability": 3.7703828450202757e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.9999401003273507,
+            "statistics_given_available": {
+              "mean": 1.9999401003273507,
+              "stddev": 0.009039695568148584,
+              "median": 2,
+              "anchor_quantiles": {
+                "p10": 2,
+                "p90": 2
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.9999700501636754,
+            "prompt_sha256": "90bef8cf8c202f030392532280a91e80200141f9533c0b6c162d52df0aa92f22",
+            "input_tokens": 203
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.29113850003341213,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 203,
+          "logical_input_tokens": 203,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4730886190,
+          "queue_seconds": 1.00000761449337e-06,
+          "compile_seconds": 0.001722583023365587,
+          "total_seconds": 0.29293541598599404
+        }
+      }
+    },
+    {
+      "id": "fill-0",
+      "expected": {
+        "fill": {
+          "value": 0,
+          "label": "0",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.9548099827613991,
+              "1": 7.160899923692043e-05,
+              "2": 4.039903290675989e-06,
+              "3": 7.090251083970129e-06,
+              "4": 5.5769144680673266e-05,
+              "__below_range__": 0.009090368757542041,
+              "__above_range__": 8.03430704765614e-06,
+              "__insufficient__": 0.03595310587571897
+            },
+            "option_logits": {
+              "0": -0.376953125,
+              "1": -9.875,
+              "2": -12.75,
+              "3": -12.1875,
+              "4": -10.125,
+              "__below_range__": -5.03125,
+              "__above_range__": -12.0625,
+              "__insufficient__": -3.65625
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9548099827613991,
+              "entropy_nats": 0.20790450866996785,
+              "concentration": 0.9000190654544603,
+              "unavailable_probability": 0.04505150894030867
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 0.008483078952072537,
+            "statistics_given_available": {
+              "mean": 0.008483078952072537,
+              "stddev": 0.8265211006450369,
+              "median": 0.0,
+              "anchor_quantiles": {
+                "p10": 0.0,
+                "p90": 0.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 0.009090368757542041,
+              "above": 8.03430704765614e-06
+            },
+            "prompt_sha256": "e56380f9b7e520a29dd0684aa90a3c2e65a7ef1546fa20e979b352c0650e676b",
+            "input_tokens": 362
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.5130486250272952,
+          "prefill_seconds": 0.117648083018139,
+          "shared_prefix_tokens": 71,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4899880442,
+          "queue_seconds": 1.0410440154373646e-06,
+          "compile_seconds": 0.00469879200682044,
+          "total_seconds": 0.5181839580181986
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.5130486250272952,
+          "prefill_seconds": 0.117648083018139,
+          "shared_prefix_tokens": 71,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4899880442,
+          "queue_seconds": 1.0410440154373646e-06,
+          "compile_seconds": 0.00469879200682044,
+          "total_seconds": 0.5181839580181986
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.952754985843456,
+              "1": 6.088031738511786e-05,
+              "2": 3.434632478633051e-06,
+              "3": 6.027967726572029e-06,
+              "4": 4.184238942818314e-05,
+              "__below_range__": 0.007260180188258597,
+              "__above_range__": 6.416738243471611e-06,
+              "__insufficient__": 0.03986623192302335
+            },
+            "option_logits": {
+              "0": -0.404296875,
+              "1": -10.0625,
+              "2": -12.9375,
+              "3": -12.375,
+              "4": -10.4375,
+              "__below_range__": -5.28125,
+              "__above_range__": -12.3125,
+              "__insufficient__": -3.578125
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.952754985843456,
+              "entropy_nats": 0.21153305815132356,
+              "concentration": 0.8982741020070029,
+              "unavailable_probability": 0.04713282884952542
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 0.006643188339911004,
+            "statistics_given_available": {
+              "mean": 0.006643188339911004,
+              "stddev": 0.7236055013414949,
+              "median": 0.0,
+              "anchor_quantiles": {
+                "p10": 0.0,
+                "p90": 0.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 0.007260180188258597,
+              "above": 6.416738243471611e-06
+            },
+            "prompt_sha256": "e56380f9b7e520a29dd0684aa90a3c2e65a7ef1546fa20e979b352c0650e676b",
+            "input_tokens": 362
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.48437504103640094,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4885681508,
+          "queue_seconds": 1.125037670135498e-06,
+          "compile_seconds": 0.004719749966170639,
+          "total_seconds": 0.48915899998974055
+        }
+      }
+    },
+    {
+      "id": "fill-50",
+      "expected": {
+        "fill": {
+          "value": 50,
+          "label": "2",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 7.239366418474134e-06,
+              "1": 6.8007553800078085e-06,
+              "2": 0.9999606341183951,
+              "3": 8.560887607953658e-08,
+              "4": 2.0536501777149118e-07,
+              "__below_range__": 9.797417046978192e-07,
+              "__above_range__": 3.180755618040227e-07,
+              "__insufficient__": 2.3736968646030984e-05
+            },
+            "option_logits": {
+              "0": -12.5625,
+              "1": -12.625,
+              "2": -0.7265625,
+              "3": -17.0,
+              "4": -16.125,
+              "__below_range__": -14.5625,
+              "__above_range__": -15.6875,
+              "__insufficient__": -11.375
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999606341183951,
+              "entropy_nats": 0.0004816011395166932,
+              "concentration": 0.999768398808111,
+              "unavailable_probability": 2.5034785912532828e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 49.9994804082595,
+            "statistics_given_available": {
+              "mean": 49.9994804082595,
+              "stddev": 0.15138067902396915,
+              "median": 50.0,
+              "anchor_quantiles": {
+                "p10": 50.0,
+                "p90": 50.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 9.797417046978192e-07,
+              "above": 3.180755618040227e-07
+            },
+            "prompt_sha256": "7e01b7ac328ea9676e76b7367f8433fbb1bd742ddad162ec8d790b93a0effa21",
+            "input_tokens": 363
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.5134744170354679,
+          "prefill_seconds": 0.1181284170015715,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4894232782,
+          "queue_seconds": 1.1249794624745846e-06,
+          "compile_seconds": 0.004636375000700355,
+          "total_seconds": 0.5187722920090891
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.5134744170354679,
+          "prefill_seconds": 0.1181284170015715,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4894232782,
+          "queue_seconds": 1.1249794624745846e-06,
+          "compile_seconds": 0.004636375000700355,
+          "total_seconds": 0.5187722920090891
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 7.016664806957874e-06,
+              "1": 6.192184958614661e-06,
+              "2": 0.9999649490686365,
+              "3": 6.878896126940635e-08,
+              "4": 1.8698778341720035e-07,
+              "__below_range__": 1.0108464067787436e-06,
+              "__above_range__": 2.7206561951051413e-07,
+              "__insufficient__": 2.0303392827026037e-05
+            },
+            "option_logits": {
+              "0": -12.5,
+              "1": -12.625,
+              "2": -0.6328125,
+              "3": -17.125,
+              "4": -16.125,
+              "__below_range__": -14.4375,
+              "__above_range__": -15.75,
+              "__insufficient__": -11.4375
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999649490686365,
+              "entropy_nats": 0.00043404789628129805,
+              "concentration": 0.9997912670841755,
+              "unavailable_probability": 2.1586304853315294e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 49.999505420572746,
+            "statistics_given_available": {
+              "mean": 49.999505420572746,
+              "stddev": 0.1480623814391426,
+              "median": 50.0,
+              "anchor_quantiles": {
+                "p10": 50.0,
+                "p90": 50.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 1.0108464067787436e-06,
+              "above": 2.7206561951051413e-07
+            },
+            "prompt_sha256": "7e01b7ac328ea9676e76b7367f8433fbb1bd742ddad162ec8d790b93a0effa21",
+            "input_tokens": 363
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.48685033299261704,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4887929340,
+          "queue_seconds": 1.0410440154373646e-06,
+          "compile_seconds": 0.004533041967079043,
+          "total_seconds": 0.4914484160253778
+        }
+      }
+    },
+    {
+      "id": "fill-75",
+      "expected": {
+        "fill": {
+          "value": 75,
+          "label": "3",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 3.250273096930614e-06,
+              "1": 2.8683559405953072e-06,
+              "2": 9.312188333762465e-07,
+              "3": 0.9999472160649893,
+              "4": 3.023224919061624e-07,
+              "__below_range__": 2.8683559405953072e-06,
+              "__above_range__": 4.132258524075507e-07,
+              "__insufficient__": 4.215018285503255e-05
+            },
+            "option_logits": {
+              "0": -13.125,
+              "1": -13.25,
+              "2": -14.375,
+              "3": -0.48828125,
+              "4": -15.5,
+              "__below_range__": -13.25,
+              "__above_range__": -15.1875,
+              "__insufficient__": -10.5625
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999472160649893,
+              "entropy_nats": 0.0006152426325816834,
+              "concentration": 0.9997041308350103,
+              "unavailable_probability": 4.5431764648035407e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 74.99959707100638,
+            "statistics_given_available": {
+              "mean": 74.99959707100638,
+              "stddev": 0.16194341136342907,
+              "median": 75.0,
+              "anchor_quantiles": {
+                "p10": 75.0,
+                "p90": 75.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 2.8683559405953072e-06,
+              "above": 4.132258524075507e-07
+            },
+            "prompt_sha256": "09bb38064789cebfd7db23deda7a031cd31ccf7a6169fa9d6042088387ef689b",
+            "input_tokens": 363
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.5168787080328912,
+          "prefill_seconds": 0.11907687498023733,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4892825770,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.004715832998044789,
+          "total_seconds": 0.5220345830311999
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.5168787080328912,
+          "prefill_seconds": 0.11907687498023733,
+          "shared_prefix_tokens": 72,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4892825770,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.004715832998044789,
+          "total_seconds": 0.5220345830311999
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 2.53134900265235e-06,
+              "1": 2.377982319631481e-06,
+              "2": 7.252436317871562e-07,
+              "3": 0.9999605560804624,
+              "4": 2.506374925109815e-07,
+              "__below_range__": 2.377982319631481e-06,
+              "__above_range__": 3.4258083424467277e-07,
+              "__insufficient__": 3.083814393724501e-05
+            },
+            "option_logits": {
+              "0": -13.4375,
+              "1": -13.5,
+              "2": -14.6875,
+              "3": -0.55078125,
+              "4": -15.75,
+              "__below_range__": -13.5,
+              "__above_range__": -15.4375,
+              "__insufficient__": -10.9375
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999605560804624,
+              "entropy_nats": 0.00047312059830594244,
+              "concentration": 0.9997724770863605,
+              "unavailable_probability": 3.355870709112116e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 74.99967937379553,
+            "statistics_given_available": {
+              "mean": 74.99967937379553,
+              "stddev": 0.14420233935095056,
+              "median": 75.0,
+              "anchor_quantiles": {
+                "p10": 75.0,
+                "p90": 75.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 2.377982319631481e-06,
+              "above": 3.4258083424467277e-07
+            },
+            "prompt_sha256": "09bb38064789cebfd7db23deda7a031cd31ccf7a6169fa9d6042088387ef689b",
+            "input_tokens": 363
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.4859537919983268,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 363,
+          "logical_input_tokens": 363,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4887944016,
+          "queue_seconds": 1.00000761449337e-06,
+          "compile_seconds": 0.004914209013804793,
+          "total_seconds": 0.49093366699526086
+        }
+      }
+    },
+    {
+      "id": "fill-100",
+      "expected": {
+        "fill": {
+          "value": 100,
+          "label": "4",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 3.1013893047874783e-06,
+              "1": 6.167849118192633e-06,
+              "2": 5.73699335257129e-07,
+              "3": 5.389406496679546e-07,
+              "4": 0.999933368186526,
+              "__below_range__": 1.0169064035633223e-05,
+              "__above_range__": 5.062878863792578e-07,
+              "__insufficient__": 4.5574583144065304e-05
+            },
+            "option_logits": {
+              "0": -13.0,
+              "1": -12.3125,
+              "2": -14.6875,
+              "3": -14.75,
+              "4": -0.31640625,
+              "__below_range__": -11.8125,
+              "__above_range__": -14.8125,
+              "__insufficient__": -10.3125
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999933368186526,
+              "entropy_nats": 0.0007757959449501496,
+              "concentration": 0.9996269210124928,
+              "unavailable_probability": 5.6249935066077786e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 99.99918506806279,
+            "statistics_given_available": {
+              "mean": 99.99918506806279,
+              "stddev": 0.2597734828231407,
+              "median": 100.0,
+              "anchor_quantiles": {
+                "p10": 100.0,
+                "p90": 100.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 1.0169064035633223e-05,
+              "above": 5.062878863792578e-07
+            },
+            "prompt_sha256": "d7587cdbe7962ab9fd60375fa1f4b51bc5332094cd8bf8e75bb36904e24a7334",
+            "input_tokens": 364
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.5195800000219606,
+          "prefill_seconds": 0.1199584580026567,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 364,
+          "logical_input_tokens": 364,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4893502746,
+          "queue_seconds": 9.5803989097476e-07,
+          "compile_seconds": 0.005617666989564896,
+          "total_seconds": 0.525676375022158
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.5195800000219606,
+          "prefill_seconds": 0.1199584580026567,
+          "shared_prefix_tokens": 73,
+          "evaluated_tokens_including_padding": 364,
+          "logical_input_tokens": 364,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4893502746,
+          "queue_seconds": 9.5803989097476e-07,
+          "compile_seconds": 0.005617666989564896,
+          "total_seconds": 0.525676375022158
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 3.4598379980042084e-06,
+              "1": 6.463828353141756e-06,
+              "2": 6.012296926128845e-07,
+              "3": 5.30583341472759e-07,
+              "4": 0.9999299610759764,
+              "__below_range__": 1.0657051295979391e-05,
+              "__above_range__": 5.648030269918745e-07,
+              "__insufficient__": 4.776159031522295e-05
+            },
+            "option_logits": {
+              "0": -12.9375,
+              "1": -12.3125,
+              "2": -14.6875,
+              "3": -14.8125,
+              "4": -0.36328125,
+              "__below_range__": -11.8125,
+              "__above_range__": -14.75,
+              "__insufficient__": -10.3125
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999299610759764,
+              "entropy_nats": 0.0008123935797563363,
+              "concentration": 0.9996093212704118,
+              "unavailable_probability": 5.898344463819422e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 99.99912585144527,
+            "statistics_given_available": {
+              "mean": 99.99912585144527,
+              "stddev": 0.2698066584296573,
+              "median": 100.0,
+              "anchor_quantiles": {
+                "p10": 100.0,
+                "p90": 100.0
+              }
+            },
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 1.0657051295979391e-05,
+              "above": 5.648030269918745e-07
+            },
+            "prompt_sha256": "d7587cdbe7962ab9fd60375fa1f4b51bc5332094cd8bf8e75bb36904e24a7334",
+            "input_tokens": 364
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.4918171250028536,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 364,
+          "logical_input_tokens": 364,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4889486224,
+          "queue_seconds": 1.2919772416353226e-06,
+          "compile_seconds": 0.005252208036836237,
+          "total_seconds": 0.4971358340117149
+        }
+      }
+    },
+    {
+      "id": "fill-unknown",
+      "expected": {
+        "fill": {
+          "label": "__insufficient__",
+          "status": "insufficient_evidence"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 1.4845262162575045e-06,
+              "1": 2.029106757047933e-06,
+              "2": 9.49025859106285e-08,
+              "3": 8.375123811339812e-08,
+              "4": 1.6655922536002336e-07,
+              "__below_range__": 7.012405312272196e-07,
+              "__above_range__": 1.6655922536002336e-07,
+              "__insufficient__": 0.9999952733542208
+            },
+            "option_logits": {
+              "0": -13.5,
+              "1": -13.1875,
+              "2": -16.25,
+              "3": -16.375,
+              "4": -15.6875,
+              "__below_range__": -14.25,
+              "__above_range__": -15.6875,
+              "__insufficient__": -0.07958984375
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999952733542208,
+              "entropy_nats": 6.928248003966861e-05,
+              "concentration": 0.9999666821698754,
+              "unavailable_probability": 0.9999961411539774
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 7.012405312272196e-07,
+              "above": 1.6655922536002336e-07
+            },
+            "prompt_sha256": "cdf506ac970c961b2c4f5ea927c1c0977e90482b25beb3fd86dc0b23bfcbfd25",
+            "input_tokens": 362
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.5172647080034949,
+          "prefill_seconds": 0.11940174998017028,
+          "shared_prefix_tokens": 71,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4900593498,
+          "queue_seconds": 1.0829535312950611e-06,
+          "compile_seconds": 0.00500870804535225,
+          "total_seconds": 0.5227240409585647
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.5172647080034949,
+          "prefill_seconds": 0.11940174998017028,
+          "shared_prefix_tokens": 71,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4900593498,
+          "queue_seconds": 1.0829535312950611e-06,
+          "compile_seconds": 0.00500870804535225,
+          "total_seconds": 0.5227240409585647
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "fill": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 1.4579472625572341e-06,
+              "1": 1.992777634693702e-06,
+              "2": 9.320345024745812e-08,
+              "3": 9.320345024745812e-08,
+              "4": 1.443563276805021e-07,
+              "__below_range__": 6.077628404543612e-07,
+              "__above_range__": 1.443563276805021e-07,
+              "__insufficient__": 0.9999954663927063
+            },
+            "option_logits": {
+              "0": -13.625,
+              "1": -13.3125,
+              "2": -16.375,
+              "3": -16.375,
+              "4": -15.9375,
+              "__below_range__": -14.5,
+              "__above_range__": -15.9375,
+              "__insufficient__": -0.1865234375
+            },
+            "legend": {
+              "0": "Approximately 0 percent: The measured fill level is approximately 0 percent.",
+              "1": "Approximately 25 percent: The measured fill level is approximately 25 percent.",
+              "2": "Approximately 50 percent: The measured fill level is approximately 50 percent.",
+              "3": "Approximately 75 percent: The measured fill level is approximately 75 percent.",
+              "4": "Approximately 100 percent: The measured fill level is approximately 100 percent.",
+              "__below_range__": "The value is below 0 percent.",
+              "__above_range__": "The value is above 100 percent.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999954663927063,
+              "entropy_nats": 6.654770939505778e-05,
+              "concentration": 0.9999679973165577,
+              "unavailable_probability": 0.9999962185118745
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 0.0,
+              "1": 25.0,
+              "2": 50.0,
+              "3": 75.0,
+              "4": 100.0
+            },
+            "support": [
+              0.0,
+              100.0
+            ],
+            "unit": "percent",
+            "range_probabilities": {
+              "below": 6.077628404543612e-07,
+              "above": 1.443563276805021e-07
+            },
+            "prompt_sha256": "cdf506ac970c961b2c4f5ea927c1c0977e90482b25beb3fd86dc0b23bfcbfd25",
+            "input_tokens": 362
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.4845805420191027,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 362,
+          "logical_input_tokens": 362,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4908831110,
+          "queue_seconds": 9.5803989097476e-07,
+          "compile_seconds": 0.00492366700200364,
+          "total_seconds": 0.4895743750385009
+        }
+      }
+    },
+    {
+      "id": "above-range",
+      "expected": {
+        "price": {
+          "label": "__above_range__",
+          "status": "out_of_range"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "price": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.679459627782663,
+              "1": 0.002979067455749873,
+              "2": 0.0018068957492644066,
+              "__below_range__": 0.00348288271490043,
+              "__above_range__": 0.10178475283700815,
+              "__insufficient__": 0.21048677346041422
+            },
+            "option_logits": {
+              "0": -0.6640625,
+              "1": -6.09375,
+              "2": -6.59375,
+              "__below_range__": -5.9375,
+              "__above_range__": -2.5625,
+              "__insufficient__": -1.8359375
+            },
+            "legend": {
+              "0": "Approximately 100 EUR: The stated price is approximately 100 EUR.",
+              "1": "Approximately 200 EUR: The stated price is approximately 200 EUR.",
+              "2": "Approximately 300 EUR: The stated price is approximately 300 EUR.",
+              "__below_range__": "The value is below 100 EUR.",
+              "__above_range__": "The value is above 300 EUR.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.679459627782663,
+              "entropy_nats": 0.8716101378952529,
+              "concentration": 0.5135451198308614,
+              "unavailable_probability": 0.3157544090123228
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 100.96352231437285,
+            "statistics_given_available": {
+              "mean": 100.96352231437285,
+              "stddev": 12.175307068569335,
+              "median": 100.0,
+              "anchor_quantiles": {
+                "p10": 100.0,
+                "p90": 100.0
+              }
+            },
+            "values": {
+              "0": 100.0,
+              "1": 200.0,
+              "2": 300.0
+            },
+            "support": [
+              100.0,
+              300.0
+            ],
+            "unit": "EUR",
+            "range_probabilities": {
+              "below": 0.00348288271490043,
+              "above": 0.10178475283700815
+            },
+            "prompt_sha256": "b145ec3486480dd42b5b714481f16ef59234d5059c4a3fe8a37610eb72a99d78",
+            "input_tokens": 302
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.4374287080136128,
+          "prefill_seconds": 0.1178936249925755,
+          "shared_prefix_tokens": 68,
+          "evaluated_tokens_including_padding": 302,
+          "logical_input_tokens": 302,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4809844660,
+          "queue_seconds": 1.374981366097927e-06,
+          "compile_seconds": 0.003215417033061385,
+          "total_seconds": 0.44115799997234717
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.4374287080136128,
+          "prefill_seconds": 0.1178936249925755,
+          "shared_prefix_tokens": 68,
+          "evaluated_tokens_including_padding": 302,
+          "logical_input_tokens": 302,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4809844660,
+          "queue_seconds": 1.374981366097927e-06,
+          "compile_seconds": 0.003215417033061385,
+          "total_seconds": 0.44115799997234717
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "price": {
+            "type": "numeric",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.6503639121820924,
+              "1": 0.0026269233200817755,
+              "2": 0.0016438866081645782,
+              "__below_range__": 0.003168674371592031,
+              "__above_range__": 0.12856547673280858,
+              "__insufficient__": 0.21363112678526058
+            },
+            "option_logits": {
+              "0": -0.86328125,
+              "1": -6.375,
+              "2": -6.84375,
+              "__below_range__": -6.1875,
+              "__above_range__": -2.484375,
+              "__insufficient__": -1.9765625
+            },
+            "legend": {
+              "0": "Approximately 100 EUR: The stated price is approximately 100 EUR.",
+              "1": "Approximately 200 EUR: The stated price is approximately 200 EUR.",
+              "2": "Approximately 300 EUR: The stated price is approximately 300 EUR.",
+              "__below_range__": "The value is below 100 EUR.",
+              "__above_range__": "The value is above 300 EUR.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.6503639121820924,
+              "entropy_nats": 0.9176522170351895,
+              "concentration": 0.48784854619434925,
+              "unavailable_probability": 0.3453652778896612
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": 100.90351097133129,
+            "statistics_given_available": {
+              "mean": 100.90351097133129,
+              "stddev": 11.821919648473015,
+              "median": 100.0,
+              "anchor_quantiles": {
+                "p10": 100.0,
+                "p90": 100.0
+              }
+            },
+            "values": {
+              "0": 100.0,
+              "1": 200.0,
+              "2": 300.0
+            },
+            "support": [
+              100.0,
+              300.0
+            ],
+            "unit": "EUR",
+            "range_probabilities": {
+              "below": 0.003168674371592031,
+              "above": 0.12856547673280858
+            },
+            "prompt_sha256": "b145ec3486480dd42b5b714481f16ef59234d5059c4a3fe8a37610eb72a99d78",
+            "input_tokens": 302
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.4133982079802081,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 302,
+          "logical_input_tokens": 302,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4801189866,
+          "queue_seconds": 1.00000761449337e-06,
+          "compile_seconds": 0.00501879199873656,
+          "total_seconds": 0.41849912505131215
+        }
+      }
+    },
+    {
+      "id": "below-range",
+      "expected": {
+        "price": {
+          "label": "__below_range__",
+          "status": "out_of_range"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "price": {
+            "type": "numeric",
+            "status": "out_of_range",
+            "probabilities": {
+              "0": 0.014373845296803888,
+              "1": 0.0008906179389777827,
+              "2": 0.007937991283424154,
+              "__below_range__": 0.8353996693613421,
+              "__above_range__": 0.0006936139482933379,
+              "__insufficient__": 0.14070426217115875
+            },
+            "option_logits": {
+              "0": -5.34375,
+              "1": -8.125,
+              "2": -5.9375,
+              "__below_range__": -1.28125,
+              "__above_range__": -8.375,
+              "__insufficient__": -3.0625
+            },
+            "legend": {
+              "0": "Approximately 100 EUR: The stated price is approximately 100 EUR.",
+              "1": "Approximately 200 EUR: The stated price is approximately 200 EUR.",
+              "2": "Approximately 300 EUR: The stated price is approximately 300 EUR.",
+              "__below_range__": "The value is below 100 EUR.",
+              "__above_range__": "The value is above 300 EUR.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.8353996693613421,
+              "entropy_nats": 0.5368449985936545,
+              "concentration": 0.700381101473992,
+              "unavailable_probability": 0.9767975454807942
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 100.0,
+              "1": 200.0,
+              "2": 300.0
+            },
+            "support": [
+              100.0,
+              300.0
+            ],
+            "unit": "EUR",
+            "range_probabilities": {
+              "below": 0.8353996693613421,
+              "above": 0.0006936139482933379
+            },
+            "prompt_sha256": "0269f0023e0c40737bf76e1218b68da67be10b64bec38cce5a45fa296a78f2e6",
+            "input_tokens": 301
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.45212483301293105,
+          "prefill_seconds": 0.12398170900996774,
+          "shared_prefix_tokens": 67,
+          "evaluated_tokens_including_padding": 301,
+          "logical_input_tokens": 301,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4810208328,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.004402084043249488,
+          "total_seconds": 0.4573558330303058
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.45212483301293105,
+          "prefill_seconds": 0.12398170900996774,
+          "shared_prefix_tokens": 67,
+          "evaluated_tokens_including_padding": 301,
+          "logical_input_tokens": 301,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4810208328,
+          "queue_seconds": 1.207983586937189e-06,
+          "compile_seconds": 0.004402084043249488,
+          "total_seconds": 0.4573558330303058
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "price": {
+            "type": "numeric",
+            "status": "out_of_range",
+            "probabilities": {
+              "0": 0.017889474762055494,
+              "1": 0.0011436358596495816,
+              "2": 0.00871863368187648,
+              "__below_range__": 0.7848263929026271,
+              "__above_range__": 0.001009255103825427,
+              "__insufficient__": 0.18641260768996584
+            },
+            "option_logits": {
+              "0": -5.25,
+              "1": -8.0,
+              "2": -5.96875,
+              "__below_range__": -1.46875,
+              "__above_range__": -8.125,
+              "__insufficient__": -2.90625
+            },
+            "legend": {
+              "0": "Approximately 100 EUR: The stated price is approximately 100 EUR.",
+              "1": "Approximately 200 EUR: The stated price is approximately 200 EUR.",
+              "2": "Approximately 300 EUR: The stated price is approximately 300 EUR.",
+              "__below_range__": "The value is below 100 EUR.",
+              "__above_range__": "The value is above 300 EUR.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.7848263929026271,
+              "entropy_nats": 0.6313265187562421,
+              "concentration": 0.647649961058536,
+              "unavailable_probability": 0.9722482556964184
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 100.0,
+              "1": 200.0,
+              "2": 300.0
+            },
+            "support": [
+              100.0,
+              300.0
+            ],
+            "unit": "EUR",
+            "range_probabilities": {
+              "below": 0.7848263929026271,
+              "above": 0.001009255103825427
+            },
+            "prompt_sha256": "0269f0023e0c40737bf76e1218b68da67be10b64bec38cce5a45fa296a78f2e6",
+            "input_tokens": 301
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.41302924999035895,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 301,
+          "logical_input_tokens": 301,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4853508946,
+          "queue_seconds": 1.7919810488820076e-06,
+          "compile_seconds": 0.004742541001178324,
+          "total_seconds": 0.4178337919875048
+        }
+      }
+    },
+    {
+      "id": "italian-mixed",
+      "expected": {
+        "queue": {
+          "label": "access",
+          "status": "ok"
+        },
+        "needs_access_support": {
+          "label": "true",
+          "status": "ok"
+        },
+        "urgency": {
+          "label": "2",
+          "status": "ok"
+        },
+        "deadline_hours": {
+          "label": "__insufficient__",
+          "status": "insufficient_evidence"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "shared",
+        "answers": {
+          "needs_access_support": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.39566108236631314,
+              "true": 0.6033111048923647,
+              "__insufficient__": 0.0010278127413221557
+            },
+            "option_logits": {
+              "false": -1.234375,
+              "true": -0.8125,
+              "__insufficient__": -7.1875
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.6033111048923647,
+              "entropy_nats": 0.6787941121381396,
+              "concentration": 0.3821349723285291,
+              "unavailable_probability": 0.0010278127413221557
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": true,
+            "probability_true_given_available": 0.6039318337259583,
+            "prompt_sha256": "47d786b4c8cb1d762715d992f986b68fa1099c107aab40bbaded729f50d378a7",
+            "input_tokens": 234
+          },
+          "queue": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.9999357826059647,
+              "billing": 1.450975727312204e-05,
+              "sales": 5.014437935727476e-06,
+              "__insufficient__": 4.469319882638145e-05
+            },
+            "option_logits": {
+              "access": -0.609375,
+              "billing": -11.75,
+              "sales": -12.8125,
+              "__insufficient__": -10.625
+            },
+            "legend": {
+              "access": "Problemi di login, password o accesso all'account.",
+              "billing": "Problemi con fatture, addebiti o pagamenti.",
+              "sales": "Richieste di acquisto di nuovi prodotti.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999357826059647,
+              "entropy_nats": 0.0007346893531111856,
+              "concentration": 0.9994700336568363,
+              "unavailable_probability": 4.469319882638145e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "84f31ed262ea387e92e6638327de3090aea5676b6c19b142a800c766afd27018",
+            "input_tokens": 252
+          },
+          "urgency": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.0002806700418936867,
+              "1": 0.00026366510369533477,
+              "2": 0.9994037461171495,
+              "__insufficient__": 5.1918737261535906e-05
+            },
+            "option_logits": {
+              "0": -8.5625,
+              "1": -8.625,
+              "2": -0.384765625,
+              "__insufficient__": -10.25
+            },
+            "legend": {
+              "0": "Nessuna scadenza e nessuna attività bloccata.",
+              "1": "Attività rallentata, ma esiste una soluzione temporanea.",
+              "2": "Attività bloccata con una scadenza entro oggi.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9994037461171495,
+              "entropy_nats": 0.005576529525012298,
+              "concentration": 0.9959773842544469,
+              "unavailable_probability": 5.1918737261535906e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.9991749519770656,
+            "statistics_given_available": {
+              "mean": 1.9991749519770656,
+              "stddev": 0.0372254825094718,
+              "median": 2,
+              "anchor_quantiles": {
+                "p10": 2,
+                "p90": 2
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.9995874759885328,
+            "prompt_sha256": "57dd4160d57a9f680fef329379ba50093fe1901baae22ab60299e2c37cb27675",
+            "input_tokens": 264
+          },
+          "deadline_hours": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 7.253647203144239e-06,
+              "1": 4.637101516450275e-07,
+              "2": 1.4283278221113491e-06,
+              "__below_range__": 3.882597563927763e-06,
+              "__above_range__": 8.749568675060476e-06,
+              "__insufficient__": 0.9999782221485841
+            },
+            "option_logits": {
+              "0": -11.4375,
+              "1": -14.1875,
+              "2": -13.0625,
+              "__below_range__": -12.0625,
+              "__above_range__": -11.25,
+              "__insufficient__": 0.396484375
+            },
+            "legend": {
+              "0": "Approximately 1 hours: La scadenza è tra un'ora.",
+              "1": "Approximately 4 hours: La scadenza è tra quattro ore.",
+              "2": "Approximately 8 hours: La scadenza è tra otto ore.",
+              "__below_range__": "The value is below 1 hours.",
+              "__above_range__": "The value is above 8 hours.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999782221485841,
+              "entropy_nats": 0.0002838791569122681,
+              "concentration": 0.9998415640258709,
+              "unavailable_probability": 0.9999908543148232
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 8.0
+            },
+            "support": [
+              1.0,
+              8.0
+            ],
+            "unit": "hours",
+            "range_probabilities": {
+              "below": 3.882597563927763e-06,
+              "above": 8.749568675060476e-06
+            },
+            "prompt_sha256": "91c49963e5eac748bafafb65e528c2fb20748055d96b6f14bea39d269b722982",
+            "input_tokens": 356
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 1.343883541005198,
+          "prefill_seconds": 0.15865154098719358,
+          "shared_prefix_tokens": 116,
+          "evaluated_tokens_including_padding": 1076,
+          "logical_input_tokens": 1106,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 5245009252,
+          "queue_seconds": 1.208973117172718e-06,
+          "compile_seconds": 0.009562208026181906,
+          "total_seconds": 1.3543218749691732
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 1.343883541005198,
+          "prefill_seconds": 0.15865154098719358,
+          "shared_prefix_tokens": 116,
+          "evaluated_tokens_including_padding": 1076,
+          "logical_input_tokens": 1106,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 5245009252,
+          "queue_seconds": 1.208973117172718e-06,
+          "compile_seconds": 0.009562208026181906,
+          "total_seconds": 1.3543218749691732
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+          "source_files": {
+            "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+            "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+            "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+            "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+            "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+            "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+            "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+            "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+            "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+          },
+          "precision": "q8",
+          "quantization_group_size": 64,
+          "device": "gpu",
+          "mlx": "0.32.2",
+          "mlx_lm": "0.31.3",
+          "prompt_version": "spark-decisions-v2",
+          "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+          "load_seconds": 4.494148499972653
+        },
+        "mode": "direct",
+        "answers": {
+          "needs_access_support": {
+            "type": "boolean",
+            "status": "ok",
+            "probabilities": {
+              "false": 0.41365688452110794,
+              "true": 0.5856328742808989,
+              "__insufficient__": 0.0007102411979930796
+            },
+            "option_logits": {
+              "false": -1.2578125,
+              "true": -0.91015625,
+              "__insufficient__": -7.625
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.5856328742808989,
+              "entropy_nats": 0.6836417400645698,
+              "concentration": 0.37772247123380065,
+              "unavailable_probability": 0.0007102411979930796
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": true,
+            "probability_true_given_available": 0.5860491105032255,
+            "prompt_sha256": "47d786b4c8cb1d762715d992f986b68fa1099c107aab40bbaded729f50d378a7",
+            "input_tokens": 234
+          },
+          "queue": {
+            "type": "choice",
+            "status": "ok",
+            "probabilities": {
+              "access": 0.999942309640468,
+              "billing": 1.4118473482844013e-05,
+              "sales": 5.193896135062483e-06,
+              "__insufficient__": 3.837798991399577e-05
+            },
+            "option_logits": {
+              "access": -0.64453125,
+              "billing": -11.8125,
+              "sales": -12.8125,
+              "__insufficient__": -10.8125
+            },
+            "legend": {
+              "access": "Problemi di login, password o accesso all'account.",
+              "billing": "Problemi con fatture, addebiti o pagamenti.",
+              "sales": "Richieste di acquisto di nuovi prodotti.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999942309640468,
+              "entropy_nats": 0.0006687920623343702,
+              "concentration": 0.9995175685041422,
+              "unavailable_probability": 3.837798991399577e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "choice": "access",
+            "prompt_sha256": "84f31ed262ea387e92e6638327de3090aea5676b6c19b142a800c766afd27018",
+            "input_tokens": 252
+          },
+          "urgency": {
+            "type": "score",
+            "status": "ok",
+            "probabilities": {
+              "0": 0.00026263860432957064,
+              "1": 0.00027957733900674806,
+              "2": 0.9994092007999652,
+              "__insufficient__": 4.858325669858456e-05
+            },
+            "option_logits": {
+              "0": -8.6875,
+              "1": -8.625,
+              "2": -0.443359375,
+              "__insufficient__": -10.375
+            },
+            "legend": {
+              "0": "Nessuna scadenza e nessuna attività bloccata.",
+              "1": "Attività rallentata, ma esiste una soluzione temporanea.",
+              "2": "Attività bloccata con una scadenza entro oggi.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9994092007999652,
+              "entropy_nats": 0.005526116138867082,
+              "concentration": 0.99601374982554,
+              "unavailable_probability": 4.858325669858456e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "score": 1.999195106347979,
+            "statistics_given_available": {
+              "mean": 1.999195106347979,
+              "stddev": 0.03646297475256557,
+              "median": 2,
+              "anchor_quantiles": {
+                "p10": 2,
+                "p90": 2
+              }
+            },
+            "values": {
+              "0": 0,
+              "1": 1,
+              "2": 2
+            },
+            "support": [
+              0,
+              2
+            ],
+            "normalized_score": 0.9995975531739895,
+            "prompt_sha256": "57dd4160d57a9f680fef329379ba50093fe1901baae22ab60299e2c37cb27675",
+            "input_tokens": 264
+          },
+          "deadline_hours": {
+            "type": "numeric",
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "0": 8.613901975750984e-06,
+              "1": 5.173050224364622e-07,
+              "2": 1.4061808422596342e-06,
+              "__below_range__": 4.068919181934508e-06,
+              "__above_range__": 9.169450922848524e-06,
+              "__insufficient__": 0.9999762242420548
+            },
+            "option_logits": {
+              "0": -11.25,
+              "1": -14.0625,
+              "2": -13.0625,
+              "__below_range__": -12.0,
+              "__above_range__": -11.1875,
+              "__insufficient__": 0.412109375
+            },
+            "legend": {
+              "0": "Approximately 1 hours: La scadenza è tra un'ora.",
+              "1": "Approximately 4 hours: La scadenza è tra quattro ore.",
+              "2": "Approximately 8 hours: La scadenza è tra otto ore.",
+              "__below_range__": "The value is below 1 hours.",
+              "__above_range__": "The value is above 8 hours.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999762242420548,
+              "entropy_nats": 0.0003075337520797931,
+              "concentration": 0.9998283621449411,
+              "unavailable_probability": 0.9999894626121596
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "value": null,
+            "statistics_given_available": null,
+            "values": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 8.0
+            },
+            "support": [
+              1.0,
+              8.0
+            ],
+            "unit": "hours",
+            "range_probabilities": {
+              "below": 4.068919181934508e-06,
+              "above": 9.169450922848524e-06
+            },
+            "prompt_sha256": "91c49963e5eac748bafafb65e528c2fb20748055d96b6f14bea39d269b722982",
+            "input_tokens": 356
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 1.512573916988913,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 1106,
+          "logical_input_tokens": 1106,
+          "batches": 4,
+          "generated_tokens": 0,
+          "peak_mlx_bytes": 4876278828,
+          "queue_seconds": 2.4170149117708206e-06,
+          "compile_seconds": 0.008569707977585495,
+          "total_seconds": 1.5212319580023177
+        }
+      }
+    }
+  ]
+}

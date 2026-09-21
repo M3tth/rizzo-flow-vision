@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rizzo Flow Playground</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1d1f; --muted: #6a6f76; --line: #dedcd5;
+  --accent: #0b8f6c; --accent-ink: #ffffff; --accent-soft: #dff3ec; --track: #ebe9e2;
+  --warn: #b4540a; --warn-soft: #fbead8; --bad: #b3261e; --bad-soft: #fbe3e1;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111314; --panel: #191c1e; --ink: #e9ebec; --muted: #949ba3; --line: #2b3034;
+    --accent: #3fd6ab; --accent-ink: #06241b; --accent-soft: #12352b; --track: #262b2e;
+    --warn: #f0a35a; --warn-soft: #3a2a18; --bad: #ff8a80; --bad-soft: #3b1d1b;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 20px;
+  border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 15px; margin: 0; letter-spacing: .01em; }
+header h1 span { color: var(--muted); font-weight: 400; }
+.badge { font: 12px var(--mono); padding: 3px 8px; border-radius: 999px; background: var(--track); color: var(--muted); }
+.badge.ok { background: var(--accent-soft); color: var(--accent); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.spacer { flex: 1; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 16px 20px 40px; max-width: 1500px; margin: 0 auto; }
+@media (max-width: 960px) { main { grid-template-columns: minmax(0, 1fr); padding: 16px; } }
+section.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+label.field { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 3px; }
+input[type=text], input[type=password], textarea, select {
+  width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 7px;
+  padding: 7px 9px; font: 13px var(--sans); }
+textarea { resize: vertical; min-height: 60px; }
+textarea.code, input.code { font: 12.5px/1.5 var(--mono); }
+input:focus, textarea:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button { font: 13px var(--sans); border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  padding: 6px 11px; border-radius: 7px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; padding: 8px 16px; }
+button.primary:disabled { opacity: .55; cursor: progress; }
+button.ghost { border-color: transparent; color: var(--muted); padding: 4px 7px; }
+button.ghost:hover { color: var(--bad); }
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.tabs button { border: 0; border-radius: 0; background: transparent; color: var(--muted); }
+.tabs button.on { background: var(--track); color: var(--ink); font-weight: 600; }
+.q { border: 1px solid var(--line); border-radius: 9px; padding: 10px; margin-top: 10px; background: var(--bg); }
+.q .head { display: grid; grid-template-columns: minmax(0, 1fr) 110px auto; gap: 8px; align-items: center; }
+.q input, .q textarea, .q select { background: var(--panel); }
+.crit { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr) auto; gap: 6px; margin-top: 6px; align-items: center; }
+.crit.level { grid-template-columns: 26px minmax(0, 1fr) auto; }
+.crit .idx { font: 12px var(--mono); color: var(--muted); text-align: center; }
+.hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.error { background: var(--bad-soft); color: var(--bad); border-radius: 8px; padding: 9px 11px; margin-top: 10px;
+  font: 12.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.metric { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.metric b { display: block; font: 600 17px var(--mono); }
+.metric span { font-size: 11px; color: var(--muted); }
+.answer { border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px; margin-top: 10px; }
+.answer .top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.answer .qid { font: 600 13px var(--mono); word-break: break-all; }
+.answer .type { font: 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.answer .big { font: 600 22px var(--mono); }
+.answer .big small { font: 12px var(--sans); color: var(--muted); font-weight: 400; margin-left: 6px; }
+.answer .asked { color: var(--muted); font-size: 12.5px; margin: 2px 0 8px; }
+.bar { display: grid; grid-template-columns: minmax(70px, 34%) minmax(0, 1fr) 54px; gap: 8px; align-items: center; margin-top: 5px; font-size: 12.5px; }
+.bar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .num { font: 12px var(--mono); text-align: right; color: var(--muted); }
+.track { height: 9px; background: var(--track); border-radius: 999px; position: relative; overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; background: var(--muted); border-radius: 999px; opacity: .55; }
+.bar.win .track i { background: var(--accent); opacity: 1; }
+.bar.win .name { font-weight: 600; }
+.scale { position: relative; height: 26px; margin: 10px 6px 4px; }
+.scale::before { content: ""; position: absolute; left: 0; right: 0; top: 12px; height: 3px; background: var(--track); border-radius: 3px; }
+.scale .tick { position: absolute; top: 8px; width: 2px; height: 11px; background: var(--muted); transform: translateX(-1px); }
+.scale .tick em { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font: normal 10.5px var(--mono); color: var(--muted); }
+.scale .pin { position: absolute; top: 5px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--panel); transform: translateX(-7px); }
+.pill { font: 11.5px var(--mono); padding: 2px 7px; border-radius: 999px; background: var(--track); color: var(--muted); }
+.pill.hi { background: var(--accent-soft); color: var(--accent); }
+.pill.lo { background: var(--warn-soft); color: var(--warn); }
+pre { margin: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow: auto;
+  font: 12px/1.5 var(--mono); max-height: 640px; white-space: pre-wrap; word-break: break-word; }
+.empty { color: var(--muted); padding: 30px 8px; text-align: center; }
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 520px) { .grid2, .q .head { grid-template-columns: 1fr; } .crit { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Rizzo Flow <span>playground</span></h1>
+  <span id="health" class="badge">verifica…</span>
+  <span class="spacer"></span>
+  <select id="preset" style="width:auto;max-width:170px" aria-label="Esempi"></select>
+  <button id="run" class="primary" title="Cmd/Ctrl + Invio">Esegui</button>
+</header>
+
+<main>
+  <section class="panel" aria-label="Richiesta">
+    <div class="row between">
+      <h2 style="margin:0">Richiesta</h2>
+      <div class="tabs" role="tablist">
+        <button id="tab-builder" class="on">Builder</button>
+        <button id="tab-json">JSON</button>
+      </div>
+    </div>
+
+    <div id="builder">
+      <label class="field" for="state">State — testo libero oppure JSON (oggetto/array), prefillato una sola volta</label>
+      <textarea id="state" class="code" rows="7" spellcheck="false"></textarea>
+      <div class="row between" style="margin-top:14px">
+        <h2 style="margin:0">Domande <span id="qcount" class="pill"></span></h2>
+        <div class="row">
+          <button data-add="noul">+ Noul</button>
+          <button data-add="choice">+ Choice</button>
+          <button data-add="score">+ Score</button>
+        </div>
+      </div>
+      <div id="questions"></div>
+      <p class="hint">Tutte le domande di una richiesta condividono la KV cache dello state e vengono valutate in microbatch.
+        Gli ID non vengono inviati al modello. <code>instructions</code> e criteri accettano anche JSON.</p>
+    </div>
+
+    <div id="jsonmode" hidden>
+      <label class="field" for="endpoint">Endpoint</label>
+      <select id="endpoint">
+        <option value="/v1/systemone">POST /v1/systemone — formato compatibile TypeSafe (noul, choice, score)</option>
+        <option value="/v1/decisions">POST /v1/decisions — formato nativo (boolean, choice, score, numeric, policy)</option>
+      </select>
+      <label class="field" for="raw">Corpo della richiesta</label>
+      <textarea id="raw" class="code" rows="26" spellcheck="false"></textarea>
+    </div>
+
+    <details>
+      <summary>Impostazioni</summary>
+      <div class="grid2">
+        <div><label class="field" for="model">model</label><input id="model" type="text" class="code" value="rizzo-latest"></div>
+        <div><label class="field" for="apikey">API key (solo se il server usa RIZZO_API_KEY)</label><input id="apikey" type="password" autocomplete="off"></div>
+      </div>
+    </details>
+    <div id="inputError" class="error" hidden></div>
+  </section>
+
+  <section class="panel" aria-label="Risposta">
+    <div class="row between" style="margin-bottom:10px">
+      <h2 style="margin:0">Risposta</h2>
+      <div class="tabs" role="tablist">
+        <button id="out-visual" class="on">Visuale</button>
+        <button id="out-json">JSON</button>
+        <button id="out-curl">cURL</button>
+      </div>
+    </div>
+    <div id="visual"><div class="empty">Premi <b>Esegui</b> o Cmd/Ctrl + Invio.</div></div>
+    <pre id="rawout" hidden></pre>
+    <pre id="curl" hidden></pre>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+
+function h(tag, props = {}, ...kids) {
+  const el = document.createElement(tag);
+  let value;
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") el.className = v;
+    else if (k === "value") value = v;
+    else if (k === "style") el.style.cssText = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  if (value !== undefined) el.value = value;
+  return el;
+}
+
+const PRESETS = {
+  "Ticket di supporto": {
+    state: "Help! My payouts have been failing for 3 days. I already wrote twice and nobody answered. I need this fixed before Friday payroll.",
+    questions: [
+      { id: "is_urgent", type: "noul", instructions: "Does this convey urgency?", t: "Explicitly time-sensitive", f: "No urgency expressed" },
+      { id: "is_repeat_contact", type: "noul", instructions: "Has the customer contacted support about this before?" },
+      { id: "department", type: "choice", instructions: "Which team should handle this?", options: [
+        ["billing", "Payments, invoicing, refunds"], ["technical", "Bugs, outages, integrations"], ["sales", "Pricing, upgrades, new accounts"]] },
+      { id: "frustration", type: "score", instructions: "How frustrated is the customer?", levels: ["Calm", "Frustrated", "Very angry"] },
+    ],
+  },
+  "Ticket in italiano (state JSON)": {
+    state: JSON.stringify({
+      message: "Non riesco ad accedere al mio account dopo aver cambiato la password. Devo consegnare un lavoro oggi. Il pagamento dell'abbonamento è regolare.",
+      account: { subscription_active: true, password_reset_completed: true },
+    }, null, 2),
+    questions: [
+      { id: "needs_access_support", type: "noul", instructions: "Il cliente ha bisogno di assistenza per accedere all'account?" },
+      { id: "queue", type: "choice", instructions: "Quale reparto deve gestire questo problema?", options: [
+        ["access", "Problemi di login, password o accesso all'account."], ["billing", "Problemi con fatture, addebiti o pagamenti."], ["sales", "Richieste di acquisto di nuovi prodotti."]] },
+      { id: "urgency", type: "score", instructions: "Quanto è urgente risolvere il problema per il cliente?", levels: [
+        "Nessuna scadenza e nessuna attività bloccata.", "Attività rallentata, ma esiste una soluzione temporanea.", "Attività bloccata con una scadenza entro oggi."] },
+    ],
+  },
+  "Checklist CV — 8 noul in parallelo": {
+    state: "Senior backend engineer, 8 years. Python daily (Django, FastAPI), PostgreSQL, Kafka. Led a team of 5 at a fintech. Migrated a monolith to services on AWS. Some Go. No mobile work. Based in Milan, open to remote. Fluent English and Italian.",
+    questions: [
+      ["python", "Does the candidate have strong Python experience?"], ["lead", "Has the candidate managed or led other engineers?"],
+      ["cloud", "Does the candidate have cloud infrastructure experience?"], ["mobile", "Does the candidate have mobile development experience?"],
+      ["fintech", "Has the candidate worked in financial services?"], ["remote", "Is the candidate open to remote work?"],
+      ["rust", "Does the candidate mention Rust?"], ["english", "Does the candidate speak English?"],
+    ].map(([id, instructions]) => ({ id, type: "noul", instructions })),
+  },
+};
+
+let questions = [];
+let lastBody = null, lastEndpoint = "/v1/systemone";
+
+const blank = (type, n) => ({
+  id: `${type}_${n}`, type, instructions: "", t: "", f: "",
+  options: [["", ""], ["", ""]], levels: ["", ""],
+});
+
+// Text that parses as a JSON object/array is sent structured; anything else stays a string.
+function structured(text) {
+  const s = text.trim();
+  if (s.startsWith("{") || s.startsWith("[")) {
+    try { return JSON.parse(s); } catch { /* plain text */ }
+  }
+  return s;
+}
+const asText = (v) => (typeof v === "string" ? v : v == null ? "" : JSON.stringify(v));
+
+function buildBody() {
+  const out = {};
+  for (const q of questions) {
+    const id = q.id.trim();
+    if (!id) throw new Error("Ogni domanda deve avere un ID.");
+    if (id in out) throw new Error(`ID duplicato: ${id}`);
+    const item = { type: q.type, instructions: structured(q.instructions) };
+    if (q.type === "noul") {
+      const criteria = {};
+      if (q.t.trim()) criteria.true = structured(q.t);
+      if (q.f.trim()) criteria.false = structured(q.f);
+      if (Object.keys(criteria).length) item.criteria = criteria;
+    } else if (q.type === "choice") {
+      item.criteria = {};
+      for (const [key, desc] of q.options) {
+        if (!key.trim()) continue;
+        if (key.trim() in item.criteria) throw new Error(`${id}: opzione duplicata "${key.trim()}"`);
+        item.criteria[key.trim()] = desc.trim() ? structured(desc) : null;
+      }
+    } else {
+      item.criteria = q.levels.filter((l) => l.trim()).map(structured);
+    }
+    out[id] = item;
+  }
+  return { state: structured($("#state").value), model: $("#model").value.trim(), questions: out };
+}
+
+function loadBody(body) {
+  $("#state").value = typeof body.state === "string" ? body.state : JSON.stringify(body.state, null, 2);
+  if (body.model) $("#model").value = body.model;
+  questions = Object.entries(body.questions || {}).map(([id, q], n) => {
+    if (!["noul", "choice", "score"].includes(q.type)) throw new Error(`${id}: tipo "${q.type}" non gestito dal builder`);
+    const item = { ...blank(q.type, n), id, instructions: asText(q.instructions) };
+    if (q.type === "noul") { item.t = asText(q.criteria?.true); item.f = asText(q.criteria?.false); }
+    if (q.type === "choice") item.options = Object.entries(q.criteria || {}).map(([k, v]) => [k, asText(v)]);
+    if (q.type === "score") item.levels = (q.criteria || []).map(asText);
+    return item;
+  });
+  renderQuestions();
+}
+
+function bind(obj, key, extra = {}) {
+  return { value: obj[key], oninput: (e) => { obj[key] = e.target.value; save(); }, ...extra };
+}
+
+function renderQuestions() {
+  const root = $("#questions");
+  root.replaceChildren(...questions.map((q, i) => {
+    const criteria = [];
+    if (q.type === "noul") {
+      criteria.push(h("div", { class: "grid2" },
+        h("div", {}, h("label", { class: "field" }, "criteria.true (opzionale)"), h("input", { type: "text", ...bind(q, "t") })),
+        h("div", {}, h("label", { class: "field" }, "criteria.false (opzionale)"), h("input", { type: "text", ...bind(q, "f") }))));
+    } else if (q.type === "choice") {
+      criteria.push(h("label", { class: "field" }, "criteria — opzione → descrizione (vuota = null)"));
+      q.options.forEach((pair, j) => criteria.push(h("div", { class: "crit" },
+        h("input", { type: "text", class: "code", placeholder: "opzione", ...bind(pair, 0) }),
+        h("input", { type: "text", placeholder: "descrizione", ...bind(pair, 1) }),
+        h("button", { class: "ghost", title: "Rimuovi", onclick: () => { q.options.splice(j, 1); renderQuestions(); } }, "✕"))));
+      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.options.push(["", ""]); renderQuestions(); } }, "+ opzione"));
+    } else {
+      criteria.push(h("label", { class: "field" }, "criteria — livelli ordinati dal più basso al più alto (max 10)"));
+      q.levels.forEach((_, j) => criteria.push(h("div", { class: "crit level" },
+        h("span", { class: "idx" }, j),
+        h("input", { type: "text", placeholder: `livello ${j}`, ...bind(q.levels, j) }),
+        h("button", { class: "ghost", title: "Rimuovi", onclick: () => { q.levels.splice(j, 1); renderQuestions(); } }, "✕"))));
+      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.levels.push(""); renderQuestions(); } }, "+ livello"));
+    }
+    return h("div", { class: "q" },
+      h("div", { class: "head" },
+        h("input", { type: "text", class: "code", placeholder: "id_domanda", "aria-label": "ID domanda", ...bind(q, "id") }),
+        h("select", { "aria-label": "Tipo", value: q.type, onchange: (e) => { q.type = e.target.value; renderQuestions(); } },
+          ["noul", "choice", "score"].map((t) => h("option", { value: t }, t))),
+        h("button", { class: "ghost", title: "Elimina domanda", onclick: () => { questions.splice(i, 1); renderQuestions(); } }, "✕")),
+      h("label", { class: "field" }, "instructions"),
+      h("textarea", { rows: 2, ...bind(q, "instructions") }),
+      criteria);
+  }));
+  $("#qcount").textContent = questions.length;
+  save();
+}
+
+function save() {
+  try { localStorage.setItem("rizzo-playground", JSON.stringify({ state: $("#state").value, questions })); } catch { /* optional */ }
+}
+
+function showInputError(message) {
+  const box = $("#inputError");
+  box.hidden = !message;
+  box.textContent = message || "";
+}
+
+// ---------- tabs ----------
+let jsonMode = false;
+function setMode(toJson) {
+  try {
+    if (toJson && !jsonMode) $("#raw").value = JSON.stringify(buildBody(), null, 2);
+    if (!toJson && jsonMode && $("#endpoint").value === "/v1/systemone") loadBody(JSON.parse($("#raw").value));
+    showInputError("");
+  } catch (error) { showInputError(error.message); if (!toJson) return; }
+  jsonMode = toJson;
+  $("#builder").hidden = toJson; $("#jsonmode").hidden = !toJson;
+  $("#tab-builder").classList.toggle("on", !toJson); $("#tab-json").classList.toggle("on", toJson);
+}
+$("#tab-builder").onclick = () => setMode(false);
+$("#tab-json").onclick = () => setMode(true);
+
+function setOut(which) {
+  for (const [name, node] of [["visual", $("#visual")], ["json", $("#rawout")], ["curl", $("#curl")]]) {
+    node.hidden = name !== which;
+    $(`#out-${name}`).classList.toggle("on", name === which);
+  }
+}
+for (const name of ["visual", "json", "curl"]) $(`#out-${name}`).onclick = () => setOut(name);
+
+// ---------- rendering ----------
+const pct = (p) => `${(p * 100).toFixed(p >= 0.0995 ? 1 : 2)}%`;
+const fix = (x, n = 3) => Number(x).toFixed(n);
+
+function bars(probabilities, labels = {}) {
+  const entries = Object.entries(probabilities);
+  const top = Math.max(...entries.map(([, p]) => p));
+  return entries.map(([key, p]) => h("div", { class: "bar" + (p === top ? " win" : "") },
+    h("span", { class: "name", title: labels[key] || key }, labels[key] ? `${key} · ${labels[key]}` : key),
+    h("span", { class: "track" }, h("i", { style: `width:${Math.max(p * 100, 0.6)}%` })),
+    h("span", { class: "num" }, pct(p))));
+}
+
+function confidencePill(c) {
+  return h("span", { class: "pill " + (c >= 0.8 ? "hi" : c < 0.5 ? "lo" : "") }, `confidence ${fix(c, 2)}`);
+}
+
+function answerCard(id, a, asked) {
+  const body = [];
+  let headline;
+  if (a.type === "noul") {
+    headline = h("span", { class: "big" }, fix(a.noul), h("small", {}, a.noul >= 0.5 ? "sì" : "no"));
+    body.push(...bars({ yes: a.noul, no: 1 - a.noul }));
+  } else if (a.type === "score" && a.legend && "confidence" in a) {
+    const last = Object.keys(a.legend).length - 1;
+    headline = h("span", { class: "big" }, fix(a.score, 2), h("small", {}, `su ${last}`));
+    body.push(h("div", { class: "scale" },
+      Object.keys(a.legend).map((k) => h("span", { class: "tick", style: `left:${(k / last) * 100}%` }, h("em", {}, k))),
+      h("span", { class: "pin", style: `left:${(a.score / last) * 100}%` })));
+    body.push(h("div", { style: "height:14px" }), ...bars(a.probabilities, a.legend), confidencePill(a.confidence));
+  } else if (a.type === "choice" && "confidence" in a) {
+    headline = h("span", { class: "big" }, a.choice);
+    body.push(...bars(a.probabilities), confidencePill(a.confidence));
+  } else {
+    // Native /v1/decisions answer.
+    const primary = a.choice ?? a.value ?? a.score;
+    headline = h("span", { class: "big" }, primary == null ? "null" : typeof primary === "number" ? fix(primary) : String(primary),
+      a.unit ? h("small", {}, a.unit) : null);
+    body.push(...bars(a.probabilities || {}, a.legend || {}),
+      h("span", { class: "pill " + (a.status === "ok" ? "hi" : "lo") }, `status ${a.status}`));
+  }
+  const pills = body.filter((n) => n.classList?.contains("pill"));
+  return h("div", { class: "answer" },
+    h("div", { class: "top" }, h("span", { class: "qid" }, id), h("span", { class: "type" }, a.type)),
+    asked ? h("div", { class: "asked" }, asked) : null,
+    headline, body.filter((n) => !pills.includes(n)),
+    pills.length ? h("div", { class: "row", style: "margin-top:9px" }, pills) : null);
+}
+
+function metric(value, label) { return h("div", { class: "metric" }, h("b", {}, value), h("span", {}, label)); }
+const ms = (seconds) => (seconds == null ? "—" : `${Math.round(seconds * 1000)} ms`);
+
+function renderResponse(json, body, roundtrip) {
+  const timing = json.x_rizzo?.timing || json.timing || {};
+  const count = Object.keys(json.answers).length;
+  const tokens = json.usage?.input_tokens ?? timing.logical_input_tokens;
+  const metrics = h("div", { class: "metrics" },
+    metric(`${Math.round(roundtrip)} ms`, "round-trip browser"),
+    metric(ms(timing.inference_seconds), "inferenza GPU"),
+    metric(ms(timing.prefill_seconds), "prefill state (1 volta)"),
+    metric(count, count === 1 ? "domanda" : "domande in parallelo"),
+    metric(timing.batches ?? "—", "microbatch"),
+    metric(tokens ?? "—", "token input"),
+    metric(timing.shared_prefix_tokens ?? "—", "token state in cache"),
+    metric(json.usage?.output_tokens ?? timing.generated_tokens ?? 0, "token generati"));
+  const model = typeof json.model === "string" ? json.model : json.model?.source;
+  const cards = Object.entries(json.answers).map(([id, a]) => answerCard(id, a, asText(body.questions?.[id]?.instructions)));
+  const note = h("p", { class: "hint" }, `Modello: ${model}. Probabilità non calibrate: `,
+    "confidence descrive la forma della distribuzione, non la probabilità di avere ragione.");
+  $("#visual").replaceChildren(metrics, ...cards, note);
+}
+
+function curlFor(endpoint, body) {
+  const auth = $("#apikey").value ? ` \\\n  -H "Authorization: Bearer $RIZZO_API_KEY"` : "";
+  const data = JSON.stringify(body, null, 2).replace(/'/g, `'\\''`);
+  return `curl ${location.origin}${endpoint}${auth} \\\n  -H 'Content-Type: application/json' \\\n  -d '${data}'`;
+}
+
+async function run() {
+  let body, endpoint;
+  try {
+    endpoint = jsonMode ? $("#endpoint").value : "/v1/systemone";
+    body = jsonMode ? JSON.parse($("#raw").value) : buildBody();
+    showInputError("");
+  } catch (error) { showInputError(error.message); return; }
+  lastBody = body; lastEndpoint = endpoint;
+  $("#curl").textContent = curlFor(endpoint, body);
+  const button = $("#run");
+  button.disabled = true; button.textContent = "In esecuzione…";
+  const headers = { "Content-Type": "application/json" };
+  if ($("#apikey").value) headers.Authorization = `Bearer ${$("#apikey").value}`;
+  const started = performance.now();
+  try {
+    const response = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify(body) });
+    const elapsed = performance.now() - started;
+    const textBody = await response.text();
+    let json; try { json = JSON.parse(textBody); } catch { json = textBody; }
+    $("#rawout").textContent = typeof json === "string" ? json : JSON.stringify(json, null, 2);
+    if (!response.ok) {
+      const detail = typeof json === "string" ? json : JSON.stringify(json.detail ?? json, null, 2);
+      $("#visual").replaceChildren(h("div", { class: "error" }, `HTTP ${response.status}\n${detail}`));
+    } else renderResponse(json, body, elapsed);
+  } catch (error) {
+    $("#visual").replaceChildren(h("div", { class: "error" }, `Server non raggiungibile: ${error.message}`));
+  } finally {
+    button.disabled = false; button.textContent = "Esegui";
+  }
+}
+
+// ---------- boot ----------
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  $("#state").value = preset.state;
+  questions = preset.questions.map((q, n) => ({ ...blank(q.type, n), ...q,
+    options: (q.options || blank("choice", n).options).map((pair) => [...pair]), levels: [...(q.levels || ["", ""])] }));
+  renderQuestions();
+  if (jsonMode) $("#raw").value = JSON.stringify(buildBody(), null, 2);
+}
+
+$("#preset").append(h("option", { value: "" }, "Esempi…"), ...Object.keys(PRESETS).map((n) => h("option", { value: n }, n)));
+$("#preset").onchange = (e) => { if (e.target.value) applyPreset(e.target.value); e.target.value = ""; };
+document.querySelectorAll("[data-add]").forEach((b) => (b.onclick = () => { questions.push(blank(b.dataset.add, questions.length + 1)); renderQuestions(); }));
+$("#state").oninput = save;
+$("#run").onclick = run;
+document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); run(); } });
+
+let restored = false;
+try {
+  const saved = JSON.parse(localStorage.getItem("rizzo-playground") || "null");
+  if (saved?.questions?.length) { $("#state").value = saved.state || ""; questions = saved.questions; renderQuestions(); restored = true; }
+} catch { /* optional */ }
+if (!restored) applyPreset(Object.keys(PRESETS)[0]);
+
+fetch("/health").then((r) => r.json()).then((info) => {
+  const m = info.model || {};
+  $("#health").className = "badge ok";
+  $("#health").textContent = [m.source || "modello", m.precision, m.device].filter(Boolean).join(" · ");
+}).catch(() => { $("#health").className = "badge bad"; $("#health").textContent = "offline"; });
+</script>
+</body>
+</html>

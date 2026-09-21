@@ -1,0 +1,157 @@
+{
+  "hardware": {
+    "device_name": "Apple M4 Pro",
+    "max_recommended_working_set_size": 17179885568,
+    "memory_size": 25769803776,
+    "architecture": "applegpu_g16s",
+    "max_buffer_length": 12884901888,
+    "resource_limit": 499000
+  },
+  "model": {
+    "source": "XHToken/Spark-X2.5-4B",
+    "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+    "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+    "source_files": {
+      "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+      "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+      "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+      "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+      "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+      "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+      "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+      "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+      "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+    },
+    "precision": "bf16",
+    "quantization_group_size": null,
+    "device": "gpu",
+    "mlx": "0.32.2",
+    "mlx_lm": "0.31.3",
+    "prompt_version": "spark-decisions-v2",
+    "fingerprint": "e483fffc8f445e5309c53022a4f07ea14e6eaf28b5120aed9c258ae9e5aae780",
+    "load_seconds": 6.188021084002685
+  },
+  "selected_projection_max_logit_delta": 0.0,
+  "validation_seconds": 20.80003016703995,
+  "suites": {
+    "smoke": {
+      "requests": 17,
+      "repeats": 1,
+      "warmup_excluded": true,
+      "decisions_per_second": 2.658282561467714,
+      "latency_seconds": {
+        "median": 0.3893351670121774,
+        "p95": 1.2564119169837795
+      },
+      "labeled_decision_coverage": 0.85,
+      "status_accuracy": 0.9,
+      "categorical": {
+        "rows": 20,
+        "accuracy": 0.85,
+        "accepted_accuracy": 0.8235294117647058,
+        "nll": 0.22770635049010263,
+        "brier": 0.139877381252984,
+        "ece_10_bins": 0.08685443175731526,
+        "reliability_bins": [
+          {
+            "lower": 0.5,
+            "count": 1,
+            "accuracy": 0,
+            "mean_top_probability": 0.5219646438231106
+          },
+          {
+            "lower": 0.6,
+            "count": 1,
+            "accuracy": 0,
+            "mean_top_probability": 0.619934661714805
+          },
+          {
+            "lower": 0.7,
+            "count": 2,
+            "accuracy": 0.5,
+            "mean_top_probability": 0.7483562714817634
+          },
+          {
+            "lower": 0.9,
+            "count": 16,
+            "accuracy": 1,
+            "mean_top_probability": 0.9938452008346961
+          }
+        ]
+      },
+      "numeric": {
+        "rows": 7,
+        "by_type_unit_and_support": {
+          "{\"support\":[0.0,2.0],\"type\":\"score\",\"unit\":null}": {
+            "rows": 3,
+            "answered": 3,
+            "mae_on_answered": 0.018259226312415718,
+            "rmse_on_answered": 0.03158168116409813
+          },
+          "{\"support\":[0.0,100.0],\"type\":\"numeric\",\"unit\":\"percent\"}": {
+            "rows": 4,
+            "answered": 4,
+            "mae_on_answered": 0.0022090435976558527,
+            "rmse_on_answered": 0.003484937835746842
+          }
+        }
+      },
+      "mode_comparison": {
+        "decisions": 20,
+        "changed_argmaxes": 1,
+        "max_probability_delta": 0.07279959858144014,
+        "median_seconds": {
+          "shared": 0.3893351670121774,
+          "direct": 0.32107345800613984
+        }
+      }
+    },
+    "perturbations": {
+      "requests": 9,
+      "repeats": 1,
+      "warmup_excluded": true,
+      "decisions_per_second": 3.3327234670798616,
+      "latency_seconds": {
+        "median": 0.29836320801405236,
+        "p95": 0.30813683301676065
+      },
+      "labeled_decision_coverage": 0.7777777777777778,
+      "status_accuracy": 0.8888888888888888,
+      "categorical": {
+        "rows": 9,
+        "accuracy": 0.8888888888888888,
+        "accepted_accuracy": 1,
+        "nll": 0.09724306030027753,
+        "brier": 0.07413329276673333,
+        "ece_10_bins": 0.06566665699863113,
+        "reliability_bins": [
+          {
+            "lower": 0.5,
+            "count": 1,
+            "accuracy": 0,
+            "mean_top_probability": 0.5774710341205918
+          },
+          {
+            "lower": 0.9,
+            "count": 8,
+            "accuracy": 1,
+            "mean_top_probability": 0.998308890141614
+          }
+        ]
+      },
+      "numeric": {
+        "rows": 0,
+        "by_type_unit_and_support": {}
+      },
+      "mode_comparison": {
+        "decisions": 9,
+        "changed_argmaxes": 1,
+        "max_probability_delta": 0.08921008926933083,
+        "median_seconds": {
+          "shared": 0.29836320801405236,
+          "direct": 0.320904582971707
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rizzo-q8",
+      "runtimeExecutable": ".venv/bin/rizzo",
+      "runtimeArgs": ["serve", "--bits", "8"],
+      "port": 8017
+    }
+  ]
+}

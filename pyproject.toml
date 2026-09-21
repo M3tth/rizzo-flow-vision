@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rizzo-flow"
+version = "0.1.0"
+description = "Local typed decisions and numeric estimates with Spark-X2.5-4B"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.11,<3", "fastapi>=0.115,<1", "uvicorn>=0.34,<1"]
+
+[project.optional-dependencies]
+mlx = [
+  "mlx==0.32.2",
+  "mlx-lm==0.31.3",
+  "spark-mlx-llm @ git+https://github.com/XHToken/Spark-MLX-LLM.git@de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+]
+test = ["pytest>=8.4,<10", "httpx>=0.28,<1", "ruff>=0.12"]
+
+[project.scripts]
+rizzo = "rizzo_flow.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rizzo_flow"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["mlx: small real Spark architecture tests; requires MLX", "integration: requires downloaded Spark weights"]
+
+[tool.ruff]
+line-length = 100

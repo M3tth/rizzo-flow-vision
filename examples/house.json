@@ -1,0 +1,22 @@
+{
+  "state": {
+    "scenario": "Esempio sintetico: i comparabili sono dati inventati per mostrare l'API, non prezzi reali di mercato.",
+    "property": {"area_m2": 85, "condition": "renovated", "elevator": true},
+    "provided_comparables": [
+      {"area_m2": 83, "sold_price_eur": 270000, "condition": "renovated", "elevator": true},
+      {"area_m2": 87, "sold_price_eur": 280000, "condition": "renovated", "elevator": true}
+    ]
+  },
+  "questions": {
+    "estimated_price": {
+      "type": "numeric",
+      "instructions": "Stima il prezzo usando soltanto i comparabili sintetici forniti. Se non sono sufficienti seleziona dati insufficienti. Non usare conoscenze esterne sui prezzi.",
+      "unit": "EUR",
+      "anchors": [
+        {"value": 225000, "description": "Valore intorno a 225000 euro."},
+        {"value": 275000, "description": "Valore intorno a 275000 euro."},
+        {"value": 325000, "description": "Valore intorno a 325000 euro."}
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+dev: 72 base rows, 54 perturbed rows, 17 smoke
+
+### v2-current  (39s)
+{"base": {"bal_acc": 0.754, "errors": 17, "nll": 0.813, "by_family": {"evidence_interpretation": 0.87, "rule_application": 0.667, "candidate_selection": 0.725}}, "perturbed": {"bal_acc": 0.711, "errors": 18, "nll": 1.05, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.333, "candidate_selection": 0.8}}, "flips": {"option_reversal": 6, "criterion_wrapper": 1, "irrelevant_context": 1}, "smoke": {"accuracy": 0.9, "status_accuracy": 0.9, "nll": 0.216}}
+
+### a-text-all  (48s)
+{"base": {"bal_acc": 0.827, "errors": 11, "nll": 0.867, "by_family": {"evidence_interpretation": 0.87, "rule_application": 0.778, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.852, "errors": 8, "nll": 0.801, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.556, "candidate_selection": 1.0}}, "flips": {"option_reversal": 2, "criterion_wrapper": 1, "irrelevant_context": 1}, "smoke": {"accuracy": 0.95, "status_accuracy": 0.95, "nll": 0.427}}
+
+### b-text-question-only  (39s)
+{"base": {"bal_acc": 0.784, "errors": 14, "nll": 0.563, "by_family": {"evidence_interpretation": 0.741, "rule_application": 0.778, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.852, "errors": 8, "nll": 0.644, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.556, "candidate_selection": 1.0}}, "flips": {"option_reversal": 1, "criterion_wrapper": 2, "irrelevant_context": 0}, "smoke": {"accuracy": 0.9, "status_accuracy": 0.9, "nll": 0.462}}
+
+### c-system-only  (52s)
+{"base": {"bal_acc": 0.811, "errors": 13, "nll": 0.732, "by_family": {"evidence_interpretation": 0.926, "rule_application": 0.722, "candidate_selection": 0.786}}, "perturbed": {"bal_acc": 0.796, "errors": 13, "nll": 1.045, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.556, "candidate_selection": 0.833}}, "flips": {"option_reversal": 2, "criterion_wrapper": 2, "irrelevant_context": 2}, "smoke": {"accuracy": 0.95, "status_accuracy": 0.95, "nll": 0.104}}
+
+### d-text-no-closing  (49s)
+{"base": {"bal_acc": 0.809, "errors": 12, "nll": 0.769, "by_family": {"evidence_interpretation": 0.87, "rule_application": 0.778, "candidate_selection": 0.778}}, "perturbed": {"bal_acc": 0.815, "errors": 10, "nll": 0.727, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.444, "candidate_selection": 1.0}}, "flips": {"option_reversal": 2, "criterion_wrapper": 2, "irrelevant_context": 1}, "smoke": {"accuracy": 0.85, "status_accuracy": 0.85, "nll": 0.533}}
+
+### e-text-oldsystem  (44s)
+{"base": {"bal_acc": 0.772, "errors": 15, "nll": 0.637, "by_family": {"evidence_interpretation": 0.815, "rule_application": 0.667, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.778, "errors": 12, "nll": 0.714, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.333, "candidate_selection": 1.0}}, "flips": {"option_reversal": 3, "criterion_wrapper": 0, "irrelevant_context": 1}, "smoke": {"accuracy": 0.9, "status_accuracy": 0.9, "nll": 0.477}}

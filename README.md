@@ -1,0 +1,360 @@
+<div align="center">
+
+<img src="assets/rizzo_flow_logo.png" alt="Rizzo Flow mascot — a purple hedgehog holding an infinity-shaped flow of arrows" width="200" />
+
+# Rizzo Flow
+
+### The open, local take on Jev: typed decisions from an LLM, without generating a single token
+
+**_Unstructured state in → typed, probabilistic decisions out. On your own machine._**
+
+<p>
+<img src="https://img.shields.io/badge/100%25-LOCAL-7c3aed?style=for-the-badge" alt="100% local" />
+<img src="https://img.shields.io/badge/0-GENERATED%20TOKENS-7c3aed?style=for-the-badge" alt="0 generated tokens" />
+<img src="https://img.shields.io/badge/JEV--COMPATIBLE-API-7c3aed?style=for-the-badge" alt="Jev-compatible API" />
+</p>
+
+<p>
+<img src="https://img.shields.io/badge/model-Spark--X2.5--4B-blue" alt="Spark-X2.5-4B" />
+<img src="https://img.shields.io/badge/native%20context-1M%20tokens-blue" alt="1M-token native context" />
+<img src="https://img.shields.io/badge/runtime-MLX%20·%20Apple%20Silicon-blue" alt="MLX on Apple Silicon" />
+<img src="https://img.shields.io/badge/latency-~250%20ms%20%2F%20decision%20(Q8%2C%20M4%20Pro)-brightgreen" alt="about 250 ms per decision" />
+<img src="https://img.shields.io/badge/memory-~5%20GiB%20(Q8)-brightgreen" alt="about 5 GiB at 8 bit" />
+<img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license" />
+</p>
+
+<sub>A project by <a href="https://www.rizzoaiacademy.com"><b>Rizzo AI Academy</b></a> · 🇮🇹 <a href="docs/README.it.md">Documentazione dettagliata in italiano</a></sub>
+
+</div>
+
+**Rizzo Flow** is an open-source, local-first implementation of the idea behind
+[**Jev**](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's "System One"
+model: a *function call with judgment* that takes unstructured state and returns **typed decisions
+with probabilities** — a yes/no, a choice among options, a score on a rubric, a number — instead
+of text you then have to parse.
+
+Jev is a closed, hosted service. Rizzo Flow gives you the same programming model **on your own
+hardware, with open weights, and with the same HTTP interface**, so code written against the
+TypeSafe API can point at `localhost` by changing one URL.
+
+> **Independent project.** Rizzo Flow is not affiliated with TypeSafe and does not reproduce Jev's
+> proprietary architecture or its RLCD training. It reproduces the *interface pattern* with an
+> off-the-shelf open model, in the spirit of [SemIf](https://github.com/TheoLeeCJ/SemIf), which
+> inspired it. Probabilities are **uncalibrated** unless you calibrate them on your own data, and
+> we make no claim of matching Jev or SemIf in quality. Every number below comes with its caveats.
+
+---
+
+## Why "System One"
+
+An LLM asked to classify something *writes* an answer: token by token, slowly, in a format you
+hope is valid JSON. But for a decision you do not need text — you need **which option, and how
+sure**. That information is already in the model after a single forward pass: it is the
+probability it assigns to each possible answer.
+
+Rizzo Flow reads exactly that and nothing else:
+
+```mermaid
+flowchart LR
+    S["state<br/>(text or JSON)"] --> P["prefill once<br/>→ KV cache"]
+    P --> Q1["question 1"]
+    P --> Q2["question 2"]
+    P --> Q3["question N"]
+    Q1 & Q2 & Q3 --> L["logits of the answer letters only<br/>(A, B, C …)"]
+    L --> D["softmax → typed JSON<br/>choice · boolean · score · number"]
+```
+
+1. **Every question becomes a multiple choice.** Each candidate answer is mapped to one uppercase
+   letter. The tokenizer is checked at request time: every letter must be exactly one token, in
+   context. 26 letters → at most **26 answer slots** per question.
+2. **The state is processed once.** It sits at the start of the prompt, so it is prefilled a
+   single time (in 512-token chunks) and its KV cache is **cloned for every question** — both the
+   full-attention and the sliding-window caches. Question suffixes run in padded micro-batches.
+3. **Only the needed logits are computed.** The last hidden state is multiplied by just the
+   vocabulary rows of the allowed letters — also with quantized weights. Verified identical to the
+   full-vocabulary projection.
+4. **Plain Python turns logits into typed output.** Softmax, optional temperature, expected values
+   for scores and numbers, abstention policy, and a schema-validated JSON response.
+
+No decoding loop, no output parsing, no JSON repair, no type errors by construction.
+"Zero generated tokens" is not zero latency: prefill and suffixes still cost compute.
+
+---
+
+## Primitives
+
+### Native API — `POST /v1/decisions`
+
+| Type | You provide | You get |
+| --- | --- | --- |
+| `boolean` | optional descriptions of *true* / *false* | `value`, probability of true |
+| `choice` | `options` (id + description), up to 26 | `choice`, probability of every option |
+| `score` | ordered `levels`, low → high | probability-weighted `score`, `normalized_score`, spread |
+| `numeric` | increasing `anchors` (value + description) and a `unit` | probability-weighted `value`, median, spread, below/above-range probability |
+
+Every type can **abstain**: a built-in `__insufficient__` option (on by default), plus
+`__below_range__` / `__above_range__` for `numeric`. When those win, the primary value is `null`
+and `status` says why: `ok`, `insufficient_evidence`, `out_of_range`, `uncertain`. Thresholds are
+a per-question `policy`. Special options use answer slots too: 26 options without abstention, 25
+with it, 24/23 anchors for `numeric`.
+
+```json
+{
+  "state": {"measurement": 75, "unit": "percent"},
+  "questions": {
+    "fill": {
+      "type": "numeric",
+      "instructions": "Read the reported fill percentage.",
+      "unit": "percent",
+      "anchors": [
+        {"value": 0, "description": "Empty"},
+        {"value": 50, "description": "Half full"},
+        {"value": 75, "description": "Three quarters full"},
+        {"value": 100, "description": "Completely full"}
+      ]
+    }
+  }
+}
+```
+
+Anchors are representative values, **not statistical intervals**; the mean stays inside the
+extreme anchors; reported quantiles are those of the discrete distribution over anchors. Details:
+[docs/README.it.md](docs/README.it.md#cosa-significa-un-numero).
+
+### Jev-compatible API — `POST /v1/systemone`, `GET /v1/models`
+
+Same request and response shape as the public [TypeSafe API reference](https://docs.typesafe.ai/api):
+
+| Type | `criteria` | Answer |
+| --- | --- | --- |
+| `noul` | optional `{true, false}` descriptions | `noul`: probability of yes, 0–1 |
+| `choice` | map *option → description* (or `null`), up to 26 | `choice`, `probabilities`, `confidence` |
+| `score` | ordered array of level descriptions, up to 10 | `score`, `legend`, `probabilities`, `confidence` |
+
+```bash
+curl http://127.0.0.1:8017/v1/systemone \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "state": "Help! My payouts have been failing for 3 days.",
+    "model": "rizzo-latest",
+    "questions": {
+      "is_urgent": {"type": "noul", "instructions": "Does this convey urgency?"},
+      "department": {"type": "choice", "instructions": "Which team should handle this?",
+        "criteria": {"billing": "Payments, invoicing, refunds", "technical": "Bugs, outages", "sales": null}},
+      "frustration": {"type": "score", "instructions": "How frustrated is the customer?",
+        "criteria": ["Calm", "Frustrated", "Very angry"]}
+    }
+  }'
+```
+
+A real response from the 8-bit model (values rounded, `x_rizzo` omitted):
+
+```json
+{
+  "model": "rizzo-spark-x2.5-4b-q8",
+  "answers": {
+    "is_urgent":   {"type": "noul", "noul": 0.99998},
+    "department":  {"type": "choice", "choice": "billing",
+                    "probabilities": {"billing": 0.99999, "technical": 0.00001, "sales": 0.0}, "confidence": 0.99999},
+    "frustration": {"type": "score", "score": 1.0, "legend": {"0": "Calm", "1": "Frustrated", "2": "Very angry"},
+                    "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "confidence": 1.0}
+  },
+  "usage": {"input_tokens": 287, "output_tokens": 0}
+}
+```
+
+A client written for the hosted API can target Rizzo Flow by changing only the base URL (for the
+official SDKs: `TYPESAFE_BASE_URL=http://127.0.0.1:8017` — designed for it, not yet tested with
+the real SDK). **The interface is compatible, the model is not Jev:**
+
+- `model` accepts `rizzo-latest`, the local id, and any `jev-*` name as a convenience alias. The
+  response **always reports the local model id** — no answer ever presents itself as Jev.
+- `instructions` and `criteria` may be strings, objects or arrays, as in the original.
+- No abstention in this format (`allow_abstain: false`); `noul` is P(yes) over two options.
+- `confidence = (n · p_max − 1) / (n − 1)`, the statistic shown on TypeSafe's Confidence page;
+  Jev's exact formula is not public. It describes the *shape* of the distribution, not the
+  probability of being right.
+- `usage.input_tokens` counts the state once plus the question suffixes; `output_tokens` is always 0.
+- `x_rizzo` (timings, fingerprint) is an extension outside the contract.
+- Bearer auth like the original, enforced only if `RIZZO_API_KEY` is set. Errors: 401, 422.
+
+**Asking many questions at once is the point.** All questions in one request share the state's KV
+cache: 8 yes/no questions on one document cost 1 prefill + 2 micro-batches (932 ms total on an M4
+Pro at 8 bit), not 8 full passes.
+
+---
+
+## A model with a native 1M-token context
+
+Rizzo Flow runs [**XHToken/Spark-X2.5-4B**](https://huggingface.co/XHToken/Spark-X2.5-4B)
+(Apache-2.0, original weights, pinned revision). The model has a **native 1,048,576-token context
+window** and a hybrid attention design — one full-attention layer for every three sliding-window
+layers (window 512) — so the KV cache grows far more slowly than in a standard transformer. That
+is what makes the "prefill a large state once, ask many cheap questions" pattern attractive.
+
+What is true *today* in this repository, so you can plan around it:
+
+- The per-question token limit defaults to **8,192** and is raised with `--max-tokens`.
+- A request's `state` is capped at **256 KB** of JSON (roughly 60k tokens). Inputs over a limit
+  are **rejected, never truncated**.
+- The longest states we have measured are **~2,000 tokens** (the 37×21 systems benchmark below).
+  Long-context behaviour beyond that is the model's published capability, **not something we have
+  validated here**; memory, not the architecture, is the practical ceiling on a 24 GiB machine.
+
+---
+
+## Quickstart (Apple Silicon)
+
+```bash
+git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
+cd rizzo-flow
+uv sync --extra mlx --extra test --locked
+.venv/bin/rizzo download                       # ~8 GB into models/Spark-X2.5-4B
+.venv/bin/rizzo decide examples/ticket.json --bits 8
+.venv/bin/rizzo serve --bits 8                 # API + playground on 127.0.0.1:8017
+```
+
+BF16 is the default precision; `--bits 8` / `--bits 4` quantize in memory (affine, group size 64).
+Quantization changes probabilities: compare on your own workload. The runtime is
+[MLX](https://github.com/ml-explore/mlx); `--device cpu` exists but is untested, and CUDA is not
+supported yet.
+
+### Playground
+
+With the server running, open <http://127.0.0.1:8017/playground>: a question builder for
+noul / choice / score, ready-made examples, a raw JSON editor for both endpoints, probability
+bars, timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
+equivalent cURL. One self-contained page, no external calls.
+
+Interactive OpenAPI docs: <http://127.0.0.1:8017/docs>. Schemas: `request.schema.json`,
+`response.schema.json`. `GET /health` reports model provenance and file hashes.
+
+---
+
+## Results so far
+
+Hardware for everything we ran: **Apple M4 Pro, 24 GiB**. Timings exclude model load and warm-up
+and include request compilation plus synchronized GPU inference. All reports are committed,
+create-only, with logits, prompt hashes and weight hashes: [results/](results/README.md) (Italian).
+
+### Own development fixtures (prompt v2)
+
+| Measure | BF16 | 8 bit |
+| --- | ---: | ---: |
+| Median over 17 smoke requests | 389 ms | 304 ms |
+| Peak MLX allocation | 8.38 GiB | 4.88 GiB |
+| Correct argmax, 20 labelled decisions | 17/20 | 18/20 |
+| Correct argmax, 9 perturbations | 8/9 | 9/9 |
+| Long state, 4 questions: shared vs direct | 2.75× faster | 2.83× faster |
+
+These fixtures are small and were read while writing the prompt: they are a smoke test, not an
+independent benchmark.
+
+### SemIf's fixtures, SemIf's metric code (prompt v2, 8 bit)
+
+We ran [SemIf](https://github.com/TheoLeeCJ/SemIf)'s committed fixtures (file hashes verified)
+through Rizzo Flow and scored them with SemIf's own `benchmarks/evaluate.py`
+(`scripts/semif_compare.py`). Same rows, same metric, same timing scope; each system keeps its own
+prompt and model.
+
+| Measure | Rizzo Flow · Spark-X2.5-4B Q8 (M4 Pro) | SemIf · Qwen3.5-4B Q8, published (M5 Max) |
+| --- | ---: | ---: |
+| `authored144`, mean-family balanced accuracy | 0.758 | 0.819 |
+| `perturbations108`, same metric | 0.706 | 0.766 |
+| Per-decision latency, short state (p50 / p95) | 254 / 259 ms | not comparable |
+| `shape777` shared: 37 states (~2k tokens) × 21 criteria | 3.92 decisions/s · 5.33 s per state | not comparable |
+| `shape777` fresh (3 states) | 0.31 decisions/s | not comparable |
+| Argmax changes, shared vs fresh (63 decisions) | 0 (max Δp 0.057) | — |
+
+Reading this honestly:
+
+- **Rizzo Flow is ~6 points behind SemIf's published quality** on these sets with the current
+  prompt. The weakest family is `rule_application` (0.689; 0.481 under perturbation, NLL 1.83 —
+  confidently wrong).
+- **Shared-state reuse is ~12.6× faster** than fresh scoring here, with no argmax change.
+- SemIf's numbers were measured on a different Mac: **valid for quality, not for timing**. The
+  same-hardware run of SemIf (needs the Qwen3.5-4B weights) is **not done yet**.
+- Not included: WANLI, the TypeSafe subset (not redistributable) and Every sets. SemIf states its
+  labels are model-reviewed, not human-adjudicated; 6 points on 144 rows is about 9 rows.
+
+### Prompt work in progress (dev split only — not a result)
+
+The fixtures were split by source group into dev and held-out halves, and prompt variants were
+compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*.txt`):
+
+| Variant (dev: 72 base + 54 perturbed rows, 8 bit) | base | perturbed | flips on option reversal | own smoke |
+| --- | ---: | ---: | ---: | ---: |
+| current v2 (JSON state, JSON question) | 0.754 | 0.711 | 6 | 0.90 |
+| new short system prompt + plain-text multiple choice, state as text | 0.827 | 0.852 | 2 | 0.95 |
+| new short system prompt + plain-text multiple choice, state as JSON | 0.806 | 0.852 | 1 | 0.95 |
+| …plus longer guidance (rules, abstention, "order is arbitrary") | 0.79–0.81 | 0.80–0.82 | 2–3 | 0.90–0.95 |
+
+A plain-text multiple-choice question and a short, decision-focused system prompt both help and
+reduce position bias; longer instructions do not. **The held-out half has not been run and the
+shipped prompt is still v2** — these numbers chose a candidate, they do not prove it.
+
+---
+
+## Calibration
+
+Out of the box the distributions are often extremely peaked (0.9999 where Jev's docs show 0.88),
+so thresholds designed for Jev's `confidence` do not transfer. Temperature scaling is built in,
+per primitive, and bound to a fingerprint of weights, tokenizer, precision, runtime and prompt
+version:
+
+```bash
+.venv/bin/rizzo calibrate calibration.jsonl --fingerprint MODEL_HASH --output calibration-fit.json
+.venv/bin/rizzo serve --bits 8 --calibration calibration-fit.json
+```
+
+You need labelled data from your own domain, a separate calibration set, and a held-out test. The
+evaluator reports accuracy, NLL, Brier, ECE and coverage.
+
+## Known limitations
+
+- Probabilities are uncalibrated by default; `status: ok` does not mean *correct*.
+- The model under-uses abstention and out-of-range options (documented cases in
+  [results/README.md](results/README.md)).
+- Residual position bias; permutation debiasing is not implemented.
+- 26 options per question (Jev: 255; SemIf: 16). Beyond that you need two stages.
+- Apple Silicon / MLX only, one resident model, concurrent requests are serialized.
+- English is strongest; an Italian boolean flipped between BF16 and 8 bit in our smoke set.
+- Localhost by default; no rate limiting; not hardened for public exposure.
+
+## Development
+
+```bash
+.venv/bin/pytest -q                                   # 29 tests, no weights needed
+.venv/bin/ruff check src tests scripts
+.venv/bin/rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/local-smoke.json
+.venv/bin/python scripts/semif_compare.py --system rizzo --semif ../SemIf --bits 8 --output results/local-semif
+```
+
+Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (Italian).
+
+## Credits
+
+- [TypeSafe — *Introducing System One models and Jev*](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
+  and the [TypeSafe docs](https://docs.typesafe.ai/introduction): the idea, the primitives and the
+  API shape this project mirrors. "Jev" and "TypeSafe" belong to their owners.
+- [SemIf](https://github.com/TheoLeeCJ/SemIf) by TheoLeeCJ (MIT): the open option-logit baseline
+  that inspired this work, and the fixtures and evaluator used for the comparison. No SemIf source
+  files are copied here.
+- [Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) (revision `0bcb3567…`) and the
+  official [Spark MLX runtime](https://github.com/XHToken/Spark-MLX-LLM) (commit `de2b4379…`),
+  both Apache-2.0. MLX `0.32.2`, MLX-LM `0.31.3`.
+
+## License
+
+Released under the **[MIT License](LICENSE)** © 2026 Simone Rizzo — Rizzo AI Academy.
+Model weights and the Spark runtime keep their own Apache-2.0 licenses.
+
+---
+
+<div align="center">
+
+**Author** — Simone Rizzo · **A project by** [Rizzo AI Academy](https://www.rizzoaiacademy.com)
+
+→ [www.rizzoaiacademy.com](https://www.rizzoaiacademy.com)
+
+</div>

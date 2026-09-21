@@ -1,0 +1,21 @@
+{
+  "state": {
+    "sensor": "tank_fill",
+    "measurement": {"value": 75, "unit": "percent"},
+    "verified": true
+  },
+  "questions": {
+    "fill": {
+      "type": "numeric",
+      "instructions": "Quanto è pieno il serbatoio secondo la misura fornita? Usa esclusivamente la misura presente nello stato.",
+      "unit": "percent",
+      "anchors": [
+        {"value": 0, "description": "Serbatoio vuoto."},
+        {"value": 25, "description": "Serbatoio pieno per un quarto."},
+        {"value": 50, "description": "Serbatoio pieno per metà."},
+        {"value": 75, "description": "Serbatoio pieno per tre quarti."},
+        {"value": 100, "description": "Serbatoio completamente pieno."}
+      ]
+    }
+  }
+}

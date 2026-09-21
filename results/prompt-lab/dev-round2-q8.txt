@@ -1,0 +1,13 @@
+dev: 72 base rows, 54 perturbed rows, 17 smoke
+
+### f-a+order-note  (54s)
+{"base": {"bal_acc": 0.809, "errors": 12, "nll": 0.891, "by_family": {"evidence_interpretation": 0.87, "rule_application": 0.722, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.796, "errors": 11, "nll": 0.92, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.389, "candidate_selection": 1.0}}, "flips": {"option_reversal": 2, "criterion_wrapper": 2, "irrelevant_context": 0}, "smoke": {"accuracy": 0.95, "status_accuracy": 0.95, "nll": 0.444}}
+
+### g-systemB-text  (60s)
+{"base": {"bal_acc": 0.79, "errors": 14, "nll": 0.932, "by_family": {"evidence_interpretation": 0.87, "rule_application": 0.667, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.796, "errors": 11, "nll": 1.104, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.389, "candidate_selection": 1.0}}, "flips": {"option_reversal": 3, "criterion_wrapper": 2, "irrelevant_context": 0}, "smoke": {"accuracy": 0.95, "status_accuracy": 0.95, "nll": 0.389}}
+
+### i-systemA-json-mcq  (51s)
+{"base": {"bal_acc": 0.806, "errors": 12, "nll": 0.811, "by_family": {"evidence_interpretation": 0.833, "rule_application": 0.806, "candidate_selection": 0.778}}, "perturbed": {"bal_acc": 0.852, "errors": 8, "nll": 0.715, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.556, "candidate_selection": 1.0}}, "flips": {"option_reversal": 1, "criterion_wrapper": 1, "irrelevant_context": 1}, "smoke": {"accuracy": 0.95, "status_accuracy": 0.95, "nll": 0.321}}
+
+### k-systemB-json-mcq  (62s)
+{"base": {"bal_acc": 0.787, "errors": 14, "nll": 0.831, "by_family": {"evidence_interpretation": 0.833, "rule_application": 0.694, "candidate_selection": 0.833}}, "perturbed": {"bal_acc": 0.815, "errors": 10, "nll": 0.982, "by_family": {"evidence_interpretation": 1.0, "rule_application": 0.444, "candidate_selection": 1.0}}, "flips": {"option_reversal": 2, "criterion_wrapper": 1, "irrelevant_context": 0}, "smoke": {"accuracy": 0.9, "status_accuracy": 0.9, "nll": 0.32}}

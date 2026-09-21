@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Rizzo Flow
+models/
+.research/
+.cache/
+results/local-*/
+.DS_Store

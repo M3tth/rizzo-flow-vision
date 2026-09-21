@@ -1,0 +1,209 @@
+"""Run SemIf's own fixtures through Rizzo Flow or SemIf's MLX backend, on this machine.
+
+Both systems see the same rows, are scored by SemIf's `benchmarks/evaluate.py`, and are timed
+with the scope SemIf documents: warm model; prompt construction, tokenization, forward passes
+and CPU readout included; model loading and file writes excluded. Each system keeps its own
+prompt and model, so this compares complete systems, not checkpoints in isolation.
+
+  .venv/bin/python scripts/semif_compare.py --system rizzo --semif /path/SemIf --output results/x
+  /path/semif-venv/bin/python scripts/semif_compare.py --system semif --semif /path/SemIf --output ...
+"""
+
+import argparse
+import json
+import statistics
+import sys
+import time
+from collections import defaultdict
+from pathlib import Path
+
+
+def read(path):
+    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def write(path, value):
+    # Create-only, like every other benchmark artifact in this project.
+    with Path(path).open("x") as stream:
+        if isinstance(value, list):
+            stream.writelines(json.dumps(row, allow_nan=False) + "\n" for row in value)
+        else:
+            stream.write(json.dumps(value, indent=2, allow_nan=False) + "\n")
+
+
+class Rizzo:
+    def __init__(self, args):
+        from rizzo_flow.backend import SparkBackend
+        from rizzo_flow.engine import Engine
+
+        backend = SparkBackend.load(args.model, bits=args.bits, batch_size=args.batch_size)
+        self.engine = Engine(backend)
+        self.metadata = {**backend.metadata, "batch_size": args.batch_size}
+
+    def _run(self, rows, mode):
+        questions = {
+            row["id"]: {
+                "type": "choice",
+                "instructions": row["question"],
+                # Fixture options already include their own `insufficient` where relevant.
+                "policy": {"allow_abstain": False},
+                "options": [
+                    {"id": f"o{index}", "description": option["description"]}
+                    for index, option in enumerate(row["options"])
+                ],
+            }
+            for row in rows
+        }
+        response = self.engine.decide(
+            {"state": rows[0]["state"], "questions": questions, "mode": mode}
+        )
+        return [
+            {
+                "id": row["id"],
+                "option_ids": [option["id"] for option in row["options"]],
+                "probabilities": list(response["answers"][row["id"]]["probabilities"].values()),
+                "input_tokens": response["answers"][row["id"]]["input_tokens"],
+            }
+            for row in rows
+        ]
+
+    def direct(self, row):
+        return self._run([row], "direct")[0]
+
+    def shared(self, rows):
+        return self._run(rows, "shared")
+
+
+class SemIf:
+    def __init__(self, args):
+        from semif_phase1 import mlx_backend
+
+        self.backend = mlx_backend
+        self.model, self.tokenizer, self.metadata = mlx_backend.load_model(
+            args.model, args.revision, args.bits
+        )
+
+    def direct(self, row):
+        return self.backend.score(self.model, self.tokenizer, row, self.metadata)
+
+    def shared(self, rows):
+        return self.backend.score_shared(self.model, self.tokenizer, rows, self.metadata)[0]
+
+
+def latency(seconds):
+    ordered = sorted(seconds)
+    return {
+        "calls": len(ordered),
+        "total_seconds": sum(ordered),
+        "p50_seconds": statistics.median(ordered),
+        "p95_seconds": ordered[min(len(ordered) - 1, round(0.95 * (len(ordered) - 1)))],
+        "max_seconds": ordered[-1],
+    }
+
+
+def slim(prediction):
+    keep = ("id", "option_ids", "probabilities", "option_logits", "input_tokens")
+    return {key: prediction[key] for key in keep if key in prediction}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--system", choices=("rizzo", "semif"), required=True)
+    parser.add_argument("--semif", type=Path, required=True, help="SemIf repository checkout")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--model")
+    parser.add_argument("--revision", default="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a")
+    parser.add_argument("--bits", type=int, choices=(4, 8))
+    parser.add_argument("--batch-size", type=int, default=4, help="Rizzo suffix microbatch")
+    parser.add_argument("--shape-states", type=int, default=37, help="Shared-mode states")
+    parser.add_argument("--direct-states", type=int, default=3, help="Fresh-mode states (slow)")
+    args = parser.parse_args()
+    args.model = args.model or (
+        "models/Spark-X2.5-4B" if args.system == "rizzo" else "Qwen/Qwen3.5-4B"
+    )
+    sys.path[:0] = [str(args.semif / "benchmarks"), str(args.semif / "src")]
+    import evaluate
+    import mlx.core as mx
+
+    args.output.mkdir(parents=True)
+    data = args.semif / "benchmarks" / "data"
+    system = (Rizzo if args.system == "rizzo" else SemIf)(args)
+    report = {"system": args.system, "model": system.metadata, "quality": {}, "shape": {}}
+
+    # Quality: one fresh call per row, exactly as SemIf's MLX quality suite does.
+    for name in ("authored144", "perturbations108"):
+        gold = read(data / f"{name}.jsonl")
+        system.direct(gold[0])
+        mx.reset_peak_memory()
+        predictions, seconds = [], []
+        for index, row in enumerate(gold):
+            mark = time.perf_counter()
+            predictions.append(slim(system.direct(row)))
+            seconds.append(time.perf_counter() - mark)
+            if (index + 1) % 36 == 0:
+                print(f"{name}: {index + 1}/{len(gold)}", flush=True)
+        result = evaluate.evaluate(gold, predictions)
+        report["quality"][name] = {
+            "mean_family_balanced_accuracy": result["mean_family_balanced_accuracy"],
+            "mean_family_macro_f1": result["mean_family_macro_f1"],
+            "families": {
+                family: {k: v for k, v in metrics.items() if isinstance(v, (int, float))}
+                for family, metrics in result["family_results"].items()
+            },
+            "errors": len(result["errors"]),
+            "latency": latency(seconds),
+            "peak_mlx_bytes": mx.get_peak_memory(),
+        }
+        write(args.output / f"{name}.jsonl", predictions)
+        print(name, json.dumps(report["quality"][name]["latency"]), flush=True)
+
+    # Systems: ~2k-token states with 21 binary criteria each; no gold labels.
+    groups = defaultdict(list)
+    for row in read(data / "shape777.jsonl"):
+        groups[row["group_id"]].append(row)
+    groups = list(groups.values())
+    runs = {}
+    for mode, count in (("shared", args.shape_states), ("direct", args.direct_states)):
+        selected = groups[:count]
+        if not selected:
+            continue
+
+        def run(group, mode=mode):
+            if mode == "shared":
+                return system.shared(group)
+            return [system.direct(row) for row in group]
+
+        run(groups[0])
+        mx.clear_cache()
+        mx.reset_peak_memory()
+        predictions, seconds = [], []
+        for index, group in enumerate(selected):
+            mark = time.perf_counter()
+            scored = run(group)
+            seconds.append(time.perf_counter() - mark)
+            predictions.extend(slim(p) for p in scored)
+            print(f"shape/{mode}: {index + 1}/{len(selected)} {seconds[-1]:.2f}s", flush=True)
+        runs[mode] = predictions
+        report["shape"][mode] = {
+            "states": len(selected),
+            "decisions": len(predictions),
+            "decisions_per_second": len(predictions) / sum(seconds),
+            "state_latency": latency(seconds),
+            "input_tokens_per_decision": statistics.mean(p["input_tokens"] for p in predictions),
+            "peak_mlx_bytes": mx.get_peak_memory(),
+        }
+        write(args.output / f"shape777-{mode}.jsonl", predictions)
+    if "direct" in runs and "shared" in runs:
+        fresh = {p["id"]: p["probabilities"] for p in runs["direct"]}
+        pairs = [(fresh[p["id"]], p["probabilities"]) for p in runs["shared"] if p["id"] in fresh]
+        report["shape"]["shared_vs_direct"] = {
+            "rows": len(pairs),
+            "argmax_flips": sum(a.index(max(a)) != b.index(max(b)) for a, b in pairs),
+            "max_probability_difference": max(abs(x - y) for a, b in pairs for x, y in zip(a, b)),
+        }
+    write(args.output / "report.json", report)
+    print(json.dumps({k: report[k] for k in ("quality", "shape")}, indent=2, default=str)[:3000])
+
+
+if __name__ == "__main__":
+    main()

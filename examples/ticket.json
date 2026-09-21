@@ -1,0 +1,40 @@
+{
+  "state": {
+    "message": "Non riesco ad accedere al mio account dopo aver cambiato la password. Devo consegnare un lavoro oggi. Il pagamento dell'abbonamento è regolare.",
+    "account": {"subscription_active": true, "password_reset_completed": true}
+  },
+  "questions": {
+    "needs_access_support": {
+      "type": "boolean",
+      "instructions": "Il cliente ha bisogno di assistenza per accedere all'account?"
+    },
+    "queue": {
+      "type": "choice",
+      "instructions": "Quale reparto deve gestire questo problema?",
+      "options": [
+        {"id": "access", "description": "Problemi di login, password o accesso all'account."},
+        {"id": "billing", "description": "Problemi con fatture, addebiti o pagamenti."},
+        {"id": "sales", "description": "Richieste di acquisto di nuovi prodotti."}
+      ]
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "Quanto è urgente risolvere il problema per il cliente?",
+      "levels": [
+        "Nessuna scadenza e nessuna attività bloccata.",
+        "Attività rallentata, ma esiste una soluzione temporanea.",
+        "Attività bloccata con una scadenza entro oggi."
+      ]
+    },
+    "deadline_hours": {
+      "type": "numeric",
+      "instructions": "Quante ore esatte mancano alla scadenza? Se non sono specificate, segnala dati insufficienti.",
+      "unit": "hours",
+      "anchors": [
+        {"value": 1, "description": "La scadenza è tra un'ora."},
+        {"value": 4, "description": "La scadenza è tra quattro ore."},
+        {"value": 8, "description": "La scadenza è tra otto ore."}
+      ]
+    }
+  }
+}

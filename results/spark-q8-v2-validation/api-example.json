@@ -1,0 +1,213 @@
+{
+  "model": {
+    "source": "XHToken/Spark-X2.5-4B",
+    "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+    "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+    "source_files": {
+      "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+      "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+      "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+      "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+      "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+      "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+      "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+      "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+      "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+    },
+    "precision": "q8",
+    "quantization_group_size": 64,
+    "device": "gpu",
+    "mlx": "0.32.2",
+    "mlx_lm": "0.31.3",
+    "prompt_version": "spark-decisions-v2",
+    "fingerprint": "c64820894c90ba8fe83a426c3d93446191ac9c3779471cec081da4efd69098d0",
+    "load_seconds": 4.494148499972653
+  },
+  "mode": "shared",
+  "answers": {
+    "needs_access_support": {
+      "type": "boolean",
+      "status": "ok",
+      "probabilities": {
+        "false": 0.39566108236631314,
+        "true": 0.6033111048923647,
+        "__insufficient__": 0.0010278127413221557
+      },
+      "option_logits": {
+        "false": -1.234375,
+        "true": -0.8125,
+        "__insufficient__": -7.1875
+      },
+      "legend": {
+        "false": "No. The evidence supports a negative answer to the question.",
+        "true": "Yes. The evidence supports an affirmative answer to the question.",
+        "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+      },
+      "uncertainty": {
+        "top_probability": 0.6033111048923647,
+        "entropy_nats": 0.6787941121381396,
+        "concentration": 0.3821349723285291,
+        "unavailable_probability": 0.0010278127413221557
+      },
+      "probability_status": "uncalibrated_conditional_option_scores",
+      "temperature": 1.0,
+      "value": true,
+      "probability_true_given_available": 0.6039318337259583,
+      "prompt_sha256": "47d786b4c8cb1d762715d992f986b68fa1099c107aab40bbaded729f50d378a7",
+      "input_tokens": 234
+    },
+    "queue": {
+      "type": "choice",
+      "status": "ok",
+      "probabilities": {
+        "access": 0.9999357826059647,
+        "billing": 1.450975727312204e-05,
+        "sales": 5.014437935727476e-06,
+        "__insufficient__": 4.469319882638145e-05
+      },
+      "option_logits": {
+        "access": -0.609375,
+        "billing": -11.75,
+        "sales": -12.8125,
+        "__insufficient__": -10.625
+      },
+      "legend": {
+        "access": "Problemi di login, password o accesso all'account.",
+        "billing": "Problemi con fatture, addebiti o pagamenti.",
+        "sales": "Richieste di acquisto di nuovi prodotti.",
+        "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+      },
+      "uncertainty": {
+        "top_probability": 0.9999357826059647,
+        "entropy_nats": 0.0007346893531111856,
+        "concentration": 0.9994700336568363,
+        "unavailable_probability": 4.469319882638145e-05
+      },
+      "probability_status": "uncalibrated_conditional_option_scores",
+      "temperature": 1.0,
+      "choice": "access",
+      "prompt_sha256": "84f31ed262ea387e92e6638327de3090aea5676b6c19b142a800c766afd27018",
+      "input_tokens": 252
+    },
+    "urgency": {
+      "type": "score",
+      "status": "ok",
+      "probabilities": {
+        "0": 0.0002806700418936867,
+        "1": 0.00026366510369533477,
+        "2": 0.9994037461171495,
+        "__insufficient__": 5.1918737261535906e-05
+      },
+      "option_logits": {
+        "0": -8.5625,
+        "1": -8.625,
+        "2": -0.384765625,
+        "__insufficient__": -10.25
+      },
+      "legend": {
+        "0": "Nessuna scadenza e nessuna attività bloccata.",
+        "1": "Attività rallentata, ma esiste una soluzione temporanea.",
+        "2": "Attività bloccata con una scadenza entro oggi.",
+        "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+      },
+      "uncertainty": {
+        "top_probability": 0.9994037461171495,
+        "entropy_nats": 0.005576529525012298,
+        "concentration": 0.9959773842544469,
+        "unavailable_probability": 5.1918737261535906e-05
+      },
+      "probability_status": "uncalibrated_conditional_option_scores",
+      "temperature": 1.0,
+      "score": 1.9991749519770656,
+      "statistics_given_available": {
+        "mean": 1.9991749519770656,
+        "stddev": 0.0372254825094718,
+        "median": 2,
+        "anchor_quantiles": {
+          "p10": 2,
+          "p90": 2
+        }
+      },
+      "values": {
+        "0": 0,
+        "1": 1,
+        "2": 2
+      },
+      "support": [
+        0,
+        2
+      ],
+      "normalized_score": 0.9995874759885328,
+      "prompt_sha256": "57dd4160d57a9f680fef329379ba50093fe1901baae22ab60299e2c37cb27675",
+      "input_tokens": 264
+    },
+    "deadline_hours": {
+      "type": "numeric",
+      "status": "insufficient_evidence",
+      "probabilities": {
+        "0": 7.253647203144239e-06,
+        "1": 4.637101516450275e-07,
+        "2": 1.4283278221113491e-06,
+        "__below_range__": 3.882597563927763e-06,
+        "__above_range__": 8.749568675060476e-06,
+        "__insufficient__": 0.9999782221485841
+      },
+      "option_logits": {
+        "0": -11.4375,
+        "1": -14.1875,
+        "2": -13.0625,
+        "__below_range__": -12.0625,
+        "__above_range__": -11.25,
+        "__insufficient__": 0.396484375
+      },
+      "legend": {
+        "0": "Approximately 1 hours: La scadenza è tra un'ora.",
+        "1": "Approximately 4 hours: La scadenza è tra quattro ore.",
+        "2": "Approximately 8 hours: La scadenza è tra otto ore.",
+        "__below_range__": "The value is below 1 hours.",
+        "__above_range__": "The value is above 8 hours.",
+        "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+      },
+      "uncertainty": {
+        "top_probability": 0.9999782221485841,
+        "entropy_nats": 0.0002838791569122681,
+        "concentration": 0.9998415640258709,
+        "unavailable_probability": 0.9999908543148232
+      },
+      "probability_status": "uncalibrated_conditional_option_scores",
+      "temperature": 1.0,
+      "value": null,
+      "statistics_given_available": null,
+      "values": {
+        "0": 1.0,
+        "1": 4.0,
+        "2": 8.0
+      },
+      "support": [
+        1.0,
+        8.0
+      ],
+      "unit": "hours",
+      "range_probabilities": {
+        "below": 3.882597563927763e-06,
+        "above": 8.749568675060476e-06
+      },
+      "prompt_sha256": "91c49963e5eac748bafafb65e528c2fb20748055d96b6f14bea39d269b722982",
+      "input_tokens": 356
+    }
+  },
+  "calibration": null,
+  "timing": {
+    "inference_seconds": 1.3423540419898927,
+    "prefill_seconds": 0.15867658302886412,
+    "shared_prefix_tokens": 116,
+    "evaluated_tokens_including_padding": 1076,
+    "logical_input_tokens": 1106,
+    "batches": 1,
+    "generated_tokens": 0,
+    "peak_mlx_bytes": 5245027146,
+    "queue_seconds": 3.7497375160455704e-07,
+    "compile_seconds": 0.009013667004182935,
+    "total_seconds": 1.3518333340180106
+  }
+}

@@ -1,0 +1,65 @@
+"""Local HTTP API. One resident model, serialized GPU access, no external calls."""
+
+import hmac
+import os
+from pathlib import Path
+
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
+
+from .compat import SystemOneRequest, from_native, list_models, resolve_model, to_native
+from .responses import Response
+from .schema import Request
+
+API_KEY_ENV = "RIZZO_API_KEY"
+PLAYGROUND = Path(__file__).with_name("playground.html")
+
+
+def create_app(engine, api_key=None):
+    app = FastAPI(
+        title="Rizzo Flow",
+        version="0.2.0",
+        description="Typed decisions with local Spark-X2.5-4B; no text generation.",
+    )
+    api_key = api_key if api_key is not None else os.environ.get(API_KEY_ENV)
+
+    def authorize(authorization: str | None = Header(default=None)):
+        # Bearer auth mirrors the hosted API; it is enforced only when a key is configured.
+        if api_key and not hmac.compare_digest(
+            (authorization or "").encode(), f"Bearer {api_key}".encode()
+        ):
+            raise HTTPException(status_code=401, detail="Missing or invalid API key")
+
+    @app.get("/health")
+    def health():
+        return {"status": "ready", "model": engine.backend.metadata}
+
+    @app.post("/v1/decisions", response_model=Response)
+    def decisions(request: Request):
+        try:
+            return engine.decide(request)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
+    @app.post("/v1/systemone", dependencies=[Depends(authorize)])
+    def systemone(request: SystemOneRequest):
+        try:
+            served = resolve_model(request.model, engine.backend.metadata)
+            native, options = to_native(request)
+            return from_native(request, engine.decide(native), options, served)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
+    @app.get("/v1/models", dependencies=[Depends(authorize)])
+    def models():
+        return list_models(engine.backend.metadata)
+
+    @app.get("/playground", response_class=HTMLResponse, include_in_schema=False)
+    def playground():
+        return PLAYGROUND.read_text(encoding="utf-8")
+
+    @app.get("/", include_in_schema=False)
+    def root():
+        return RedirectResponse("/playground")
+
+    return app
