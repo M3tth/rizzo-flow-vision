@@ -7,36 +7,51 @@ Implementazione indipendente ispirata al pattern di Jev e SemIf. Usa i pesi orig
 non è un modello addestrato da zero, non replica l'architettura proprietaria di Jev e non presume
 di avere probabilità calibrate o qualità superiore a SemIf.
 
-**Verificato con il checkpoint reale su M4 Pro:** 28 test superati, API funzionante,
-circa 304 ms di mediana nello smoke Q8 e picco MLX di 4.88 GiB. Risultati, errori e limiti
-sono documentati in [results/README.md](../results/README.md).
+**Runtime: [llama.cpp](https://github.com/ggml-org/llama.cpp)** (dal 22 settembre 2026), quindi
+GPU Apple, NVIDIA, AMD e Intel oppure sola CPU, senza compilare nulla. MLX, il runtime originale
+del progetto, resta disponibile con `--backend mlx`. Verificato con i pesi reali su Windows 10 +
+RTX 5060 Ti (build CUDA e build Vulkan): 65 test superati, API funzionante, smoke Q8_0 0.95 con
+66 ms di mediana. Risultati, errori e limiti sono in [results/README.md](../results/README.md).
 
 ## Avvio
 
-Scegli la riga adatta alla tua macchina (è l'unico passo che dipende dalla piattaforma):
+Gli stessi comandi su ogni sistema:
 
 ```bash
-uv sync --locked --extra mlx      # Mac con Apple Silicon (GPU Metal)
-uv sync --locked --extra cuda     # Windows o Linux con GPU NVIDIA (driver CUDA 13)
-uv sync --locked --extra cpu      # Windows o Linux senza GPU: molto lento, ultima spiaggia
+uv sync --locked
 source .venv/bin/activate         # macOS / Linux
 .venv\Scripts\activate           # Windows
-rizzo devices                     # mostra il backend rilevato: mlx, cuda o cpu
-rizzo download
+rizzo download                    # runtime llama.cpp per questa macchina + Spark-X2.5-4B Q8_0 (~4.4 GB)
+rizzo devices                     # GPU viste dal runtime e quella scelta da `auto`
 rizzo decide examples/ticket.json
-rizzo decide examples/numeric.json --bits 8
-rizzo serve --bits 8              # --device auto|mlx|cuda|cpu, default auto
+rizzo decide examples/numeric.json
+rizzo serve                       # --device auto|gpu|cpu|cuda|vulkan|metal|rocm|sycl, default auto
 ```
 
-Provato su Apple Silicon (tutti i risultati pubblicati) e su Windows 10 + RTX 5060 Ti. CUDA su
-Linux non è stato provato; il backend CPU installa e passa i test unitari ma nell'unico tentativo
-(i7-7700K, 1.7B a 8 bit) ha impiegato circa 3 minuti per 8 token.
+`rizzo download` sceglie da solo il pacchetto ufficiale di llama.cpp (release `b11081`, verificato
+con sha256): Metal sui Mac Apple Silicon, CUDA se c'è un driver NVIDIA, altrimenti Vulkan, che
+pilota GPU AMD, Intel e NVIDIA con il driver già installato e ripiega sulla CPU se non c'è una
+GPU. `--runtime rocm|sycl|vulkan|cpu` forza un'altra build; più build possono convivere e
+`--device vulkan` sceglie quale usare. `RIZZO_LLAMA_DIR` punta a una build propria, che deve
+essere dello stesso commit (`161755f`) perché i binding ctypes ricalcano quell'header.
 
-Il download richiede circa 8 GB. Il modello viene salvato in `models/Spark-X2.5-4B`.
-BF16 è la precisione predefinita; `--bits 8` e `--bits 4` quantizzano i pesi in memoria.
-Le piccole proiezioni dei gate di attenzione mantengono la precisione originale.
-La quantizzazione modifica le probabilità: confrontare i risultati sul proprio carico.
-I comandi vanno eseguiti dalla radice del progetto. È possibile indicare `--model /percorso/assoluto`.
+**Cosa è stato provato davvero:** Windows 10 + RTX 5060 Ti, build CUDA e build Vulkan sulla stessa
+scheda (stesse risposte: 3 argmax diversi su 252). macOS/Metal, Linux, GPU AMD e Intel, ROCm, SYCL
+e sola CPU **non sono stati provati**: i pacchetti sono fissati e verificati, il codice di
+caricamento è scritto per quei sistemi, ma nessuno l'ha ancora eseguito lì.
+
+I pesi sono i GGUF pubblicati dagli autori del modello
+([4B](https://huggingface.co/XHToken/Spark-X2.5-4B-GGUF),
+[1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B-GGUF)), salvati in `models/`:
+`--quant q8_0` (default, 4.4 GB), `q4_k_m` (2.6 GB), `bf16` (8.2 GB); `--size 1.7b` per il modello
+piccolo. La quantizzazione modifica le probabilità: confrontare i risultati sul proprio carico.
+I comandi vanno eseguiti dalla radice del progetto. `--model /percorso/file.gguf` carica un altro
+file (senza provenienza verificata: `gguf_source` resta `null` nei metadati).
+
+Runtime MLX (facoltativo): `uv sync --locked --extra mlx` (Apple Silicon; `--extra cuda` per
+NVIDIA, `--extra cpu` senza GPU), `rizzo download --backend mlx` (pesi originali, ~8 GB),
+`rizzo serve --backend mlx --bits 8`. BF16 è la sua precisione predefinita; `--bits 8` e `--bits 4`
+quantizzano i pesi in memoria. Tutti i risultati contrassegnati "MLX" sono stati misurati così.
 
 L'API mantiene un solo modello residente. Interfaccia interattiva: <http://127.0.0.1:8017/docs>.
 Gli schemi completi sono in `request.schema.json` e `response.schema.json`; il server valida
@@ -213,7 +228,9 @@ Le richieste concorrenti condividono un lock per evitare picchi di memoria e int
 `mode: "direct"` nella richiesta disattiva la condivisione come riferimento di verifica.
 `--batch-size 1` riduce la memoria e mantiene il riuso del prefisso. `--ctx` (prima `--max-tokens`) cambia
 il limite per domanda (default 8192); input oltre il limite vengono rifiutati, mai troncati.
-Il limite di cache MLX inattiva è 256 MiB: non limita memoria dei pesi o cache KV attive.
+Con llama.cpp la cache KV è prenotata all'avvio (`--ctx` + 2048 celle) e tiene tutte le posizioni
+anche per i layer a finestra scorrevole: ~144 KiB per token nel 4B, circa 1.4 GiB con il default.
+Con MLX il limite di cache inattiva è 256 MiB: non limita memoria dei pesi o cache KV attive.
 
 ## Misurazioni e calibrazione
 
@@ -222,7 +239,8 @@ Il limite di cache MLX inattiva è 256 MiB: non limita memoria dei pesi o cache 
 .venv/bin/ruff check src tests scripts
 .venv/bin/rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/my-smoke.json
 .venv/bin/rizzo evaluate benchmarks/perturbations.jsonl --output results/my-perturbations.json
-.venv/bin/python scripts/validate_checkpoint.py --bits 8 --output results/my-q8-validation
+.venv/bin/python scripts/validate_checkpoint.py --output results/my-q8-validation
+RIZZO_REAL=1 .venv/bin/pytest -q -m integration   # runtime e pesi GGUF reali
 ```
 
 Per confrontare due report per ID semantico:
@@ -231,12 +249,17 @@ Per confrontare due report per ID semantico:
 .venv/bin/python scripts/compare_reports.py results/my-smoke.json results/my-perturbations.json --perturbations
 ```
 
-I test MLX usano l'architettura Spark reale con pesi casuali piccoli e verificano la proiezione
+I test del backend llama.cpp usano una sessione finta che registra ogni chiamata (posizioni,
+sequenze, righe di logit lette); quelli del runtime verificano scelta del pacchetto, download
+ripreso dopo un'interruzione, sha256 ed estrazione sicura senza rete. I test MLX (saltati se MLX
+non è installato) usano l'architettura Spark reale con pesi casuali piccoli e verificano la proiezione
 selettiva contro l'intero vocabolario, isolamento delle cache, confini sliding-window, batch con
 lunghezze diverse e quantizzazione. Il validatore usa invece i pesi 4B reali, API, fixture e stato lungo.
 
 Gli output sono **create-only**. I report conservano distribuzioni, logit, hash dei prompt,
-hash dei pesi/tokenizer, revisioni, tempi sincronizzati GPU e memoria MLX. Il caricamento
+hash dei pesi/tokenizer, revisioni, tempi sincronizzati GPU e memoria (`peak_device_bytes` con
+llama.cpp: calo della memoria libera della GPU da prima del caricamento, quindi include gli altri
+processi; `peak_mlx_bytes` con MLX). Il caricamento
 e il warmup sono esclusi dai benchmark; tempi di compilazione e inferenza sono separati.
 La memoria MLX non coincide con l'intera memoria del processo.
 
@@ -269,6 +292,10 @@ trasferimento tra domini o rubriche. Valutare anche il costo degli errori e dell
 ## Provenienza
 
 - [Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B), revisione `0bcb35678590218655dff3765b9e61c83b35e9c4`.
+- GGUF ufficiali [4B](https://huggingface.co/XHToken/Spark-X2.5-4B-GGUF) (`9826e0be…`) e
+  [1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B-GGUF) (`1f7fa33b…`), sha256 in `config.py`.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) release `b11081` (commit `161755f2…`), pacchetti
+  precompilati ufficiali con sha256 in `llama_release.py`.
 - [Runtime Spark MLX ufficiale](https://github.com/XHToken/Spark-MLX-LLM), commit `de2b4379fa1e2f2e1f99d84c83f0e008f651d86c`.
 - MLX `0.32.2`, MLX-LM `0.31.3`; dipendenze transitive fissate in `uv.lock`.
 - [Score di TypeSafe](https://docs.typesafe.ai/primitives/score) per la semantica della rubrica.

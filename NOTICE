@@ -6,7 +6,10 @@ Licensed under the Apache License, Version 2.0 (see LICENSE).
 This project downloads and runs, but does not redistribute, third-party components
 that keep their own licenses:
 
-- XHToken/Spark-X2.5-4B and XHToken/Spark-X2.5-1.7B model weights — Apache-2.0, Copyright 2026 XHToken
+- XHToken/Spark-X2.5-4B and XHToken/Spark-X2.5-1.7B model weights, and their GGUF conversions
+  published by XHToken — Apache-2.0, Copyright 2026 XHToken
+- llama.cpp and ggml prebuilt binaries (https://github.com/ggml-org/llama.cpp) — MIT; the CUDA
+  packages also unpack NVIDIA CUDA runtime libraries, under NVIDIA's own license
 - Spark-MLX-LLM runtime (https://github.com/XHToken/Spark-MLX-LLM) — Apache-2.0
 - MLX and MLX-LM (https://github.com/ml-explore) — MIT
 

@@ -17,9 +17,9 @@
 <p>
 <img src="https://img.shields.io/badge/models-Spark--X2.5%204B%20·%201.7B-blue" alt="Spark-X2.5 4B and 1.7B" />
 <img src="https://img.shields.io/badge/native%20context-1M%20tokens-blue" alt="1M-token native context" />
-<img src="https://img.shields.io/badge/runtime-MLX%20·%20Metal%20%7C%20CUDA%20%7C%20CPU-blue" alt="MLX on Metal, CUDA or CPU" />
-<img src="https://img.shields.io/badge/latency-~250%20ms%20%2F%20decision%20(Q8%2C%20M4%20Pro)-brightgreen" alt="about 250 ms per decision" />
-<img src="https://img.shields.io/badge/memory-~5%20GiB%20(Q8)-brightgreen" alt="about 5 GiB at 8 bit" />
+<img src="https://img.shields.io/badge/runtime-llama.cpp%20·%20Metal%20%7C%20CUDA%20%7C%20Vulkan%20%7C%20ROCm%20%7C%20SYCL%20%7C%20CPU-blue" alt="llama.cpp on Metal, CUDA, Vulkan, ROCm, SYCL or CPU" />
+<img src="https://img.shields.io/badge/latency-~50%20ms%20%2F%20decision%20(Q8__0%2C%20RTX%205060%20Ti)-brightgreen" alt="about 50 ms per decision at Q8_0 on an RTX 5060 Ti" />
+<img src="https://img.shields.io/badge/GPU%20memory-~5.6%20GiB%20(Q8__0)-brightgreen" alt="about 5.6 GiB of GPU memory at Q8_0" />
 <img src="https://img.shields.io/badge/license-Apache--2.0-brightgreen" alt="Apache-2.0 license" />
 </p>
 
@@ -35,7 +35,9 @@ of text you then have to parse.
 
 Jev is a closed, hosted service. Rizzo Flow gives you the same programming model **on your own
 hardware, with open weights, and with the same HTTP interface**, so code written against the
-TypeSafe API can point at `localhost` by changing one URL.
+TypeSafe API can point at `localhost` by changing one URL. It runs on
+[llama.cpp](https://github.com/ggml-org/llama.cpp), so the hardware can be an Apple, NVIDIA, AMD
+or Intel GPU, or no GPU at all.
 
 > **Independent project.** Rizzo Flow is not affiliated with TypeSafe and does not reproduce Jev's
 > proprietary architecture or its RLCD training. It reproduces the *interface pattern* with an
@@ -49,8 +51,120 @@ TypeSafe API can point at `localhost` by changing one URL.
 
 <sub>🐍 <b>Fast enough to play Snake</b> — every move is one <code>POST /v1/decisions</code>. Recorded at <b>real speed</b>, not sped up:
 140 moves in 25.6 s (≈ 5.5 per second), about <b>150 ms per decision</b> round trip, <b>0 generated tokens</b>.<br />
-Spark-X2.5-4B at 8 bit on an RTX 5060 Ti (CUDA) · one game, not a benchmark · <a href="#snake-demo">about the demo ↓</a> · <a href="#quickstart">run it yourself ↓</a></sub>
+Spark-X2.5-4B at 8 bit on an RTX 5060 Ti, recorded with the earlier MLX runtime (today's llama.cpp runtime is ~1.8× faster per decision) · one game, not a benchmark · <a href="#snake-demo">about the demo ↓</a> · <a href="#quickstart">run it yourself ↓</a></sub>
 </div>
+
+---
+
+## Quickstart
+
+You need Python ≥ 3.11, git and [uv](https://docs.astral.sh/uv/). The same four commands work on
+macOS, Windows and Linux; nothing is compiled and no GPU toolkit is installed.
+
+```bash
+git clone https://github.com/Rizzo-AI-Academy/rizzo-flow && cd rizzo-flow
+uv sync --locked          # seconds: four small Python packages
+uv run rizzo download     # llama.cpp for this machine + Spark-X2.5-4B Q8_0 (~4.4 GB)
+uv run rizzo serve        # → http://127.0.0.1:8017/playground
+```
+
+`rizzo download` is the only slow step, and it is all download: the model (4.4 GB) plus the
+llama.cpp runtime (about 570 MB with CUDA, 30 MB with Vulkan, 11 MB on a Mac). An interrupted
+download resumes where it stopped. In a hurry? `uv run rizzo download --size 1.7b` fetches a
+1.8 GB model that is fine for a first look and [much less accurate](#results-so-far) afterwards.
+
+Then open <http://127.0.0.1:8017/playground>, pick an example from the **Examples…** menu (or
+write your own state and questions) and press **Run** — or call the API:
+
+```bash
+curl http://127.0.0.1:8017/v1/systemone \
+  -H 'Content-Type: application/json' \
+  -d '{"state": "Help! My payouts have been failing for 3 days.", "model": "rizzo-latest",
+       "questions": {"is_urgent": {"type": "noul", "instructions": "Does this convey urgency?"}}}'
+```
+
+<details>
+<summary>The same call from Windows PowerShell</summary>
+
+```powershell
+$body = @{ state = "Help! My payouts have been failing for 3 days."; model = "rizzo-latest"
+           questions = @{ is_urgent = @{ type = "noul"; instructions = "Does this convey urgency?" } }
+         } | ConvertTo-Json -Depth 5
+Invoke-RestMethod http://127.0.0.1:8017/v1/systemone -Method Post -ContentType "application/json" -Body $body |
+  ConvertTo-Json -Depth 6
+```
+</details>
+
+No server needed for one-off runs: `uv run rizzo decide examples/ticket.json`. If you prefer an
+activated environment, `source .venv/bin/activate` (PowerShell: `.venv\Scripts\activate`) and drop
+the `uv run` prefix.
+
+<div align="center">
+<br />
+<a href="assets/playground.webp"><img src="assets/playground.webp" alt="The Rizzo Flow playground: an Italian support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens" width="100%" /></a>
+
+<sub>🦔 <b>The built-in playground</b> — one state, several questions answered in parallel, probability bars, timings and the
+equivalent cURL. Interface in Italian or English. (Screenshot taken with the earlier MLX runtime on an M4 Pro.)</sub>
+</div>
+
+### Which hardware, and what we have actually run
+
+`rizzo download` picks an official prebuilt llama.cpp package for your machine and checks its
+sha256. `rizzo devices` shows what the runtime sees and what `--device auto` will use.
+
+| Your machine | Build picked (`--runtime auto`) | Status |
+| --- | --- | --- |
+| Windows or Linux, NVIDIA GPU | `cuda` — CUDA 13 libraries included; needs a recent driver, no toolkit | **tested on Windows 10 + RTX 5060 Ti**: every current number in this README. Linux not tried |
+| Windows or Linux, AMD or Intel GPU | `vulkan` — uses the GPU driver you already have | **the Vulkan build was tested on the same RTX 5060 Ti** and gives the same answers as CUDA. Not tried on AMD or Intel hardware: [reports welcome](https://github.com/Rizzo-AI-Academy/rizzo-flow/issues) |
+| Mac, Apple Silicon | `metal` | not tried yet |
+| No GPU | `vulkan` falls back to the CPU; or `--runtime cpu` | not tried: we have no CPU number |
+
+Other builds on request: `uv run rizzo download --only runtime --runtime rocm` (AMD, ROCm/HIP),
+`--runtime sycl` (Intel oneAPI), `--runtime cpu`. Several builds can live side by side and
+`--device vulkan` (or `cuda`, `metal`, …) picks one at start-up; a named family is a requirement,
+never silently downgraded to the CPU. To use your own llama.cpp build, point `RIZZO_LLAMA_DIR` at
+the folder that holds `libllama`: it must be commit `161755f`, because the bindings are tied to
+that header.
+
+Everything is pinned: llama.cpp release
+[`b11081`](https://github.com/ggml-org/llama.cpp/releases/tag/b11081) from its official GitHub
+releases, and the GGUF files published by the model's authors
+([4B](https://huggingface.co/XHToken/Spark-X2.5-4B-GGUF),
+[1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B-GGUF)). The runtime goes to `runtimes/`,
+the weights to `models/`, both git-ignored.
+
+### Models and options
+
+| `--size` | GGUF files (`--quant`) | Status |
+| --- | --- | --- |
+| `4b` (default) | `q8_0` 4.4 GB (default) · `q4_k_m` 2.6 GB · `bf16` 8.2 GB | every result in this README unless it says 1.7B |
+| `1.7b` | `q8_0` 1.8 GB (default) · `q4_k_m` 1.1 GB · `bf16` 3.4 GB | ~2× faster, **much less accurate**. With abstention enabled it picks "cannot determine" almost every time: use it with `"allow_abstain": false` (the Jev-compatible endpoint always does) and check it on your own data |
+
+`rizzo serve` flags: `--size`, `--quant`, `--device auto|gpu|cpu|cuda|vulkan|metal|rocm|sycl`,
+`--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--ctx` (token limit per
+question, default 8192), `--threads` (CPU), `--model /path/to/file.gguf` (overrides `--size`),
+`--calibration fit.json`. Set `RIZZO_API_KEY=...` before starting for Bearer auth on the
+Jev-compatible endpoints. The model loads in about 10 seconds.
+
+Quantization changes probabilities, and so does the hardware (CUDA, Vulkan and Metal round
+differently): compare on your own workload, and note that a calibration is bound to the runtime,
+backend and file it was fitted on.
+
+<details>
+<summary><b>Optional: the MLX runtime</b> (<code>--backend mlx</code>) — what this project ran on until September 2026</summary>
+
+Every result marked "MLX" below was measured with it, and it is still there as an opt-in:
+
+```bash
+uv sync --locked --extra mlx                  # Apple Silicon · or --extra cuda (NVIDIA) · or --extra cpu
+uv run --no-sync rizzo download --backend mlx # original safetensors, ~8 GB
+uv run --no-sync rizzo serve --backend mlx --bits 8   # --bits 4|8 quantize in memory; omit for BF16
+```
+
+With an MLX extra installed use `uv run --no-sync`: a plain `uv run` re-syncs the environment
+without the extra and removes it. Prompt, API and result format are the same; probabilities are
+not (different kernels and quantization).
+</details>
 
 ---
 
@@ -77,16 +191,17 @@ flowchart LR
    letter. The tokenizer is checked at request time: every letter must be exactly one token, in
    context. 26 letters → at most **26 answer slots** per question.
 2. **The state is processed once.** It sits at the start of the prompt, so it is prefilled a
-   single time (in 512-token chunks) and its KV cache is **cloned for every question** — both the
-   full-attention and the sliding-window caches. Question suffixes run in padded micro-batches.
-3. **Only the needed logits are computed.** The last hidden state is multiplied by just the
-   vocabulary rows of the allowed letters — also with quantized weights. Verified identical to the
-   full-vocabulary projection.
+   single time. Every question then branches from it: the branches *share* the state's KV cache
+   cells instead of copying them, and their texts run together in one unpadded micro-batch.
+3. **Only the answer letters are read.** One position per question, the logits of the allowed
+   letters, nothing else. Nothing is sampled.
 4. **Plain Python turns logits into typed output.** Softmax, optional temperature, expected values
    for scores and numbers, abstention policy, and a schema-validated JSON response.
 
 No decoding loop, no output parsing, no JSON repair, no type errors by construction.
-"Zero generated tokens" is not zero latency: prefill and suffixes still cost compute.
+"Zero generated tokens" is not zero latency: prefill and questions still cost compute — about
+50 ms for one short decision and 1 second for 21 questions on a 2,000-token state, on an
+RTX 5060 Ti at 8 bit.
 
 ---
 
@@ -156,19 +271,19 @@ curl http://127.0.0.1:8017/v1/systemone \
   }'
 ```
 
-A real response from the 8-bit model (values rounded, `x_rizzo` omitted):
+A real response (Q8_0, values rounded, `x_rizzo` omitted) — 83 ms in total for the three answers:
 
 ```json
 {
-  "model": "rizzo-spark-x2.5-4b-q8",
+  "model": "rizzo-spark-x2.5-4b-q8_0",
   "answers": {
     "is_urgent":   {"type": "noul", "noul": 0.99998},
     "department":  {"type": "choice", "choice": "billing",
-                    "probabilities": {"billing": 0.99999, "technical": 0.00001, "sales": 0.0}, "confidence": 0.99999},
+                    "probabilities": {"billing": 1.0, "technical": 0.0, "sales": 0.0}, "confidence": 1.0},
     "frustration": {"type": "score", "score": 1.0, "legend": {"0": "Calm", "1": "Frustrated", "2": "Very angry"},
-                    "probabilities": {"0": 0.0, "1": 1.0, "2": 0.0}, "confidence": 1.0}
+                    "probabilities": {"0": 0.0, "1": 0.99999, "2": 0.0}, "confidence": 0.99999}
   },
-  "usage": {"input_tokens": 287, "output_tokens": 0}
+  "usage": {"input_tokens": 291, "output_tokens": 0}
 }
 ```
 
@@ -188,8 +303,9 @@ the real SDK). **The interface is compatible, the model is not Jev:**
 - Bearer auth like the original, enforced only if `RIZZO_API_KEY` is set. Errors: 401, 422.
 
 **Asking many questions at once is the point.** All questions in one request share the state's KV
-cache: 8 yes/no questions on one document cost 1 prefill + 2 micro-batches (932 ms total on an M4
-Pro at 8 bit), not 8 full passes.
+cache: 8 yes/no questions on a 218-token contract cost 1 prefill + 2 micro-batches, 136 ms of
+inference in total rather than 8 full passes. (It got 7 of the 8 right: asked whether a 60-day
+payment term is longer than 30 days, it said no with p = 0.75. Probabilities are not guarantees.)
 
 ---
 
@@ -198,10 +314,10 @@ Pro at 8 bit), not 8 full passes.
 Rizzo Flow runs [**XHToken/Spark-X2.5-4B**](https://huggingface.co/XHToken/Spark-X2.5-4B) by
 default, or the smaller [**Spark-X2.5-1.7B**](https://huggingface.co/XHToken/Spark-X2.5-1.7B)
 (both Apache-2.0). The model handles up to **1M tokens** (1,048,576, native). Out of the box a
-question (state + question) is limited to **8,192 tokens**; raise it with `--ctx` — it is a
-guard, not a memory reservation. Beyond ~60k tokens also raise the 256 KB `state` cap in
-`schema.py`. Budget ~36 KiB of cache per token on the 4B (× `--batch-size`), and note that we
-have only measured states up to ~2,000 tokens. Oversized inputs are rejected, never truncated.
+question (state + question) is limited to **8,192 tokens**; raise it with `--ctx`. The KV cache
+is reserved at start-up and costs ~144 KiB per token on the 4B: about 1.4 GiB at the default,
+4.8 GiB at 32k. Beyond ~60k tokens also raise the 256 KB `state` cap in `schema.py`. Our committed
+measurements stop at states of ~2,000 tokens. Oversized inputs are rejected, never truncated.
 
 | Input context | Rizzo Flow | Jev (TypeSafe) | SemIf |
 | --- | ---: | ---: | ---: |
@@ -213,162 +329,16 @@ Sources: [TypeSafe models](https://docs.typesafe.ai/models),
 
 ---
 
-## Quickstart
-
-Rizzo Flow runs on macOS, Windows and Linux. You need Python ≥ 3.11, git and
-[uv](https://docs.astral.sh/uv/). **The only platform-specific step is the install**: you pick one
-compute backend (`mlx`, `cuda` or `cpu`) and activate the environment. From step 2 onwards every
-command is identical on every system, and the backend is detected automatically.
-
-**1 · Install — copy the block for your machine**
-
-<details open>
-<summary><b>🍎 macOS — Apple Silicon (Metal GPU)</b></summary>
-
-```bash
-git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
-cd rizzo-flow
-uv sync --locked --extra mlx
-source .venv/bin/activate
-```
-</details>
-
-<details open>
-<summary><b>🪟 Windows — NVIDIA GPU (PowerShell)</b></summary>
-
-```powershell
-git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
-cd rizzo-flow
-uv sync --locked --extra cuda
-.venv\Scripts\activate
-```
-
-Needs a recent NVIDIA driver (CUDA 13; check with `nvidia-smi`). No CUDA toolkit install is
-required: the libraries come with the Python packages and Rizzo Flow finds them by itself. If
-PowerShell refuses to run the activation script, run
-`Set-ExecutionPolicy -Scope Process RemoteSigned` first, or skip activation (see below).
-</details>
-
-<details open>
-<summary><b>🐧 Linux — NVIDIA GPU</b></summary>
-
-```bash
-git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
-cd rizzo-flow
-uv sync --locked --extra cuda
-source .venv/bin/activate
-```
-</details>
-
-<details>
-<summary><b>🐢 Windows or Linux without a GPU (CPU only — very slow, last resort)</b></summary>
-
-Same as above with `uv sync --locked --extra cpu`. See the status table before choosing this.
-</details>
-
-Check what was detected — this works the same everywhere:
-
-```bash
-rizzo devices        # → "available": ["cuda", "cpu"], "auto_selects": "cuda"   (or mlx / cpu)
-```
-
-Prefer not to activate the environment? Prefix any command with `uv run --no-sync`, on any system:
-`uv run --no-sync rizzo serve --bits 8`. (`--no-sync` matters: a plain `uv run` would re-sync the
-environment without your backend extra and remove it.)
-
-| Extra | Hardware | Status |
-| --- | --- | --- |
-| `mlx` | Apple Silicon | reference platform: every published result (M4 Pro) |
-| `cuda` | NVIDIA GPU, Windows / Linux | tested on Windows 10 + RTX 5060 Ti 16 GB (4B Q8: 4 questions in ~310 ms warm). Linux not tried. The very first request compiles GPU kernels and can take up to a minute; later runs reuse them |
-| `cpu` | any x86-64 / ARM PC | **installs and passes the unit tests, but was impractically slow in our only attempt** (Windows, i7-7700K: ~3 minutes for an 8-token forward pass of the 1.7B at 8 bit). Treat as a last resort |
-
-All three are the same [MLX](https://github.com/ml-explore/mlx) runtime with a different compute
-backend, so prompts, API and results format are identical. `cuda` and `cpu` cannot be installed
-together. Add `--extra test` if you want to run the test suite.
-
-**2 · Download a model** — pick one; weights go to `models/` (git-ignored):
-
-```bash
-rizzo download                 # Spark-X2.5-4B   · ~8 GB   · default
-rizzo download --size 1.7b     # Spark-X2.5-1.7B · ~3.4 GB · smaller and faster
-```
-
-| `--size` | Checkpoint | Weights | Status |
-| --- | --- | ---: | --- |
-| `4b` (default) | [XHToken/Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) | ~8 GB | every result in this README unless it says 1.7B |
-| `1.7b` | [XHToken/Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) | ~3.4 GB | runs, ~2× faster, **much less accurate** (below) |
-
-Both are the same Spark2.5 architecture with the same tokenizer and native 1M-token context, at
-pinned revisions. Measured on CUDA at 8 bit with prompt v3: on our own 20-decision smoke set the
-1.7B scores 0.45 against 0.95 for the 4B; on SemIf's fixtures 0.700 / 0.633 against 0.829 / 0.865
-([below](#same-fixtures-with-the-shipped-prompt-v3-windows--cuda-rtx-5060-ti)), at about half
-the latency. With abstention enabled it picks "cannot determine" almost every time; use it with `"allow_abstain": false` (the
-Jev-compatible endpoint always does) and check it on your own data before relying on it.
-
-**3 · Start the backend**
-
-```bash
-rizzo serve --bits 8                 # 4B, 8 bit, ~5 GiB
-rizzo serve --size 1.7b --bits 8     # 1.7B
-```
-
-Loading takes a few seconds; the server is ready when it prints
-`Uvicorn running on http://127.0.0.1:8017`. Useful flags: `--bits 4|8` (omit for BF16),
-`--device auto|mlx|cuda|cpu` (default `auto`: the GPU if the install has one), `--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--ctx` (context limit in tokens, default 8192),
-`--model /path/to/checkpoint` (overrides `--size`), `--calibration fit.json`.
-Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compatible endpoints.
-
-**4 · Open the playground**
-
-Open <http://127.0.0.1:8017/playground> in your browser.
-
-<div align="center">
-<br />
-<a href="assets/playground.webp"><img src="assets/playground.webp" alt="The Rizzo Flow playground: an Italian support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens" width="100%" /></a>
-
-<sub>🦔 <b>The built-in playground</b> — one support ticket, two questions answered in parallel in <b>484 ms</b>:
-one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</b>.<br />
-Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English</sub>
-</div>
-
-Pick an example from the **Examples…** menu (or write your own state and questions), press
-**Run** or `Cmd/Ctrl + Enter` — or click the hedgehog — and read the probabilities, the timings and
-the generated cURL. The badge in the header shows which checkpoint and precision is answering.
-The interface is bilingual: switch **IT / EN** in the header (it follows your browser language the
-first time and remembers your choice).
-
-**5 · Or call it from code**
-
-```bash
-curl http://127.0.0.1:8017/v1/systemone \
-  -H 'Content-Type: application/json' \
-  -d '{"state": "Help! My payouts have been failing for 3 days.", "model": "rizzo-latest",
-       "questions": {"is_urgent": {"type": "noul", "instructions": "Does this convey urgency?"}}}'
-```
-
-On Windows PowerShell, where `curl` quoting differs, the same call is:
-
-```powershell
-$body = @{ state = "Help! My payouts have been failing for 3 days."; model = "rizzo-latest"
-           questions = @{ is_urgent = @{ type = "noul"; instructions = "Does this convey urgency?" } }
-         } | ConvertTo-Json -Depth 5
-Invoke-RestMethod http://127.0.0.1:8017/v1/systemone -Method Post -ContentType "application/json" -Body $body |
-  ConvertTo-Json -Depth 6
-```
-
-No server needed for one-off runs: `rizzo decide examples/ticket.json --bits 8`.
-
-BF16 is the default precision; `--bits 8` / `--bits 4` quantize in memory (affine, group size 64).
-Quantization changes probabilities: compare on your own workload. So does the backend: Metal and
-CUDA round differently, and a calibration is bound to the backend it was fitted on.
+## Playground and Snake
 
 ### Playground
 
-<http://127.0.0.1:8017/playground> ([screenshot above](#quickstart), in step 4) is a single self-contained page served by the backend, with no
-external calls: a question builder for noul / choice / score, ready-made examples, a raw JSON
-editor for both endpoints (so you can try `numeric` and abstention too), probability bars,
-timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
-equivalent cURL.
+<http://127.0.0.1:8017/playground> ([screenshot above](#quickstart)) is a single self-contained
+page served by the backend, with no external calls: a question builder for noul / choice / score,
+ready-made examples, a raw JSON editor for both endpoints (so you can try `numeric` and abstention
+too), probability bars, timings (round-trip, inference, state prefill, micro-batches, cached
+state tokens) and the equivalent cURL. The badge in the header shows which checkpoint and
+precision is answering. Bilingual: switch **IT / EN** in the header.
 
 ### Snake demo
 
@@ -381,13 +351,12 @@ downloads when you stop.
 
 What the model sees is selectable, and it matters. With *per-move sensors* (content of the next
 cell, distance to the food, reachable free cells — all computed by the game; only the choice is
-the model's) Q8 on an M4 Pro plays at about 2 moves/s (≈ 490 ms per decision, ~300 input tokens):
-in three informal 10×10 games it ate 12 and 7 foods in 80 moves without dying, and 22 foods in
-208 moves before boxing itself in with no safe move left. With the *ASCII grid only* it died
-within 26 and 13 moves with 0 points in two games: a 4B model does not read a grid spatially.
-These are a handful of games, not a benchmark. Options are shuffled every move to dampen position
-bias; an optional safety net (off by default, every intervention logged) replaces a lethal pick
-with the most probable safe move.
+the model's) it plays well: in three informal 10×10 games on an M4 Pro (MLX runtime, 8 bit) it
+ate 12 and 7 foods in 80 moves without dying, and 22 foods in 208 moves before boxing itself in
+with no safe move left. With the *ASCII grid only* it died within 26 and 13 moves with 0 points in
+two games: a 4B model does not read a grid spatially. These are a handful of games, not a
+benchmark. Options are shuffled every move to dampen position bias; an optional safety net (off by
+default, every intervention logged) replaces a lethal pick with the most probable safe move.
 
 Interactive OpenAPI docs: <http://127.0.0.1:8017/docs>. Schemas: `request.schema.json`,
 `response.schema.json`. `GET /health` reports model provenance and file hashes.
@@ -396,103 +365,115 @@ Interactive OpenAPI docs: <http://127.0.0.1:8017/docs>. Schemas: `request.schema
 
 ## Results so far
 
-Hardware for everything we ran: **Apple M4 Pro, 24 GiB**. Timings exclude model load and warm-up
-and include request compilation plus synchronized GPU inference. All reports are committed,
-create-only, with logits, prompt hashes and weight hashes: [results/](results/README.md) (Italian).
+The runtime changed from MLX to llama.cpp on 22 September 2026, so there are two generations of
+numbers: the current ones first, then a summary of what MLX measured. Timings exclude model load
+and warm-up and include request compilation plus synchronized GPU inference. All reports are
+committed, create-only, with logits, prompt hashes and weight hashes:
+[results/](results/README.md) (Italian).
 
-### Own development fixtures (prompt v2)
+### Current runtime: llama.cpp, prompt v3, Windows + RTX 5060 Ti 16 GB
 
-| Measure | BF16 | 8 bit |
-| --- | ---: | ---: |
-| Median over 17 smoke requests | 389 ms | 304 ms |
-| Peak MLX allocation | 8.38 GiB | 4.88 GiB |
-| Correct argmax, 20 labelled decisions | 17/20 | 18/20 |
-| Correct argmax, 9 perturbations | 8/9 | 9/9 |
-| Long state, 4 questions: shared vs direct | 2.75× faster | 2.83× faster |
+[SemIf](https://github.com/TheoLeeCJ/SemIf)'s committed fixtures (file hashes verified), scored
+with SemIf's own `benchmarks/evaluate.py` through `scripts/semif_compare.py`: same rows, same
+metric, same timing scope; each system keeps its own prompt and model. GGUF files are the ones
+published by the model's authors.
 
-These fixtures are small and were read while writing the prompt: they are a smoke test, not an
-independent benchmark.
-
-### SemIf's fixtures, SemIf's metric code (historical: prompt v2, 8 bit, Mac)
-
-> These are the first numbers, measured with the **previous** prompt (v2). The shipped prompt is
-> v3: its numbers are in the next section.
-
-We ran [SemIf](https://github.com/TheoLeeCJ/SemIf)'s committed fixtures (file hashes verified)
-through Rizzo Flow and scored them with SemIf's own `benchmarks/evaluate.py`
-(`scripts/semif_compare.py`). Same rows, same metric, same timing scope; each system keeps its own
-prompt and model.
-
-| Measure | Rizzo Flow · Spark-X2.5-4B Q8 (M4 Pro) | SemIf · Qwen3.5-4B Q8, published (M5 Max) |
-| --- | ---: | ---: |
-| `authored144`, mean-family balanced accuracy | 0.758 | 0.819 |
-| `perturbations108`, same metric | 0.706 | 0.766 |
-| Per-decision latency, short state (p50 / p95) | 254 / 259 ms | not comparable |
-| `shape777` shared: 37 states (~2k tokens) × 21 criteria | 3.92 decisions/s · 5.33 s per state | not comparable |
-| `shape777` fresh (3 states) | 0.31 decisions/s | not comparable |
-| Argmax changes, shared vs fresh (63 decisions) | 0 (max Δp 0.057) | — |
+| Measure (Spark-X2.5-4B) | Q8_0 · CUDA (default) | BF16 · CUDA | Q4_K_M · CUDA | Q8_0 · Vulkan, same GPU | before: MLX-CUDA Q8 | SemIf Q8 (published) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `authored144`, mean-family balanced accuracy | 0.812 | 0.829 | 0.769 | 0.807 | 0.829 | 0.819 |
+| — held-out half only (72 rows) | 0.793 | 0.824 | 0.730 | 0.781 | 0.824 | 0.811 |
+| `perturbations108` | 0.848 | 0.859 | 0.835 | 0.854 | 0.865 | 0.766 |
+| — held-out half only (54 rows) | 0.861 | 0.875 | 0.801 | 0.861 | 0.875 | 0.824 |
+| Argmax flips: option reversal / wrapper / irrelevant context | 5 / 4 / 5 | 4 / 3 / 3 | 6 / 3 / 2 | 4 / 3 / 5 | 4 / 2 / 3 | 9 / 7 / 4 |
+| Missing evidence (36 rows): accuracy | 0.750 | 0.778 | 0.722 | 0.750 | 0.778 | 0.861 |
+| — confident (p ≥ 0.8) answers where `insufficient` was right | **6** | **6** | 5 | **6** | **6** | 1 |
+| Per-decision latency, short state (p50 / p95) | **49 / 52 ms** | 60 / 63 ms | 51 / 54 ms | 90 / 94 ms | 87 / 94 ms | not comparable |
+| `shape777` shared: 37 states (~2k tokens) × 21 criteria | **20.99 decisions/s** · 1.00 s per state | 17.75 · 1.19 s | 19.98 · 1.05 s | 14.84 · 1.35 s | 7.52 · 1.76 s | not comparable |
+| `shape777` fresh | 2.60 decisions/s | 1.97 | 2.39 (3 states) | 1.74 (3 states) | 1.65 | not comparable |
+| Argmax changes, shared vs fresh | 13 of 777 (max Δp 0.163) | 1 of 777 (0.064) | 2 of 63 (0.204) | 0 of 63 (0.028) | 2 of 777 (0.144) | — |
+| Peak GPU memory (drop in free memory since before the load) | 5.6 GiB | 9.3 GiB | 3.9 GiB | 6.0 GiB | 6.55 GiB (MLX allocator) | — |
 
 Reading this honestly:
 
-- **With prompt v2 Rizzo Flow was ~6 points behind SemIf's published quality** on these sets.
-  The weakest family is `rule_application` (0.689; 0.481 under perturbation, NLL 1.83 —
-  confidently wrong).
-- **Shared-state reuse is ~12.6× faster** than fresh scoring here, with no argmax change.
-- SemIf's numbers were measured on a different Mac: **valid for quality, not for timing**. The
-  same-hardware run of SemIf (needs the Qwen3.5-4B weights) is **not done yet**.
-- Not included: WANLI, the TypeSafe subset (not redistributable) and Every sets. SemIf states its
-  labels are model-reviewed, not human-adjudicated; 6 points on 144 rows is about 9 rows.
-
-### Same fixtures with the shipped prompt (v3), Windows + CUDA (RTX 5060 Ti)
-
-| Measure | Rizzo v3 Q8 | Rizzo v3 BF16 | SemIf Q8 (MLX, published) | SemIf BF16 (RTX 3090, published) |
-| --- | ---: | ---: | ---: | ---: |
-| `authored144`, mean-family balanced accuracy | 0.829 | 0.819 | 0.819 | 0.813 |
-| — held-out half only (72 rows) | 0.824 | 0.806 | 0.811 | 0.802 |
-| `perturbations108` | 0.865 | 0.842 | 0.766 | 0.766 |
-| — held-out half only (54 rows) | 0.875 | 0.843 | 0.824 | 0.824 |
-| Argmax flips: option reversal / wrapper / irrelevant context | 4 / 2 / 3 | 4 / 3 / 4 | 9 / 7 / 4 | 10 / 9 / 4 |
-| Missing evidence (36 rows): accuracy | 0.778 | 0.750 | 0.861 | 0.861 |
-| — confident (p ≥ 0.8) answers where `insufficient` was right | **6** | **6** | 1 | 1 |
-| Per-decision latency, short state (p50 / p95) | 87 / 94 ms | 76 / 78 ms | not comparable | not comparable |
-| `shape777` shared, 777 decisions | 7.52 decisions/s · 1.76 s per state | 15.99 decisions/s · 1.31 s per state | not comparable | not comparable |
-| `shape777` fresh, 777 decisions | 1.65 decisions/s | 1.97 decisions/s | not comparable | not comparable |
-| Argmax changes, shared vs fresh (777 decisions) | 2 (max Δp 0.144) | 2 (max Δp 0.100) | — | 6 |
-
-- **Half of these rows are the dev split the v3 prompt was chosen on**, so the totals are
-  optimistic. The held-out half, looked at once, agrees (0.824 / 0.875).
-- **On `authored144` the two systems are tied**: paired source-group bootstrap (SemIf's code)
-  gives +0.010, 95% interval [−0.051, +0.076]. We claim no superiority.
-- **Rizzo Flow is worse at admitting missing evidence**: 6 confident wrong answers out of 36
-  against SemIf's 1. `rule_application` is still weak under perturbation (0.630, NLL 1.63).
-- **On this GPU BF16 is faster than Q8** (2.1× on shared microbatches, peak 10.13 GiB against
-  6.55 GiB): MLX-CUDA's quantized kernels cost more than a BF16 matmul, so Q8 only buys memory.
-- **The 1.7B checkpoint** on the same run (Q8): `authored144` 0.700, `perturbations108` 0.633
-  (held-out halves 0.697 / 0.514), 17 of 36 argmax flips under option reversal, `rule_application`
-  0.296 under perturbation. It is 2.2–2.7× faster (40 ms per decision, 20.6 decisions/s shared,
-  2.8 GiB peak) but clearly worse: paired difference from the 4B −0.128 [−0.211, −0.046].
-- Still not run: WANLI, Every, the TypeSafe subset, SemIf on this same GPU. Details and reports:
+- **Changing the runtime did not change the quality beyond noise, and did not improve it.** Against
+  the MLX run with the same prompt, llama.cpp Q8_0 picks a different option on 5 rows of 252:
+  paired difference −0.017 on both sets, 95% interval [−0.043, 0.000]. At BF16 the two runtimes
+  differ on 4 rows (+0.009 [0.000, +0.028]). Q8_0 here is llama.cpp's format, not MLX's 8-bit:
+  they are different quantizations of the same weights. One row is 0.7–1.4 points.
+- **Against SemIf the picture is the same as before: tied.** Q8_0 −0.007 [−0.076, +0.065] on
+  `authored144`, BF16 +0.015 [−0.041, +0.079]. We claim no superiority. Half of these rows are
+  the dev split prompt v3 was chosen on; the held-out half had been looked at once for the
+  prompt and is reported again here only because the runtime changed.
+- **It is faster on the same GPU**: 1.8× per short decision and 2.8× on shared states at 8 bit
+  (20.99 against 7.52 decisions/s). Two reasons: llama.cpp's quantized CUDA kernels, and flat
+  batches without padding. With llama.cpp Q8_0 is also faster than BF16, the opposite of what we
+  measured with MLX-CUDA.
+- **The Vulkan build gives the same answers as the CUDA build** on this card (3 different rows of
+  252, −0.005 [−0.017, 0.000]) at about 1.4–1.8× the latency. This is the build AMD and Intel GPUs
+  use, but it was **not run on AMD or Intel hardware**.
+- **Shared-prefix scoring moves near-ties more at Q8_0**: 13 of 777 decisions change argmax
+  between shared and fresh (every one of them had a margin below 0.24; median |Δp| 0.0002), against
+  1 of 777 at BF16 and 2 with MLX. If a threshold matters, do not put it near 0.5.
+- **Q4_K_M costs accuracy**: −0.043 [−0.079, −0.008] on `authored144` against Q8_0, for 1.7 GiB
+  less memory and no gain in speed. Use it only if memory is what you lack.
+- **Unchanged weaknesses**: 6 confident wrong answers out of 36 when the evidence is missing
+  (SemIf: 1), and `rule_application` under perturbation (0.611, NLL 1.69 — confidently wrong).
+- **The 1.7B checkpoint** (Q8_0, CUDA): `authored144` 0.678, `perturbations108` 0.640 (held-out
+  0.690 / 0.514), 18 of 36 argmax flips under option reversal, `rule_application` 0.315 under
+  perturbation (NLL 3.51), picks `insufficient` 52 times where 36 are expected. 25 / 27 ms per
+  decision, 31.59 decisions/s shared, 5.51 fresh, 31 argmax changes of 777 between the two, 2.3 GiB.
+  Paired difference from the 4B −0.134 [−0.212, −0.051]: about twice as fast, clearly worse.
+- **Own fixtures** (small, read while writing the prompt: a smoke test, not a benchmark): 19/20
+  labelled decisions (NLL 0.459), 9/9 perturbations, median 66 ms over 17 requests; a long state
+  with 4 questions takes 0.47 s shared against 1.30 s fresh, same argmax.
+- Still not run: macOS/Metal, Linux, AMD, Intel and CPU-only with this runtime; WANLI, Every, the
+  TypeSafe subset; SemIf on this same GPU. Details and reports:
   [`results/README.md`](results/README.md).
+
+### Before llama.cpp: the MLX runtime, for the record
+
+Until 21 September 2026 Rizzo Flow ran on MLX only. These are the numbers published then, with the
+same fixtures and metric; MLX is still available as `--backend mlx`.
+
+| Measure (Spark-X2.5-4B, MLX) | M4 Pro · Q8 · prompt v2 | RTX 5060 Ti · Q8 · prompt v3 | RTX 5060 Ti · BF16 · prompt v3 |
+| --- | ---: | ---: | ---: |
+| `authored144` / `perturbations108` | 0.758 / 0.706 | 0.829 / 0.865 | 0.819 / 0.842 |
+| — held-out halves | — | 0.824 / 0.875 | 0.806 / 0.843 |
+| Per-decision latency, short state (p50 / p95) | 254 / 259 ms | 87 / 94 ms | 76 / 78 ms |
+| `shape777` shared | 3.92 decisions/s · 5.33 s per state | 7.52 · 1.76 s | 15.99 · 1.31 s |
+| `shape777` fresh | 0.31 decisions/s (3 states) | 1.65 | 1.97 |
+| Argmax changes, shared vs fresh | 0 of 63 | 2 of 777 | 2 of 777 |
+| Peak MLX allocation | 4.88 GiB (smoke) | 6.55 GiB | 10.13 GiB |
+
+- The jump from 0.758 to 0.829 is **the prompt** (v2 → v3, next section), not the hardware.
+- Prompt v3 has never been measured on the Mac, and llama.cpp has never been run there: the M4 Pro
+  column is the only Apple number we have, and it is two steps old.
+- With MLX-CUDA, BF16 was 2.1× faster than Q8 on shared states; with llama.cpp it is the other
+  way round.
+- The 1.7B on MLX-CUDA (Q8): 0.700 / 0.633, 40 / 44 ms, 20.57 decisions/s shared.
+- Own smoke fixtures on the M4 Pro with prompt v2: 18/20 at 8 bit, median 304 ms.
+
+Every report, including these: [`results/README.md`](results/README.md).
 
 ### How prompt v3 was chosen (dev split only)
 
 The fixtures were split by source group into dev and held-out halves, and prompt variants were
-compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*.txt`):
+compared **on dev only** (`scripts/prompt_lab.py`, MLX on the M4 Pro, logs in
+`results/prompt-lab/*.txt`):
 
 | Variant (dev: 72 base + 54 perturbed rows, 8 bit) | base | perturbed | flips on option reversal | own smoke |
 | --- | ---: | ---: | ---: | ---: |
-| current v2 (JSON state, JSON question) | 0.754 | 0.711 | 6 | 0.90 |
-| new short system prompt + plain-text multiple choice, state as text | 0.827 | 0.852 | 2 | 0.95 |
-| new short system prompt + plain-text multiple choice, state as JSON | 0.806 | 0.852 | 1 | 0.95 |
+| v2 (JSON state, JSON question) | 0.754 | 0.711 | 6 | 0.90 |
+| **v3**: short system prompt + plain-text multiple choice, state as text | 0.827 | 0.852 | 2 | 0.95 |
+| short system prompt + plain-text multiple choice, state as JSON | 0.806 | 0.852 | 1 | 0.95 |
 | …plus longer guidance (rules, abstention, "order is arbitrary") | 0.79–0.81 | 0.80–0.82 | 2–3 | 0.90–0.95 |
 
 A plain-text multiple-choice question and a short, decision-focused system prompt both help and
-reduce position bias; longer instructions do not. The shipped prompt is now the
-second row (`a-text-all`, `spark-decisions-v3`). The dev numbers chose a candidate, they do not
-prove it: the held-out half was then run once, on CUDA, and agrees (0.824 / 0.875, section
-above; the dev half reproduced there to the third decimal). Numbers measured on the Mac — the
-v2 SemIf table, the smoke and long-state results — are still prompt v2.
-Exact prompts, every variant and the per-family numbers: [docs/prompt-lab.md](docs/prompt-lab.md) (Italian).
+reduce position bias; longer instructions do not. The dev numbers chose a candidate, they do not
+prove it: the held-out half was then run once and agreed (0.824 / 0.875 with MLX-CUDA). The prompt
+did not change with the runtime: llama.cpp receives byte-identical prompts and token ids (same
+`prompt_sha256`, same `input_tokens`). Exact prompts, every variant and the per-family numbers:
+[docs/prompt-lab.md](docs/prompt-lab.md) (Italian).
 
 ---
 
@@ -500,12 +481,12 @@ Exact prompts, every variant and the per-family numbers: [docs/prompt-lab.md](do
 
 Out of the box the distributions are often extremely peaked (0.9999 where Jev's docs show 0.88),
 so thresholds designed for Jev's `confidence` do not transfer. Temperature scaling is built in,
-per primitive, and bound to a fingerprint of weights, tokenizer, precision, runtime and prompt
-version:
+per primitive, and bound to a fingerprint of weights, precision, runtime, compute backend and
+prompt version (so a fit made on MLX, or on CUDA, does not load on Vulkan):
 
 ```bash
 rizzo calibrate calibration.jsonl --fingerprint MODEL_HASH --output calibration-fit.json
-rizzo serve --bits 8 --calibration calibration-fit.json
+rizzo serve --calibration calibration-fit.json
 ```
 
 You need labelled data from your own domain, a separate calibration set, and a held-out test. The
@@ -514,21 +495,33 @@ evaluator reports accuracy, NLL, Brier, ECE and coverage.
 ## Known limitations
 
 - Probabilities are uncalibrated by default; `status: ok` does not mean *correct*.
-- The model under-uses abstention and out-of-range options (documented cases in
-  [results/README.md](results/README.md)).
+- The model under-uses abstention and out-of-range options, and answers confidently when the
+  evidence is missing (6 of 36 cases, against SemIf's 1).
 - Residual position bias; permutation debiasing is not implemented.
 - 26 options per question (Jev: 255; SemIf: 16). Beyond that you need two stages.
-- MLX runtime only (Metal, CUDA or CPU backend), one resident model, concurrent requests are serialized.
-- English is strongest; an Italian boolean flipped between BF16 and 8 bit in our smoke set.
+- **Tested on one machine.** Only Windows + NVIDIA (CUDA and Vulkan builds) has been run by us;
+  macOS/Metal, Linux, AMD, Intel and CPU-only are untested.
+- llama.cpp is driven through ctypes bindings tied to one pinned release (`b11081`): a build of
+  another commit can crash instead of failing cleanly.
+- The KV cache costs ~144 KiB per token on the 4B, four times what the MLX runtime needs:
+  llama.cpp's compact sliding-window cache cannot be shared between prefix branches, so every
+  position is kept for those layers too.
+- At Q8_0, scoring with the shared prefix flips a near-tie now and then (13 of 777 decisions
+  against scoring each question alone). Do not put a threshold near 0.5.
+- One resident model; concurrent requests are serialized.
+- English is strongest; an Italian boolean flipped between BF16 and 8 bit in our smoke set (MLX).
 - Localhost by default; no rate limiting; not hardened for public exposure.
 
 ## Development
 
 ```bash
-pytest -q                         # 41 tests, no weights needed
-ruff check src tests scripts
-rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/local-smoke.json
-python scripts/semif_compare.py --system rizzo --semif ../SemIf --bits 8 --output results/local-semif
+uv sync --locked --extra test
+uv run pytest -q                        # 65 tests, no weights needed
+RIZZO_REAL=1 uv run pytest -q -m integration   # 4 more, on the real runtime and GGUF weights
+uv run ruff check src tests scripts
+uv run rizzo evaluate benchmarks/smoke.jsonl --compare-modes --output results/local-smoke.json
+uv run python scripts/semif_compare.py --system rizzo --semif ../SemIf --output results/local-semif
+uv run python scripts/semif_report.py results/local-semif --semif ../SemIf   # held-out halves, paired differences
 ```
 
 Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (Italian).
@@ -542,15 +535,21 @@ Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (It
   that inspired this work, and the fixtures and evaluator used for the comparison. No SemIf source
   files are copied here.
 - [Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) (revision `0bcb3567…`),
-  [Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) (revision `14d6e83c…`) and the
-  official [Spark MLX runtime](https://github.com/XHToken/Spark-MLX-LLM) (commit `de2b4379…`),
-  both Apache-2.0. MLX `0.32.2`, MLX-LM `0.31.3`.
+  [Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) (revision `14d6e83c…`) and their
+  official GGUF conversions ([4B](https://huggingface.co/XHToken/Spark-X2.5-4B-GGUF) `9826e0be…`,
+  [1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B-GGUF) `1f7fa33b…`), all Apache-2.0.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT), release `b11081`: the runtime,
+  downloaded as official prebuilt binaries. Optional second runtime: the official
+  [Spark MLX runtime](https://github.com/XHToken/Spark-MLX-LLM) (commit `de2b4379…`, Apache-2.0)
+  with MLX `0.32.2` and MLX-LM `0.31.3`.
+- [BiG86](https://github.com/BiG86), whose pull request first ran Rizzo Flow on llama.cpp on an
+  AMD GPU and prompted the change of runtime. The code here is a separate implementation.
 
 ## License
 
 Released under the **[Apache License 2.0](LICENSE)** © 2026 Simone Rizzo — Rizzo AI Academy — the
 same license as the Spark-X2.5 models it runs. Third-party attributions are in [NOTICE](NOTICE);
-model weights and the Spark runtime are downloaded from their sources and keep their own licenses.
+model weights and the runtimes are downloaded from their sources and keep their own licenses.
 
 ---
 

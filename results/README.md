@@ -1,11 +1,16 @@
-# Risultati locali — 21 settembre 2026
+# Risultati locali — 22 settembre 2026
 
-Hardware: **Apple M4 Pro, 24 GiB** di memoria unificata. Modello originale Spark-X2.5-4B,
+> **Dal 22 settembre 2026 il runtime predefinito è llama.cpp.** I suoi numeri sono nella sezione
+> [Runtime llama.cpp](#runtime-llamacpp-22-settembre-2026-windows-10--rtx-5060-ti-16-gb-prompt-v3).
+> Tutto il resto di questo file è stato misurato con il runtime MLX (`--backend mlx`) e resta come
+> storico: le prime due sezioni su Apple M4 Pro, le altre dove indicato.
+
+Hardware (sezioni MLX iniziali): **Apple M4 Pro, 24 GiB** di memoria unificata. Modello originale Spark-X2.5-4B,
 revisione e hash dei file registrati in ogni risposta. Runtime e dipendenze sono fissati.
 Tutti i tempi sotto escludono caricamento del modello e warmup; includono compilazione
 della richiesta e inferenza GPU sincronizzata. Non descrivono un servizio remoto.
 
-## Esecuzioni correnti
+## Esecuzioni MLX su M4 Pro (prompt v2)
 
 | Misura | BF16 | 8 bit |
 | --- | ---: | ---: |
@@ -89,7 +94,96 @@ cd results
 shasum -a 256 -c SHA256SUMS
 ```
 
-## Confronto con SemIf (in corso)
+## Runtime llama.cpp (22 settembre 2026, Windows 10 + RTX 5060 Ti 16 GB, prompt v3)
+
+Dal 22 settembre 2026 il runtime predefinito è **llama.cpp** (release `b11081`, pacchetti
+precompilati ufficiali, binding ctypes) con i GGUF pubblicati dagli autori del modello; MLX resta
+disponibile con `--backend mlx` e tutte le sezioni successive di questo file sono state misurate
+con MLX. Stesse fixture di SemIf, stesso `evaluate.py`, stesso perimetro di tempo delle sezioni
+sotto. Ogni cartella contiene `report.json`, le predizioni riga per riga e `analysis.json`
+(metà held-out e differenze appaiate, `scripts/semif_report.py`; sul vecchio run MLX lo script
+ridà esattamente i numeri già pubblicati: 0.824 / 0.875 e +0.010 [−0.051, +0.076]).
+
+Report: [Q8_0 CUDA](semif-compare/rizzo-q8_0-v3-llama-cuda/report.json) (tutto, 777 decisioni
+anche direct), [BF16 CUDA](semif-compare/rizzo-bf16-v3-llama-cuda/report.json) (tutto),
+[Q4_K_M CUDA](semif-compare/rizzo-q4_k_m-v3-llama-cuda/report.json) (direct su 3 stati),
+[Q8_0 Vulkan](semif-compare/rizzo-q8_0-v3-llama-vulkan/report.json) (stessa scheda NVIDIA, build
+Vulkan; direct su 3 stati), [1.7B Q8_0 CUDA](semif-compare/rizzo-1.7b-q8_0-v3-llama-cuda/report.json)
+(tutto). Fixture proprie: [llama-q8_0-cuda-validation](llama-q8_0-cuda-validation/summary.json).
+
+| Misura (4B) | Q8_0 CUDA | BF16 CUDA | Q4_K_M CUDA | Q8_0 Vulkan | prima: MLX-CUDA Q8 | SemIf Q8 (pubbl.) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| authored144, balanced accuracy media per famiglia | 0.812 | 0.829 | 0.769 | 0.807 | 0.829 | 0.819 |
+| — solo metà held-out (72 righe) | 0.793 | 0.824 | 0.730 | 0.781 | 0.824 | 0.811 |
+| perturbations108 | 0.848 | 0.859 | 0.835 | 0.854 | 0.865 | 0.766 |
+| — solo metà held-out (54 righe) | 0.861 | 0.875 | 0.801 | 0.861 | 0.875 | 0.824 |
+| 36 originali | 0.852 | 0.870 | 0.800 | 0.852 | 0.870 | 0.723 |
+| option_reversal: accuratezza / flip | 0.889 / 5 | 0.889 / 4 | 0.907 / 6 | 0.889 / 4 | 0.889 / 4 | 0.813 / 9 |
+| criterion_wrapper: accuratezza / flip | 0.815 / 4 | 0.815 / 3 | 0.759 / 3 | 0.833 / 3 | 0.833 / 2 | 0.682 / 7 |
+| irrelevant_context: accuratezza / flip | 0.841 / 5 | 0.874 / 3 | 0.837 / 2 | 0.841 / 5 | 0.874 / 3 | 0.802 / 4 |
+| evidenza mancante (36): accuratezza | 0.750 | 0.778 | 0.722 | 0.750 | 0.778 | 0.861 |
+| — scelte ≠ `insufficient` con p ≥ 0.8 | **6** | **6** | 5 | **6** | **6** | 1 |
+| `rule_application` perturbata (NLL) | 0.611 (1.69) | 0.611 (1.69) | 0.611 (1.85) | 0.630 (1.68) | 0.630 (1.63) | — |
+| Latenza stato corto p50 / p95 | 49 / 52 ms | 60 / 63 ms | 51 / 54 ms | 90 / 94 ms | 87 / 94 ms | non confr. |
+| shape777 shared | **20.99 dec/s**, 1.00 s/stato, 37 s | 17.75, 1.19 s/stato, 44 s | 19.98, 1.05 s/stato | 14.84, 1.35 s/stato | 7.52, 1.76 s/stato, 103 s | non confr. |
+| shape777 direct | 2.60 dec/s, 8.1 s/stato, 298 s | 1.97, 10.7 s/stato, 394 s | 2.39 (3 stati) | 1.74 (3 stati) | 1.65, 12.7 s/stato, 472 s | non confr. |
+| shared / direct | 8.1× | 9.0× | 8.4× | 8.5× | 4.6× | — |
+| Cambi argmax shared/direct | 13 su 777 (max Δp 0.163) | 1 su 777 (0.064) | 2 su 63 (0.204) | 0 su 63 (0.028) | 2 su 777 (0.144) | — |
+| Picco memoria GPU | 5.6 GiB | 9.3 GiB | 3.9 GiB | 6.0 GiB | 6.55 GiB (allocatore MLX) | — |
+
+Il picco di llama.cpp è il calo della memoria libera della GPU rispetto a prima del caricamento
+(`ggml_backend_dev_memory`): comprende pesi, cache KV prenotata (10.240 celle, ~1.4 GiB), buffer di
+calcolo e qualunque altro processo abbia usato la scheda nel frattempo. Non è la stessa grandezza
+del picco dell'allocatore MLX.
+
+Fixture proprie (Q8_0 CUDA): smoke 19/20 (0.95, NLL 0.459, Brier 0.078, ECE 0.039; con MLX-CUDA
+Q8 0.95, NLL 0.428), mediana 66 ms su 17 richieste, p95 169 ms, 16.8 decisioni/s; perturbazioni
+9/9, mediana 52 ms; stato lungo con 4 domande 0.47 s shared contro 1.30 s direct (2.8×), 0 cambi
+di argmax, max Δp 0.012. Server uvicorn reale: `/v1/systemone`, `/v1/decisions`, `/v1/models`, 422
+sugli input invalidi, playground e Snake; tre raffiche di 6 richieste concorrenti con pause di 12 s
+(lo schema che faceva abortire MLX-CUDA prima del thread unico in `Engine`) tutte 200.
+
+Come leggerli:
+
+- **Cambiare runtime non ha cambiato la qualità oltre il rumore, e non l'ha migliorata.** Rispetto
+  al run MLX con lo stesso prompt, llama.cpp Q8_0 sceglie un'opzione diversa in 5 righe su 252:
+  differenza appaiata −0.017 su entrambi i set, intervallo 95% [−0.043, 0.000]. In BF16 i due
+  runtime differiscono in 4 righe (+0.009 [0.000, +0.028]). Il Q8_0 di llama.cpp e il Q8 affine di
+  MLX sono quantizzazioni diverse degli stessi pesi. Una riga vale 0.7–1.4 punti.
+- **Rispetto a SemIf resta un pareggio**: Q8_0 −0.007 [−0.076, +0.065] su authored144, BF16 +0.015
+  [−0.041, +0.079]. Nessuna superiorità dimostrata. La metà held-out era stata guardata una sola
+  volta per la scelta del prompt; qui è riportata di nuovo solo perché è cambiato il runtime (non
+  è stata usata per scegliere nulla: il passaggio a llama.cpp è stato deciso per la copertura
+  hardware, prima di vedere questi numeri).
+- **Più veloce sulla stessa GPU**: 1.8× sulla decisione singola e 2.8× sugli stati condivisi a 8
+  bit. Due motivi: i kernel CUDA quantizzati di llama.cpp e i batch piatti senza padding. Con
+  llama.cpp Q8_0 è più veloce di BF16, il contrario di quanto misurato con MLX-CUDA.
+- **La build Vulkan dà le stesse risposte della build CUDA** su questa scheda (3 righe diverse su
+  252, −0.005 [−0.017, 0.000]) con latenza 1.4–1.8×. È la build usata dalle GPU AMD e Intel, ma
+  **non è stata provata su hardware AMD o Intel**. La prima richiesta in assoluto con Vulkan ha
+  impiegato ~16 s (compilazione delle pipeline), poi tempi normali.
+- **A Q8_0 il riuso del prefisso sposta di più i quasi-pareggi**: 13 decisioni su 777 cambiano
+  argmax tra shared e direct (tutte con margine < 0.24 in direct; mediana |Δp| 0.0002, p95 0.05),
+  contro 1 su 777 in BF16 e 2 con MLX. Non dipende dal microbatch (provato con 1, 4 e 16 su 8
+  stati: 3, 4 e 3 cambi): viene dal calcolare il prefisso in una chiamata separata.
+- **Q4_K_M costa accuratezza**: −0.043 [−0.079, −0.008] su authored144 rispetto a Q8_0, per 1.7 GiB
+  in meno e nessun guadagno di velocità.
+- **Debolezze invariate**: 6 risposte sicure sbagliate su 36 quando manca l'evidenza (SemIf: 1) e
+  `rule_application` sotto perturbazione.
+- **1.7B Q8_0**: authored144 0.678, perturbations108 0.640 (held-out 0.690 / 0.514), 36 originali
+  0.628, option_reversal 0.596 con 18 flip su 36, `rule_application` perturbata 0.315 (NLL 3.51),
+  sceglie `insufficient` 52 volte su 144 contro 36 attese. 25 / 27 ms, shared 31.59 dec/s, direct
+  5.51, 31 cambi argmax su 777 (max Δp 0.191), 2.3 GiB. Differenza appaiata dal 4B −0.134
+  [−0.212, −0.051]; rispetto allo stesso modello su MLX 10 righe diverse su 252 (−0.023
+  [−0.060, +0.012]).
+- **Cache KV più costosa che con MLX**: llama.cpp tiene tutte le posizioni anche per i 27 layer a
+  finestra scorrevole (`swa_full`), perché con la cache a finestra compatta una cella condivisa
+  fra più sequenze non viene mai riciclata e, dopo un prefisso lungo, i rami non trovano posto
+  (`llama_decode` restituisce 1: verificato). ~144 KiB per token contro ~36 KiB.
+- **Non provato**: macOS/Metal, Linux, GPU AMD e Intel, ROCm, SYCL, sola CPU; 1.7B in BF16 e
+  Q4_K_M; WANLI, Every, sottoinsieme TypeSafe; SemIf sulla stessa GPU.
+
+## Confronto con SemIf — runtime MLX (storico)
 
 `scripts/semif_compare.py` esegue le fixture di SemIf (`authored144`, `perturbations108`,
 `shape777`, commit `ca3ba65`) con le metriche di SemIf (`benchmarks/evaluate.py`) e lo stesso
