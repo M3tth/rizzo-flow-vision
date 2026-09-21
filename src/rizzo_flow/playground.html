@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -114,18 +114,22 @@ summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
 </head>
 <body>
 <header>
-  <img class="mascot" id="mascot" src="/playground/logo.png" alt="Rizzo Flow, il riccio" width="40" height="40">
+  <img class="mascot" id="mascot" src="/playground/logo.png" alt="Rizzo Flow" data-i18n-attr="title:mascotTitle" width="40" height="40">
   <h1>Rizzo Flow <span>playground</span></h1>
-  <span id="health" class="badge">verifica…</span>
+  <span id="health" class="badge"></span>
   <span class="spacer"></span>
-  <select id="preset" style="width:auto;max-width:170px" aria-label="Esempi"></select>
-  <button id="run" class="primary" title="Cmd/Ctrl + Invio">Esegui</button>
+  <div class="tabs" role="group" aria-label="Language">
+    <button id="lang-it" lang="it">IT</button>
+    <button id="lang-en" lang="en">EN</button>
+  </div>
+  <select id="preset" style="width:auto;max-width:170px" data-i18n-attr="aria-label:examples"></select>
+  <button id="run" class="primary" data-i18n="run" data-i18n-attr="title:runTitle"></button>
 </header>
 
 <main>
-  <section class="panel" aria-label="Richiesta">
+  <section class="panel" data-i18n-attr="aria-label:request">
     <div class="row between">
-      <h2 style="margin:0">Richiesta</h2>
+      <h2 style="margin:0" data-i18n="request"></h2>
       <div class="tabs" role="tablist">
         <button id="tab-builder" class="on">Builder</button>
         <button id="tab-json">JSON</button>
@@ -133,10 +137,10 @@ summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
     </div>
 
     <div id="builder">
-      <label class="field" for="state">State — testo libero oppure JSON (oggetto/array), prefillato una sola volta</label>
+      <label class="field" for="state" data-i18n="stateLabel"></label>
       <textarea id="state" class="code" rows="7" spellcheck="false"></textarea>
       <div class="row between" style="margin-top:14px">
-        <h2 style="margin:0">Domande <span id="qcount" class="pill"></span></h2>
+        <h2 style="margin:0"><span data-i18n="questions"></span> <span id="qcount" class="pill"></span></h2>
         <div class="row">
           <button data-add="noul">+ Noul</button>
           <button data-add="choice">+ Choice</button>
@@ -144,49 +148,44 @@ summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
         </div>
       </div>
       <div id="questions"></div>
-      <p class="hint">Tutte le domande di una richiesta condividono la KV cache dello state e vengono valutate in microbatch.
-        Gli ID non vengono inviati al modello. <code>instructions</code> e criteri accettano anche JSON.</p>
+      <p class="hint" data-i18n-html="builderHint"></p>
     </div>
 
     <div id="jsonmode" hidden>
       <label class="field" for="endpoint">Endpoint</label>
       <select id="endpoint">
-        <option value="/v1/systemone">POST /v1/systemone — formato compatibile TypeSafe (noul, choice, score)</option>
-        <option value="/v1/decisions">POST /v1/decisions — formato nativo (boolean, choice, score, numeric, policy)</option>
+        <option value="/v1/systemone" data-i18n="endpointCompat"></option>
+        <option value="/v1/decisions" data-i18n="endpointNative"></option>
       </select>
-      <label class="field" for="raw">Corpo della richiesta</label>
+      <label class="field" for="raw" data-i18n="requestBody"></label>
       <textarea id="raw" class="code" rows="26" spellcheck="false"></textarea>
     </div>
 
     <details>
-      <summary>Impostazioni</summary>
+      <summary data-i18n="settings"></summary>
       <div class="grid2">
         <div><label class="field" for="model">model</label><input id="model" type="text" class="code" value="rizzo-latest"></div>
-        <div><label class="field" for="apikey">API key (solo se il server usa RIZZO_API_KEY)</label><input id="apikey" type="password" autocomplete="off"></div>
+        <div><label class="field" for="apikey" data-i18n="apiKeyLabel"></label><input id="apikey" type="password" autocomplete="off"></div>
       </div>
     </details>
     <div id="inputError" class="error" hidden></div>
   </section>
 
-  <section class="panel" aria-label="Risposta">
+  <section class="panel" data-i18n-attr="aria-label:response">
     <div class="row between" style="margin-bottom:10px">
-      <h2 style="margin:0">Risposta</h2>
+      <h2 style="margin:0" data-i18n="response"></h2>
       <div class="tabs" role="tablist">
-        <button id="out-visual" class="on">Visuale</button>
+        <button id="out-visual" class="on" data-i18n="visual"></button>
         <button id="out-json">JSON</button>
         <button id="out-curl">cURL</button>
       </div>
     </div>
-    <div id="visual"><div class="hello">
-      <img src="/playground/logo.png" alt="" width="150" height="150">
-      <div class="say">Ciao! Dammi uno state e qualche domanda.</div>
-      <div>Premi <b>Esegui</b> o Cmd/Ctrl + Invio: decido senza generare nemmeno un token.</div>
-    </div></div>
+    <div id="visual"></div>
     <pre id="rawout" hidden></pre>
     <pre id="curl" hidden></pre>
   </section>
 </main>
-<footer>Rizzo Flow · un progetto <a href="https://www.rizzoaiacademy.com" target="_blank" rel="noopener">Rizzo AI Academy</a></footer>
+<footer>Rizzo Flow · <span data-i18n="footer"></span> <a href="https://www.rizzoaiacademy.com" target="_blank" rel="noopener">Rizzo AI Academy</a></footer>
 
 <script>
 "use strict";
@@ -210,8 +209,68 @@ function h(tag, props = {}, ...kids) {
   return el;
 }
 
+// Translations are static strings authored here; user data is never passed through innerHTML.
+const I18N = {
+  it: {
+    checking: "verifica…", offline: "offline", model: "modello", examples: "Esempi…", run: "Esegui", running: "In esecuzione…",
+    runTitle: "Cmd/Ctrl + Invio", mascotTitle: "Clicca il riccio per eseguire",
+    request: "Richiesta", response: "Risposta", questions: "Domande", settings: "Impostazioni", visual: "Visuale",
+    stateLabel: "State — testo libero oppure JSON (oggetto/array), prefillato una sola volta",
+    builderHint: "Tutte le domande di una richiesta condividono la KV cache dello state e vengono valutate in microbatch. Gli ID non vengono inviati al modello. <code>instructions</code> e criteri accettano anche JSON.",
+    endpointCompat: "POST /v1/systemone — formato compatibile TypeSafe (noul, choice, score)",
+    endpointNative: "POST /v1/decisions — formato nativo (boolean, choice, score, numeric, policy)",
+    requestBody: "Corpo della richiesta", apiKeyLabel: "API key (solo se il server usa RIZZO_API_KEY)",
+    footer: "un progetto",
+    helloSay: "Ciao! Dammi uno state e qualche domanda.",
+    helloHint: "Premi <b>Esegui</b> o Cmd/Ctrl + Invio: decido senza generare nemmeno un token.",
+    optional: "opzionale", choiceCriteria: "criteria — opzione → descrizione (vuota = null)",
+    scoreCriteria: "criteria — livelli ordinati dal più basso al più alto (max 10)",
+    option: "opzione", description: "descrizione", level: "livello", addOption: "+ opzione", addLevel: "+ livello",
+    remove: "Rimuovi", deleteQuestion: "Elimina domanda", questionId: "id_domanda", questionIdLabel: "ID domanda", type: "Tipo",
+    errNeedId: "Ogni domanda deve avere un ID.", errDupId: "ID duplicato: {id}",
+    errDupOption: '{id}: opzione duplicata "{key}"', errType: '{id}: tipo "{type}" non gestito dal builder',
+    errServer: "Server non raggiungibile: {message}",
+    yes: "sì", no: "no", outOf: "su {n}",
+    mRoundtrip: "round-trip browser", mInference: "inferenza GPU", mPrefill: "prefill state (1 volta)",
+    mQuestion: "domanda", mQuestions: "domande in parallelo", mBatches: "microbatch", mInput: "token input",
+    mCached: "token state in cache", mGenerated: "token generati",
+    note: "Modello: {model}. Probabilità non calibrate: confidence descrive la forma della distribuzione, non la probabilità di avere ragione.",
+    presetTicket: "Ticket di supporto", presetTicketIt: "Ticket in italiano (state JSON)", presetCv: "Checklist CV — 8 noul in parallelo",
+  },
+  en: {
+    checking: "checking…", offline: "offline", model: "model", examples: "Examples…", run: "Run", running: "Running…",
+    runTitle: "Cmd/Ctrl + Enter", mascotTitle: "Click the hedgehog to run",
+    request: "Request", response: "Response", questions: "Questions", settings: "Settings", visual: "Visual",
+    stateLabel: "State — free text or JSON (object/array), prefilled only once",
+    builderHint: "All questions in a request share the state's KV cache and are evaluated in micro-batches. IDs are never sent to the model. <code>instructions</code> and criteria also accept JSON.",
+    endpointCompat: "POST /v1/systemone — TypeSafe-compatible format (noul, choice, score)",
+    endpointNative: "POST /v1/decisions — native format (boolean, choice, score, numeric, policy)",
+    requestBody: "Request body", apiKeyLabel: "API key (only if the server sets RIZZO_API_KEY)",
+    footer: "a project by",
+    helloSay: "Hi! Give me a state and a few questions.",
+    helloHint: "Press <b>Run</b> or Cmd/Ctrl + Enter: I decide without generating a single token.",
+    optional: "optional", choiceCriteria: "criteria — option → description (empty = null)",
+    scoreCriteria: "criteria — levels ordered from lowest to highest (max 10)",
+    option: "option", description: "description", level: "level", addOption: "+ option", addLevel: "+ level",
+    remove: "Remove", deleteQuestion: "Delete question", questionId: "question_id", questionIdLabel: "Question ID", type: "Type",
+    errNeedId: "Every question needs an ID.", errDupId: "Duplicate ID: {id}",
+    errDupOption: '{id}: duplicate option "{key}"', errType: '{id}: type "{type}" is not handled by the builder',
+    errServer: "Server unreachable: {message}",
+    yes: "yes", no: "no", outOf: "of {n}",
+    mRoundtrip: "browser round-trip", mInference: "GPU inference", mPrefill: "state prefill (once)",
+    mQuestion: "question", mQuestions: "questions in parallel", mBatches: "micro-batches", mInput: "input tokens",
+    mCached: "state tokens in cache", mGenerated: "generated tokens",
+    note: "Model: {model}. Probabilities are uncalibrated: confidence describes the shape of the distribution, not the probability of being right.",
+    presetTicket: "Support ticket", presetTicketIt: "Italian ticket (JSON state)", presetCv: "CV checklist — 8 nouls in parallel",
+  },
+};
+let lang = "en";
+try { lang = localStorage.getItem("rizzo-lang") || ((navigator.language || "").toLowerCase().startsWith("it") ? "it" : "en"); } catch { /* optional */ }
+if (!I18N[lang]) lang = "en";
+const t = (key, vars = {}) => (I18N[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
+
 const PRESETS = {
-  "Ticket di supporto": {
+  presetTicket: {
     state: "Help! My payouts have been failing for 3 days. I already wrote twice and nobody answered. I need this fixed before Friday payroll.",
     questions: [
       { id: "is_urgent", type: "noul", instructions: "Does this convey urgency?", t: "Explicitly time-sensitive", f: "No urgency expressed" },
@@ -221,7 +280,7 @@ const PRESETS = {
       { id: "frustration", type: "score", instructions: "How frustrated is the customer?", levels: ["Calm", "Frustrated", "Very angry"] },
     ],
   },
-  "Ticket in italiano (state JSON)": {
+  presetTicketIt: {
     state: JSON.stringify({
       message: "Non riesco ad accedere al mio account dopo aver cambiato la password. Devo consegnare un lavoro oggi. Il pagamento dell'abbonamento è regolare.",
       account: { subscription_active: true, password_reset_completed: true },
@@ -234,7 +293,7 @@ const PRESETS = {
         "Nessuna scadenza e nessuna attività bloccata.", "Attività rallentata, ma esiste una soluzione temporanea.", "Attività bloccata con una scadenza entro oggi."] },
     ],
   },
-  "Checklist CV — 8 noul in parallelo": {
+  presetCv: {
     state: "Senior backend engineer, 8 years. Python daily (Django, FastAPI), PostgreSQL, Kafka. Led a team of 5 at a fintech. Migrated a monolith to services on AWS. Some Go. No mobile work. Based in Milan, open to remote. Fluent English and Italian.",
     questions: [
       ["python", "Does the candidate have strong Python experience?"], ["lead", "Has the candidate managed or led other engineers?"],
@@ -267,8 +326,8 @@ function buildBody() {
   const out = {};
   for (const q of questions) {
     const id = q.id.trim();
-    if (!id) throw new Error("Ogni domanda deve avere un ID.");
-    if (id in out) throw new Error(`ID duplicato: ${id}`);
+    if (!id) throw new Error(t("errNeedId"));
+    if (id in out) throw new Error(t("errDupId", { id }));
     const item = { type: q.type, instructions: structured(q.instructions) };
     if (q.type === "noul") {
       const criteria = {};
@@ -279,7 +338,7 @@ function buildBody() {
       item.criteria = {};
       for (const [key, desc] of q.options) {
         if (!key.trim()) continue;
-        if (key.trim() in item.criteria) throw new Error(`${id}: opzione duplicata "${key.trim()}"`);
+        if (key.trim() in item.criteria) throw new Error(t("errDupOption", { id, key: key.trim() }));
         item.criteria[key.trim()] = desc.trim() ? structured(desc) : null;
       }
     } else {
@@ -294,7 +353,7 @@ function loadBody(body) {
   $("#state").value = typeof body.state === "string" ? body.state : JSON.stringify(body.state, null, 2);
   if (body.model) $("#model").value = body.model;
   questions = Object.entries(body.questions || {}).map(([id, q], n) => {
-    if (!["noul", "choice", "score"].includes(q.type)) throw new Error(`${id}: tipo "${q.type}" non gestito dal builder`);
+    if (!["noul", "choice", "score"].includes(q.type)) throw new Error(t("errType", { id, type: q.type }));
     const item = { ...blank(q.type, n), id, instructions: asText(q.instructions) };
     if (q.type === "noul") { item.t = asText(q.criteria?.true); item.f = asText(q.criteria?.false); }
     if (q.type === "choice") item.options = Object.entries(q.criteria || {}).map(([k, v]) => [k, asText(v)]);
@@ -314,29 +373,29 @@ function renderQuestions() {
     const criteria = [];
     if (q.type === "noul") {
       criteria.push(h("div", { class: "grid2" },
-        h("div", {}, h("label", { class: "field" }, "criteria.true (opzionale)"), h("input", { type: "text", ...bind(q, "t") })),
-        h("div", {}, h("label", { class: "field" }, "criteria.false (opzionale)"), h("input", { type: "text", ...bind(q, "f") }))));
+        h("div", {}, h("label", { class: "field" }, `criteria.true (${t("optional")})`), h("input", { type: "text", ...bind(q, "t") })),
+        h("div", {}, h("label", { class: "field" }, `criteria.false (${t("optional")})`), h("input", { type: "text", ...bind(q, "f") }))));
     } else if (q.type === "choice") {
-      criteria.push(h("label", { class: "field" }, "criteria — opzione → descrizione (vuota = null)"));
+      criteria.push(h("label", { class: "field" }, t("choiceCriteria")));
       q.options.forEach((pair, j) => criteria.push(h("div", { class: "crit" },
-        h("input", { type: "text", class: "code", placeholder: "opzione", ...bind(pair, 0) }),
-        h("input", { type: "text", placeholder: "descrizione", ...bind(pair, 1) }),
-        h("button", { class: "ghost", title: "Rimuovi", onclick: () => { q.options.splice(j, 1); renderQuestions(); } }, "✕"))));
-      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.options.push(["", ""]); renderQuestions(); } }, "+ opzione"));
+        h("input", { type: "text", class: "code", placeholder: t("option"), ...bind(pair, 0) }),
+        h("input", { type: "text", placeholder: t("description"), ...bind(pair, 1) }),
+        h("button", { class: "ghost", title: t("remove"), onclick: () => { q.options.splice(j, 1); renderQuestions(); } }, "✕"))));
+      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.options.push(["", ""]); renderQuestions(); } }, t("addOption")));
     } else {
-      criteria.push(h("label", { class: "field" }, "criteria — livelli ordinati dal più basso al più alto (max 10)"));
+      criteria.push(h("label", { class: "field" }, t("scoreCriteria")));
       q.levels.forEach((_, j) => criteria.push(h("div", { class: "crit level" },
         h("span", { class: "idx" }, j),
-        h("input", { type: "text", placeholder: `livello ${j}`, ...bind(q.levels, j) }),
-        h("button", { class: "ghost", title: "Rimuovi", onclick: () => { q.levels.splice(j, 1); renderQuestions(); } }, "✕"))));
-      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.levels.push(""); renderQuestions(); } }, "+ livello"));
+        h("input", { type: "text", placeholder: `${t("level")} ${j}`, ...bind(q.levels, j) }),
+        h("button", { class: "ghost", title: t("remove"), onclick: () => { q.levels.splice(j, 1); renderQuestions(); } }, "✕"))));
+      criteria.push(h("button", { style: "margin-top:6px", onclick: () => { q.levels.push(""); renderQuestions(); } }, t("addLevel")));
     }
     return h("div", { class: "q" },
       h("div", { class: "head" },
-        h("input", { type: "text", class: "code", placeholder: "id_domanda", "aria-label": "ID domanda", ...bind(q, "id") }),
-        h("select", { "aria-label": "Tipo", value: q.type, onchange: (e) => { q.type = e.target.value; renderQuestions(); } },
+        h("input", { type: "text", class: "code", placeholder: t("questionId"), "aria-label": t("questionIdLabel"), ...bind(q, "id") }),
+        h("select", { "aria-label": t("type"), value: q.type, onchange: (e) => { q.type = e.target.value; renderQuestions(); } },
           ["noul", "choice", "score"].map((t) => h("option", { value: t }, t))),
-        h("button", { class: "ghost", title: "Elimina domanda", onclick: () => { questions.splice(i, 1); renderQuestions(); } }, "✕")),
+        h("button", { class: "ghost", title: t("deleteQuestion"), onclick: () => { questions.splice(i, 1); renderQuestions(); } }, "✕")),
       h("label", { class: "field" }, "instructions"),
       h("textarea", { rows: 2, ...bind(q, "instructions") }),
       criteria);
@@ -399,11 +458,11 @@ function answerCard(id, a, asked) {
   const body = [];
   let headline;
   if (a.type === "noul") {
-    headline = h("span", { class: "big" }, fix(a.noul), h("small", {}, a.noul >= 0.5 ? "sì" : "no"));
+    headline = h("span", { class: "big" }, fix(a.noul), h("small", {}, a.noul >= 0.5 ? t("yes") : t("no")));
     body.push(...bars({ yes: a.noul, no: 1 - a.noul }));
   } else if (a.type === "score" && a.legend && "confidence" in a) {
     const last = Object.keys(a.legend).length - 1;
-    headline = h("span", { class: "big" }, fix(a.score, 2), h("small", {}, `su ${last}`));
+    headline = h("span", { class: "big" }, fix(a.score, 2), h("small", {}, t("outOf", { n: last })));
     body.push(h("div", { class: "scale" },
       Object.keys(a.legend).map((k) => h("span", { class: "tick", style: `left:${(k / last) * 100}%` }, h("em", {}, k))),
       h("span", { class: "pin", style: `left:${(a.score / last) * 100}%` })));
@@ -430,23 +489,25 @@ function answerCard(id, a, asked) {
 function metric(value, label) { return h("div", { class: "metric" }, h("b", {}, value), h("span", {}, label)); }
 const ms = (seconds) => (seconds == null ? "—" : `${Math.round(seconds * 1000)} ms`);
 
+let lastResponse = null;
+
 function renderResponse(json, body, roundtrip) {
+  lastResponse = [json, body, roundtrip];
   const timing = json.x_rizzo?.timing || json.timing || {};
   const count = Object.keys(json.answers).length;
   const tokens = json.usage?.input_tokens ?? timing.logical_input_tokens;
   const metrics = h("div", { class: "metrics" },
-    metric(`${Math.round(roundtrip)} ms`, "round-trip browser"),
-    metric(ms(timing.inference_seconds), "inferenza GPU"),
-    metric(ms(timing.prefill_seconds), "prefill state (1 volta)"),
-    metric(count, count === 1 ? "domanda" : "domande in parallelo"),
-    metric(timing.batches ?? "—", "microbatch"),
-    metric(tokens ?? "—", "token input"),
-    metric(timing.shared_prefix_tokens ?? "—", "token state in cache"),
-    metric(json.usage?.output_tokens ?? timing.generated_tokens ?? 0, "token generati"));
+    metric(`${Math.round(roundtrip)} ms`, t("mRoundtrip")),
+    metric(ms(timing.inference_seconds), t("mInference")),
+    metric(ms(timing.prefill_seconds), t("mPrefill")),
+    metric(count, count === 1 ? t("mQuestion") : t("mQuestions")),
+    metric(timing.batches ?? "—", t("mBatches")),
+    metric(tokens ?? "—", t("mInput")),
+    metric(timing.shared_prefix_tokens ?? "—", t("mCached")),
+    metric(json.usage?.output_tokens ?? timing.generated_tokens ?? 0, t("mGenerated")));
   const model = typeof json.model === "string" ? json.model : json.model?.source;
   const cards = Object.entries(json.answers).map(([id, a]) => answerCard(id, a, asText(body.questions?.[id]?.instructions)));
-  const note = h("p", { class: "hint" }, `Modello: ${model}. Probabilità non calibrate: `,
-    "confidence descrive la forma della distribuzione, non la probabilità di avere ragione.");
+  const note = h("p", { class: "hint" }, t("note", { model }));
   $("#visual").replaceChildren(metrics, ...cards, note);
 }
 
@@ -466,7 +527,7 @@ async function run() {
   lastBody = body; lastEndpoint = endpoint;
   $("#curl").textContent = curlFor(endpoint, body);
   const button = $("#run");
-  button.disabled = true; button.textContent = "In esecuzione…";
+  button.disabled = true; button.textContent = t("running");
   document.body.classList.add("busy");
   const headers = { "Content-Type": "application/json" };
   if ($("#apikey").value) headers.Authorization = `Bearer ${$("#apikey").value}`;
@@ -479,12 +540,14 @@ async function run() {
     $("#rawout").textContent = typeof json === "string" ? json : JSON.stringify(json, null, 2);
     if (!response.ok) {
       const detail = typeof json === "string" ? json : JSON.stringify(json.detail ?? json, null, 2);
+      lastResponse = null;
       $("#visual").replaceChildren(h("div", { class: "error" }, `HTTP ${response.status}\n${detail}`));
     } else renderResponse(json, body, elapsed);
   } catch (error) {
-    $("#visual").replaceChildren(h("div", { class: "error" }, `Server non raggiungibile: ${error.message}`));
+    lastResponse = null;
+    $("#visual").replaceChildren(h("div", { class: "error" }, t("errServer", { message: error.message })));
   } finally {
-    button.disabled = false; button.textContent = "Esegui";
+    button.disabled = false; button.textContent = t("run");
     document.body.classList.remove("busy");
   }
 }
@@ -499,7 +562,39 @@ function applyPreset(name) {
   if (jsonMode) $("#raw").value = JSON.stringify(buildBody(), null, 2);
 }
 
-$("#preset").append(h("option", { value: "" }, "Esempi…"), ...Object.keys(PRESETS).map((n) => h("option", { value: n }, n)));
+let health = null;  // null = checking, undefined = offline, object = model metadata
+
+function hello() {
+  const hint = h("div");
+  hint.innerHTML = t("helloHint");
+  return h("div", { class: "hello" }, h("img", { src: "/playground/logo.png", alt: "", width: 150, height: 150 }),
+    h("div", { class: "say" }, t("helloSay")), hint);
+}
+
+function renderHealth() {
+  const badge = $("#health");
+  if (health === null) { badge.className = "badge"; badge.textContent = t("checking"); return; }
+  badge.className = health ? "badge ok" : "badge bad";
+  badge.textContent = health ? [health.source || t("model"), health.precision, health.device].filter(Boolean).join(" · ") : t("offline");
+}
+
+function applyLanguage(next) {
+  lang = next;
+  try { localStorage.setItem("rizzo-lang", lang); } catch { /* optional */ }
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll("[data-i18n-attr]").forEach((el) => {
+    for (const pair of el.dataset.i18nAttr.split(",")) { const [attr, key] = pair.split(":"); el.setAttribute(attr, t(key)); }
+  });
+  for (const code of Object.keys(I18N)) $(`#lang-${code}`).classList.toggle("on", code === lang);
+  $("#preset").replaceChildren(h("option", { value: "" }, t("examples")), ...Object.keys(PRESETS).map((n) => h("option", { value: n }, t(n))));
+  renderHealth();
+  renderQuestions();
+  if (lastResponse) renderResponse(...lastResponse);
+  else if (!$("#visual .error")) $("#visual").replaceChildren(hello());
+}
+for (const code of Object.keys(I18N)) $(`#lang-${code}`).onclick = () => applyLanguage(code);
 $("#preset").onchange = (e) => { if (e.target.value) applyPreset(e.target.value); e.target.value = ""; };
 document.querySelectorAll("[data-add]").forEach((b) => (b.onclick = () => { questions.push(blank(b.dataset.add, questions.length + 1)); renderQuestions(); }));
 $("#state").oninput = save;
@@ -513,12 +608,10 @@ try {
   if (saved?.questions?.length) { $("#state").value = saved.state || ""; questions = saved.questions; renderQuestions(); restored = true; }
 } catch { /* optional */ }
 if (!restored) applyPreset(Object.keys(PRESETS)[0]);
+applyLanguage(lang);
 
-fetch("/health").then((r) => r.json()).then((info) => {
-  const m = info.model || {};
-  $("#health").className = "badge ok";
-  $("#health").textContent = [m.source || "modello", m.precision, m.device].filter(Boolean).join(" · ");
-}).catch(() => { $("#health").className = "badge bad"; $("#health").textContent = "offline"; });
+fetch("/health").then((r) => r.json()).then((info) => { health = info.model || {}; })
+  .catch(() => { health = undefined; }).finally(renderHealth);
 </script>
 </body>
 </html>

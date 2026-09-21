@@ -97,6 +97,9 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
 - `GET /playground` (`playground.html`, pagina singola senza dipendenze esterne, servita dal
   package): builder noul/choice/score, esempi, editor JSON per entrambi gli endpoint, barre di
   probabilità, metriche (round-trip, inferenza, prefill, microbatch, token in cache), cURL.
+  Bilingue IT/EN: dizionario `I18N` + `t(key, vars)` nello script, attributi `data-i18n`,
+  `data-i18n-html`, `data-i18n-attr`; ogni nuova stringa UI va aggiunta in entrambe le lingue.
+  Logo servito da `/playground/logo.png` (`src/rizzo_flow/logo.png`, copia ridotta di `assets/`).
 
 ## Regole del progetto
 

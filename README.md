@@ -251,9 +251,11 @@ Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compa
 open http://127.0.0.1:8017/playground
 ```
 
-Pick an example from the **Esempi…** menu (or write your own state and questions), press
-**Esegui** or `Cmd/Ctrl + Enter`, and read the probabilities, the timings and the generated cURL.
-The badge in the header shows which checkpoint and precision is answering.
+Pick an example from the **Examples…** menu (or write your own state and questions), press
+**Run** or `Cmd/Ctrl + Enter` — or click the hedgehog — and read the probabilities, the timings and
+the generated cURL. The badge in the header shows which checkpoint and precision is answering.
+The interface is bilingual: switch **IT / EN** in the header (it follows your browser language the
+first time and remembers your choice).
 
 **5 · Or call it from code**
 
