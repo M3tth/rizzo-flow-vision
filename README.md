@@ -43,6 +43,15 @@ TypeSafe API can point at `localhost` by changing one URL.
 > inspired it. Probabilities are **uncalibrated** unless you calibrate them on your own data, and
 > we make no claim of matching Jev or SemIf in quality. Every number below comes with its caveats.
 
+<div align="center">
+<br />
+<a href="assets/playground.webp"><img src="assets/playground.webp" alt="The Rizzo Flow playground: an Italian support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens" width="100%" /></a>
+
+<sub>🦔 <b>The built-in playground</b> — one support ticket, two questions answered in parallel in <b>484 ms</b>:
+one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</b>.<br />
+Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English · <a href="#quickstart-apple-silicon">run it yourself ↓</a></sub>
+</div>
+
 ---
 
 ## Why "System One"
@@ -275,7 +284,7 @@ supported yet.
 
 ### Playground
 
-<http://127.0.0.1:8017/playground> is a single self-contained page served by the backend, with no
+<http://127.0.0.1:8017/playground> ([screenshot above](#rizzo-flow)) is a single self-contained page served by the backend, with no
 external calls: a question builder for noul / choice / score, ready-made examples, a raw JSON
 editor for both endpoints (so you can try `numeric` and abstention too), probability bars,
 timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
