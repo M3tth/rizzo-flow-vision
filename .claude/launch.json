@@ -4,14 +4,36 @@
     {
       "name": "rizzo-q8",
       "runtimeExecutable": ".venv/bin/rizzo",
-      "runtimeArgs": ["serve", "--bits", "8"],
+      "runtimeArgs": [
+        "serve",
+        "--bits",
+        "8"
+      ],
       "port": 8017
     },
     {
       "name": "site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8020", "--directory", "docs", "--bind", "127.0.0.1"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8020",
+        "--directory",
+        "docs",
+        "--bind",
+        "127.0.0.1"
+      ],
       "port": 8020
+    },
+    {
+      "name": "snake-dev",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "/private/tmp/claude-501/-Users-simonerizzo-Git-projects-rizzo-flow-test/f90ee72b-ff4b-424c-9468-7669ee9f94de/scratchpad/proxy.py",
+        "src/rizzo_flow"
+      ],
+      "port": 8047,
+      "autoPort": true
     }
   ]
 }

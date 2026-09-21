@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rizzo Flow Snake</title>
+<link rel="icon" type="image/png" href="/playground/logo.png">
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1d1f; --muted: #6a6f76; --line: #dedcd5;
+  --accent: #0b8f6c; --accent-ink: #ffffff; --accent-soft: #dff3ec; --track: #ebe9e2;
+  --warn: #b4540a; --warn-soft: #fbead8; --bad: #b3261e; --bad-soft: #fbe3e1;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111314; --panel: #191c1e; --ink: #e9ebec; --muted: #949ba3; --line: #2b3034;
+    --accent: #3fd6ab; --accent-ink: #06241b; --accent-soft: #12352b; --track: #262b2e;
+    --warn: #f0a35a; --warn-soft: #3a2a18; --bad: #ff8a80; --bad-soft: #3b1d1b;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 20px;
+  border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 15px; margin: 0; letter-spacing: .01em; }
+header h1 span { color: var(--muted); font-weight: 400; }
+header a { color: var(--muted); font-size: 13px; }
+.mascot { width: 40px; height: 40px; margin: -6px -2px -6px -4px; transform-origin: 50% 85%;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / .25)); }
+body.busy .mascot { animation: hop .55s ease-in-out infinite; }
+@keyframes hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 40% { transform: translateY(-7px) scale(.96, 1.05); } 70% { transform: translateY(0) scale(1.06, .94); } }
+@media (prefers-reduced-motion: reduce) { body.busy .mascot { animation: none; } }
+.badge { font: 12px var(--mono); padding: 3px 8px; border-radius: 999px; background: var(--track); color: var(--muted); }
+.badge.ok { background: var(--accent-soft); color: var(--accent); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.spacer { flex: 1; }
+main { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 16px; padding: 16px 20px 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
+@media (max-width: 960px) { main { grid-template-columns: minmax(0, 1fr); padding: 16px; } }
+section.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+select, input[type=range] { accent-color: var(--accent); }
+select { background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font: 13px var(--sans); max-width: 100%; }
+select:focus, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button { font: 13px var(--sans); border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  padding: 6px 11px; border-radius: 7px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button:disabled { opacity: .5; cursor: default; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; padding: 7px 16px; min-width: 92px; }
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.tabs button { border: 0; border-radius: 0; background: transparent; color: var(--muted); }
+.tabs button.on { background: var(--track); color: var(--ink); font-weight: 600; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.metric { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.metric b { display: block; font: 600 17px var(--mono); }
+.metric span { font-size: 11px; color: var(--muted); }
+.boardwrap { position: relative; width: 100%; max-width: 620px; margin: 12px auto; aspect-ratio: 1; }
+canvas { width: 100%; height: 100%; display: block; border-radius: 10px; border: 1px solid var(--line); }
+.gameover { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  text-align: center; padding: 20px; border-radius: 10px; background: color-mix(in srgb, var(--panel) 82%, transparent); backdrop-filter: blur(2px); }
+.gameover[hidden] { display: none; }
+.gameover b { font-size: 22px; }
+.gameover span { color: var(--muted); max-width: 380px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 14px; margin-top: 4px; }
+.controls label { display: block; font-size: 12px; color: var(--muted); }
+.controls label.check { display: flex; gap: 7px; align-items: flex-start; color: var(--ink); font-size: 13px; cursor: pointer; }
+.controls label.check small { display: block; color: var(--muted); font-size: 11.5px; }
+.controls select, .controls input[type=range] { width: 100%; margin-top: 3px; }
+.hint { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+.error { background: var(--bad-soft); color: var(--bad); border-radius: 8px; padding: 9px 11px; margin-top: 10px;
+  font: 12.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; }
+.verdict { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); min-height: 78px; }
+.verdict .arrow { font: 600 44px/1 var(--mono); color: var(--accent); width: 52px; text-align: center; }
+.verdict.lethal .arrow { color: var(--bad); }
+.verdict.thinking .arrow { color: var(--muted); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.verdict .what { font: 600 20px var(--mono); }
+.verdict .sub { color: var(--muted); font-size: 12.5px; }
+.bar { display: grid; grid-template-columns: 96px 22px minmax(0, 1fr) 58px; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; }
+.bar .name { white-space: nowrap; }
+.bar .name small { display: block; font-size: 11px; color: var(--muted); }
+.bar.lethal .name small { color: var(--bad); }
+.bar .letter { font: 11px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 5px; text-align: center; padding: 1px 0; }
+.bar .num { font: 12px var(--mono); text-align: right; color: var(--muted); }
+.track { height: 11px; background: var(--track); border-radius: 999px; position: relative; overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; background: var(--muted); border-radius: 999px; opacity: .55; transition: width .18s ease; }
+.bar.win .track i { background: var(--accent); opacity: 1; }
+.bar.win.lethal .track i { background: var(--bad); }
+.bar.win .name { font-weight: 600; }
+.pill { font: 11.5px var(--mono); padding: 2px 7px; border-radius: 999px; background: var(--track); color: var(--muted); white-space: nowrap; }
+.pill.hi { background: var(--accent-soft); color: var(--accent); }
+.pill.lo { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.block { margin-top: 14px; }
+.log { max-height: 250px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.log div { display: grid; grid-template-columns: 44px 26px 64px minmax(0, 1fr) 62px; gap: 6px; align-items: center; padding: 4px 9px; font: 12px var(--mono); border-bottom: 1px solid var(--line); }
+.log div:last-child { border-bottom: 0; }
+.log .n, .log .ms { color: var(--muted); }
+.log .ms { text-align: right; }
+.log .tags { display: flex; gap: 4px; overflow: hidden; }
+.empty { color: var(--muted); padding: 18px 8px; text-align: center; font-size: 13px; }
+pre { margin: 6px 0 0; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow: auto;
+  font: 11.5px/1.5 var(--mono); max-height: 360px; white-space: pre-wrap; word-break: break-word; }
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 26px; }
+footer a { color: inherit; }
+</style>
+</head>
+<body>
+<header>
+  <img class="mascot" src="/playground/logo.png" alt="Rizzo Flow" width="40" height="40">
+  <h1>Rizzo Flow <span>snake</span></h1>
+  <span id="health" class="badge"></span>
+  <span class="spacer"></span>
+  <a href="/playground">Playground</a>
+  <div class="tabs" role="group" aria-label="Language">
+    <button id="lang-it" lang="it">IT</button>
+    <button id="lang-en" lang="en">EN</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel" data-i18n-attr="aria-label:game">
+    <div class="row between">
+      <h2 style="margin:0" data-i18n="game"></h2>
+      <div class="row">
+        <button id="toggle" class="primary"></button>
+        <button id="step" data-i18n="step" data-i18n-attr="title:stepTitle"></button>
+        <button id="reset" data-i18n="reset"></button>
+      </div>
+    </div>
+    <div class="boardwrap">
+      <canvas id="board" data-i18n-attr="aria-label:boardLabel" role="img"></canvas>
+      <div id="gameover" class="gameover" hidden><b id="overTitle"></b><span id="overText"></span></div>
+    </div>
+    <div class="metrics" id="score"></div>
+    <div class="controls block">
+      <div>
+        <label for="view" data-i18n="viewLabel"></label>
+        <select id="view">
+          <option value="sensors" data-i18n="viewSensors"></option>
+          <option value="both" data-i18n="viewBoth"></option>
+          <option value="grid" data-i18n="viewGrid"></option>
+        </select>
+      </div>
+      <div>
+        <label for="size" data-i18n="sizeLabel"></label>
+        <select id="size">
+          <option value="8">8 × 8</option>
+          <option value="10" selected>10 × 10</option>
+          <option value="12">12 × 12</option>
+          <option value="16">16 × 16</option>
+        </select>
+      </div>
+      <div>
+        <label for="hold"><span data-i18n="holdLabel"></span> <span id="holdValue" class="pill"></span></label>
+        <input id="hold" type="range" min="0" max="1000" step="50" value="150">
+      </div>
+      <label class="check"><input id="shuffle" type="checkbox" checked><span><span data-i18n="shuffle"></span><small data-i18n="shuffleHint"></small></span></label>
+      <label class="check"><input id="net" type="checkbox"><span><span data-i18n="net"></span><small data-i18n="netHint"></small></span></label>
+      <label class="check"><input id="extra" type="checkbox"><span><span data-i18n="extra"></span><small data-i18n="extraHint"></small></span></label>
+      <label class="check"><input id="again" type="checkbox"><span><span data-i18n="again"></span><small data-i18n="againHint"></small></span></label>
+    </div>
+    <p class="hint" data-i18n-html="about"></p>
+    <div id="error" class="error" hidden></div>
+  </section>
+
+  <section class="panel" data-i18n-attr="aria-label:decision" aria-live="off">
+    <h2 data-i18n="decision"></h2>
+    <div id="verdict" class="verdict"></div>
+    <div id="bars"></div>
+    <div id="danger" class="block" hidden></div>
+    <div class="block"><h2 data-i18n="timing"></h2><div class="metrics" id="metrics"></div></div>
+    <div class="block"><h2 data-i18n="logTitle"></h2><div class="log" id="log"></div></div>
+    <details><summary data-i18n="lastRequest"></summary><pre id="reqout"></pre></details>
+    <details><summary data-i18n="lastResponse"></summary><pre id="resout"></pre></details>
+    <p class="hint" id="note"></p>
+  </section>
+</main>
+<footer>Rizzo Flow · <span data-i18n="footer"></span> <a href="https://www.rizzoaiacademy.com" target="_blank" rel="noopener">Rizzo AI Academy</a></footer>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+
+function h(tag, props = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") el.className = v;
+    else if (k === "style") el.style.cssText = v;
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+
+// Translations are static strings authored here; model and game data never go through innerHTML.
+const I18N = {
+  it: {
+    checking: "verifica…", offline: "offline", game: "Partita", decision: "Decisione del modello", timing: "Tempi dell'ultima decisione",
+    start: "Avvia", pause: "Pausa", resume: "Riprendi", step: "1 mossa", stepTitle: "Chiede al modello una sola decisione", reset: "Nuova partita",
+    boardLabel: "Griglia di gioco", viewLabel: "Cosa vede il modello (state)", viewSensors: "Sensori per mossa", viewBoth: "Sensori + griglia ASCII", viewGrid: "Solo griglia ASCII (difficile)",
+    sizeLabel: "Dimensione griglia", holdLabel: "Pausa dopo ogni decisione",
+    shuffle: "Mescola l'ordine delle opzioni", shuffleHint: "Le lettere A/B/C cambiano a ogni mossa: attenua il bias di posizione.",
+    net: "Rete di sicurezza", netHint: "Se il modello sceglie una mossa letale, si usa la mossa sicura più probabile. Ogni intervento è segnato nel log.",
+    extra: "Domanda extra: pericolo", extraHint: "Una seconda domanda (score) sullo stesso state: prefill condiviso, un microbatch.",
+    again: "Riparti da solo", againHint: "Dopo il game over ricomincia dopo 2 secondi.",
+    about: "Ogni mossa è una richiesta <code>POST /v1/decisions</code>: lo state descrive la partita, il modello legge i logit delle lettere di risposta in un solo forward pass e non genera testo. I sensori (cosa c'è nella cella, distanza dal cibo, celle raggiungibili) sono calcolati dal gioco; la scelta è del modello.",
+    footer: "un progetto", score: "punti", best: "record", length: "lunghezza", moves: "mosse", rate: "mosse/s", overrides: "interventi rete",
+    up: "su", down: "giù", left: "sinistra", right: "destra",
+    wall: "muro", body: "corpo", food: "cibo", empty: "libera",
+    waiting: "In attesa", waitingSub: "Premi Avvia: il modello sceglie ogni mossa.", thinking: "Sto decidendo…", thinkingSub: "forward pass in corso",
+    chose: "probabilità {p} · entropia {e} nat", overridden: "scelta del modello: {m} (letale) → applicata {a}",
+    tagFood: "cibo", tagOverride: "rete", tagDeath: "morte", tagLethal: "letale",
+    mRoundtrip: "round-trip browser", mInference: "inferenza GPU", mPrefill: "prefill state", mInput: "token input", mCached: "token state in cache", mGenerated: "token generati",
+    logTitle: "Registro decisioni", logEmpty: "Nessuna decisione ancora.", lastRequest: "Ultima richiesta (JSON)", lastResponse: "Ultima risposta (JSON)",
+    dangerTitle: "Pericolo stimato", dangerLevels: ["sicuro", "rischioso", "mortale"],
+    overDead: "Game over", overWin: "Griglia completata!", overStall: "Stallo",
+    deathWall: "Il serpente ha colpito il muro.", deathBody: "Il serpente ha colpito il proprio corpo.",
+    hadSafe: "Esisteva una mossa sicura: errore del modello.", noSafe: "Nessuna mossa sicura disponibile: era intrappolato.",
+    stallText: "{n} mosse senza mangiare: partita interrotta.", finalScore: "Punti: {s}.",
+    errServer: "Server non raggiungibile o richiesta rifiutata: {message}",
+    note: "Modello: {model}. Probabilità non calibrate: descrivono la forma della distribuzione sui logit, non la probabilità di avere ragione.",
+  },
+  en: {
+    checking: "checking…", offline: "offline", game: "Game", decision: "Model decision", timing: "Timing of the last decision",
+    start: "Start", pause: "Pause", resume: "Resume", step: "1 move", stepTitle: "Ask the model for a single decision", reset: "New game",
+    boardLabel: "Game board", viewLabel: "What the model sees (state)", viewSensors: "Per-move sensors", viewBoth: "Sensors + ASCII grid", viewGrid: "ASCII grid only (hard)",
+    sizeLabel: "Grid size", holdLabel: "Pause after each decision",
+    shuffle: "Shuffle option order", shuffleHint: "Letters A/B/C change every move: dampens position bias.",
+    net: "Safety net", netHint: "If the model picks a lethal move, the most probable safe move is used. Every intervention is marked in the log.",
+    extra: "Extra question: danger", extraHint: "A second (score) question on the same state: shared prefill, one micro-batch.",
+    again: "Restart automatically", againHint: "After game over, start again in 2 seconds.",
+    about: "Every move is one <code>POST /v1/decisions</code> request: the state describes the game, the model reads the answer-letter logits in a single forward pass and generates no text. Sensors (what is in the cell, distance to food, reachable cells) are computed by the game; the choice is the model's.",
+    footer: "a project by", score: "score", best: "best", length: "length", moves: "moves", rate: "moves/s", overrides: "net overrides",
+    up: "up", down: "down", left: "left", right: "right",
+    wall: "wall", body: "body", food: "food", empty: "free",
+    waiting: "Waiting", waitingSub: "Press Start: the model picks every move.", thinking: "Deciding…", thinkingSub: "forward pass running",
+    chose: "probability {p} · entropy {e} nat", overridden: "model's choice: {m} (lethal) → applied {a}",
+    tagFood: "food", tagOverride: "net", tagDeath: "death", tagLethal: "lethal",
+    mRoundtrip: "browser round-trip", mInference: "GPU inference", mPrefill: "state prefill", mInput: "input tokens", mCached: "state tokens in cache", mGenerated: "generated tokens",
+    logTitle: "Decision log", logEmpty: "No decisions yet.", lastRequest: "Last request (JSON)", lastResponse: "Last response (JSON)",
+    dangerTitle: "Estimated danger", dangerLevels: ["safe", "risky", "deadly"],
+    overDead: "Game over", overWin: "Board completed!", overStall: "Stalled",
+    deathWall: "The snake hit the wall.", deathBody: "The snake hit its own body.",
+    hadSafe: "A safe move existed: the model made a mistake.", noSafe: "No safe move was available: it was trapped.",
+    stallText: "{n} moves without eating: game stopped.", finalScore: "Score: {s}.",
+    errServer: "Server unreachable or request rejected: {message}",
+    note: "Model: {model}. Probabilities are uncalibrated: they describe the shape of the distribution over logits, not the probability of being right.",
+  },
+};
+let lang = "en";
+try { lang = localStorage.getItem("rizzo-lang") || ((navigator.language || "").toLowerCase().startsWith("it") ? "it" : "en"); } catch { /* optional */ }
+if (!I18N[lang]) lang = "en";
+const t = (key, vars = {}) => String(I18N[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
+
+const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+const OPPOSITE = { up: "down", down: "up", left: "right", right: "left" };
+const ARROW = { up: "↑", down: "↓", left: "←", right: "→" };
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const pct = (p) => (p >= 0.9995 ? "99.9+%" : `${(p * 100).toFixed(1)}%`);
+const ms = (seconds) => (seconds == null ? "—" : `${Math.round(seconds * 1000)} ms`);
+
+let game;
+let epoch = 0;        // bumped on reset so in-flight decisions from an old game are dropped
+let best = 0;
+let modelName = "";
+try { best = Number(localStorage.getItem("rizzo-snake-best")) || 0; } catch { /* optional */ }
+
+function newGame() {
+  const n = Number($("#size").value);
+  const y = Math.floor(n / 2), x = Math.floor(n / 2);
+  game = {
+    n, snake: [{ x, y }, { x: x - 1, y }, { x: x - 2, y }], heading: "right", food: null,
+    score: 0, steps: 0, sinceFood: 0, overrides: 0, alive: true, running: false, busy: false,
+    phase: "idle", pending: null, last: null, log: [], durations: [],
+  };
+  game.food = placeFood();
+}
+
+const same = (a, b) => a.x === b.x && a.y === b.y;
+const inside = (c) => c.x >= 0 && c.y >= 0 && c.x < game.n && c.y < game.n;
+
+function placeFood() {
+  const free = [];
+  for (let y = 0; y < game.n; y++) for (let x = 0; x < game.n; x++) {
+    if (!game.snake.some((s) => s.x === x && s.y === y)) free.push({ x, y });
+  }
+  return free.length ? free[Math.floor(Math.random() * free.length)] : null;
+}
+
+// The tail cell frees up as the snake advances, so it does not count as an obstacle.
+const obstacles = () => new Set(game.snake.slice(0, -1).map((s) => `${s.x},${s.y}`));
+
+function look(dir) {
+  const [dx, dy] = DIRS[dir];
+  const cell = { x: game.snake[0].x + dx, y: game.snake[0].y + dy };
+  let what = "empty";
+  if (!inside(cell)) what = "wall";
+  else if (obstacles().has(`${cell.x},${cell.y}`)) what = "body";
+  else if (game.food && same(cell, game.food)) what = "food";
+  return { dir, cell, what, lethal: what === "wall" || what === "body" };
+}
+
+function reachable(start) {
+  const blocked = obstacles();
+  const seen = new Set([`${start.x},${start.y}`]);
+  const queue = [start];
+  while (queue.length) {
+    const c = queue.shift();
+    for (const [dx, dy] of Object.values(DIRS)) {
+      const next = { x: c.x + dx, y: c.y + dy }, key = `${next.x},${next.y}`;
+      if (inside(next) && !blocked.has(key) && !seen.has(key)) { seen.add(key); queue.push(next); }
+    }
+  }
+  return seen.size;
+}
+
+function asciiGrid() {
+  const rows = [];
+  for (let y = 0; y < game.n; y++) {
+    let row = "";
+    for (let x = 0; x < game.n; x++) {
+      const c = { x, y };
+      row += same(c, game.snake[0]) ? "H" : game.snake.some((s) => same(s, c)) ? "o" : game.food && same(c, game.food) ? "F" : ".";
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+// The prompt side is always English: the wording below was tuned against the real model.
+function buildRequest() {
+  const head = game.snake[0], food = game.food, view = $("#view").value;
+  const looks = Object.keys(DIRS).filter((d) => d !== OPPOSITE[game.heading]).map(look);
+  const base = {
+    game: `Snake on a ${game.n}x${game.n} grid. x grows to the right, y grows downward.`,
+    rules: "Moving into a wall or into the snake's body kills the snake. Eating the food scores a point. "
+      + "Never die; among safe moves prefer the one that gets closer to the food without entering a dead end.",
+    head: { x: head.x, y: head.y },
+    food: { x: food.x, y: food.y },
+  };
+  let state;
+  if (view === "grid") {
+    state = { ...base, grid_legend: "H head, o body, F food, . empty", grid: asciiGrid(),
+      body: game.snake.slice(1).map((s) => ({ x: s.x, y: s.y })) };
+  } else {
+    const moves = {};
+    for (const l of looks) {
+      moves[l.dir] = { next_cell: l.what, outcome: l.lethal ? "snake dies" : "safe" };
+      if (!l.lethal) {
+        moves[l.dir].distance_to_food_after_move = Math.abs(food.x - l.cell.x) + Math.abs(food.y - l.cell.y);
+        moves[l.dir].free_cells_reachable_after_move = reachable(l.cell);
+      }
+    }
+    const where = [food.y > head.y ? "down" : food.y < head.y ? "up" : null, food.x > head.x ? "right" : food.x < head.x ? "left" : null];
+    state = { ...base, food_is: `${where.filter(Boolean).join(" and ")} of the head`, snake_length: game.snake.length, moves };
+    if (view === "both") { state.grid_legend = "H head, o body, F food, . empty"; state.grid = asciiGrid(); }
+  }
+  const order = looks.map((l) => l.dir);
+  if ($("#shuffle").checked) {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+  }
+  const questions = {
+    move: {
+      type: "choice", instructions: "Which move should the snake make now?",
+      options: order.map((d) => ({ id: d, description: `Move ${d}.` })), policy: { allow_abstain: false },
+    },
+  };
+  if ($("#extra").checked) {
+    questions.danger = {
+      type: "score", instructions: "How dangerous is the snake's current position?",
+      levels: ["Safe: two or more moves are safe and lead to open space.",
+        "Risky: only one move is safe, or the safe moves lead to a tight space.",
+        "Deadly: no move is safe."],
+      policy: { allow_abstain: false },
+    };
+  }
+  return { body: { state, questions }, looks, order };
+}
+
+async function decide() {
+  if (game.busy || !game.alive) return;
+  const mine = epoch;
+  game.busy = true;
+  game.phase = "thinking";
+  game.pending = buildRequest();
+  document.body.classList.add("busy");
+  renderAll();
+  const started = performance.now();
+  let json;
+  try {
+    const res = await fetch("/v1/decisions", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(game.pending.body) });
+    json = await res.json();
+    if (!res.ok) throw new Error(typeof json.detail === "string" ? json.detail : JSON.stringify(json.detail ?? json));
+  } catch (error) {
+    if (mine !== epoch) return;
+    Object.assign(game, { busy: false, running: false, phase: "idle", pending: null });
+    document.body.classList.remove("busy");
+    $("#error").hidden = false;
+    $("#error").textContent = t("errServer", { message: error.message });
+    renderAll();
+    return;
+  }
+  if (mine !== epoch) return;
+  $("#error").hidden = true;
+  const roundtrip = performance.now() - started;
+  const { looks, order, body } = game.pending;
+  const answer = json.answers.move;
+  const probs = answer.probabilities;
+  const ranked = [...looks].sort((a, b) => probs[b.dir] - probs[a.dir]);
+  const chosen = answer.choice ?? ranked[0].dir;
+  let applied = chosen;
+  if ($("#net").checked && look(chosen).lethal) {
+    const safe = ranked.find((l) => !l.lethal);
+    if (safe) applied = safe.dir;
+  }
+  game.last = { looks, order, answer, chosen, applied, roundtrip, timing: json.timing || {}, danger: json.answers.danger };
+  game.phase = "reveal";
+  game.pending = null;
+  modelName = [json.model?.source, json.model?.precision].filter(Boolean).join(" · ");
+  $("#reqout").textContent = JSON.stringify(body, null, 2);
+  $("#resout").textContent = JSON.stringify(json, null, 2);
+  document.body.classList.remove("busy");
+  renderAll();
+  await sleep(Number($("#hold").value));
+  if (mine !== epoch) return;
+  advance();
+  game.busy = false;
+  game.phase = "idle";
+  renderAll();
+  if (game.running && game.alive) decide();
+}
+
+function advance() {
+  const { chosen, applied, answer, roundtrip } = game.last;
+  const target = look(applied);
+  const entry = { step: ++game.steps, dir: applied, p: answer.probabilities[chosen], ms: roundtrip, tags: [] };
+  if (applied !== chosen) { game.overrides++; entry.tags.push(["tagOverride", "lo"]); }
+  game.durations.push(performance.now());
+  if (game.durations.length > 12) game.durations.shift();
+  if (target.lethal) {
+    const hadSafe = game.last.looks.some((l) => !l.lethal);
+    entry.tags.push(["tagDeath", "bad"]);
+    finish("overDead", `${t(target.what === "wall" ? "deathWall" : "deathBody")} ${t(hadSafe ? "hadSafe" : "noSafe")}`);
+  } else {
+    game.heading = applied;
+    game.snake.unshift(target.cell);
+    if (target.what === "food") {
+      game.score++;
+      game.sinceFood = 0;
+      entry.tags.push(["tagFood", "hi"]);
+      game.food = placeFood();
+      if (!game.food) finish("overWin", "");
+    } else {
+      game.snake.pop();
+      if (++game.sinceFood >= game.n * game.n * 2) finish("overStall", t("stallText", { n: game.sinceFood }));
+    }
+  }
+  game.log.unshift(entry);
+  if (game.log.length > 80) game.log.pop();
+  if (game.score > best) {
+    best = game.score;
+    try { localStorage.setItem("rizzo-snake-best", String(best)); } catch { /* optional */ }
+  }
+}
+
+function finish(titleKey, text) {
+  game.alive = false;
+  game.running = false;
+  game.over = { titleKey, text };
+  if ($("#again").checked) {
+    const mine = epoch;
+    setTimeout(() => { if (mine === epoch) { reset(); toggle(); } }, 2000);
+  }
+}
+
+function reset() {
+  epoch++;
+  document.body.classList.remove("busy");
+  $("#error").hidden = true;
+  newGame();
+  renderAll();
+}
+
+function toggle() {
+  if (!game.alive) reset();
+  game.running = !game.running;
+  renderAll();
+  if (game.running) decide();
+}
+
+// ---------- rendering ----------
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function roundRect(ctx, x, y, w, hh, r) {
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, hh, r);
+  ctx.fill();
+}
+
+function draw() {
+  const canvas = $("#board");
+  const size = canvas.clientWidth, ratio = window.devicePixelRatio || 1;
+  if (!size) return;
+  if (canvas.width !== Math.round(size * ratio)) { canvas.width = canvas.height = Math.round(size * ratio); }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  // One extra ring of cells around the grid is the wall, so wall moves can show their probability too.
+  const cell = size / (game.n + 2);
+  const at = (c) => [(c.x + 1) * cell, (c.y + 1) * cell];
+  ctx.fillStyle = css("--track");
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = css("--panel");
+  ctx.fillRect(cell, cell, cell * game.n, cell * game.n);
+  ctx.strokeStyle = css("--line");
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.6;
+  for (let i = 1; i < game.n; i++) {
+    ctx.beginPath(); ctx.moveTo(cell * (i + 1), cell); ctx.lineTo(cell * (i + 1), cell * (game.n + 1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cell, cell * (i + 1)); ctx.lineTo(cell * (game.n + 1), cell * (i + 1)); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  if (game.food) {
+    const [fx, fy] = at(game.food);
+    ctx.fillStyle = css("--bad");
+    ctx.beginPath(); ctx.arc(fx + cell / 2, fy + cell / 2, cell * 0.3, 0, Math.PI * 2); ctx.fill();
+  }
+
+  const pad = cell * 0.1, accent = css("--accent");
+  ctx.fillStyle = accent;
+  for (let i = game.snake.length - 1; i >= 0; i--) {
+    const [sx, sy] = at(game.snake[i]);
+    // Each segment is drawn as one rounded box spanning itself and the next one, so the body reads as one shape.
+    const [px, py] = i > 0 ? at(game.snake[i - 1]) : [sx, sy];
+    roundRect(ctx, Math.min(sx, px) + pad, Math.min(sy, py) + pad,
+      Math.abs(sx - px) + cell - 2 * pad, Math.abs(sy - py) + cell - 2 * pad, cell * 0.22);
+  }
+  const [hx, hy] = at(game.snake[0]);
+  const [dx, dy] = DIRS[game.heading];
+  ctx.fillStyle = css("--panel");
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.arc(hx + cell / 2 + dx * cell * 0.18 + side * dy * cell * 0.18, hy + cell / 2 + dy * cell * 0.18 + side * dx * cell * 0.18, cell * 0.075, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Candidate cells: "?" while the forward pass runs, then the probability the model gave each move.
+  const looks = game.phase === "thinking" ? game.pending?.looks : game.phase === "reveal" ? game.last?.looks : null;
+  if (!looks) return;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = `600 ${Math.max(9, cell * 0.26)}px ${css("--mono")}`;
+  for (const l of looks) {
+    const [cx, cy] = at(l.cell);
+    const p = game.phase === "reveal" ? game.last.answer.probabilities[l.dir] : null;
+    const color = l.lethal ? css("--bad") : accent;
+    ctx.fillStyle = color;
+    ctx.globalAlpha = p == null ? 0.1 : 0.12 + 0.55 * p;
+    roundRect(ctx, cx + 2, cy + 2, cell - 4, cell - 4, cell * 0.18);
+    ctx.globalAlpha = 1;
+    if (p != null && l.dir === game.last.applied) {
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.roundRect(cx + 2, cy + 2, cell - 4, cell - 4, cell * 0.18); ctx.stroke();
+    }
+    ctx.fillStyle = css("--ink");
+    ctx.fillText(p == null ? "?" : `${Math.round(p * 100)}%`, cx + cell / 2, cy + cell / 2);
+  }
+}
+
+const metric = (value, label) => h("div", { class: "metric" }, h("b", {}, value), h("span", {}, label));
+
+function renderScore() {
+  const d = game.durations;
+  const rate = d.length > 1 ? ((d.length - 1) * 1000 / (d[d.length - 1] - d[0])).toFixed(1) : "—";
+  const tiles = [metric(game.score, t("score")), metric(best, t("best")), metric(game.snake.length, t("length")),
+    metric(game.steps, t("moves")), metric(rate, t("rate"))];
+  if ($("#net").checked || game.overrides) tiles.push(metric(game.overrides, t("overrides")));
+  $("#score").replaceChildren(...tiles);
+}
+
+function renderDecision() {
+  const verdict = $("#verdict"), bars = $("#bars");
+  const looks = game.phase === "thinking" ? game.pending.looks : game.last?.looks;
+  const order = game.phase === "thinking" ? game.pending.order : game.last?.order;
+  if (game.phase === "thinking" || !game.last) {
+    verdict.className = `verdict${game.phase === "thinking" ? " thinking" : ""}`;
+    verdict.replaceChildren(
+      h("div", { class: "arrow" }, game.phase === "thinking" ? "…" : "·"),
+      h("div", {}, h("div", { class: "what" }, t(game.phase === "thinking" ? "thinking" : "waiting")),
+        h("div", { class: "sub" }, t(game.phase === "thinking" ? "thinkingSub" : "waitingSub"))));
+  } else {
+    const { answer, chosen, applied } = game.last;
+    const lethal = game.last.looks.find((l) => l.dir === applied).lethal;
+    verdict.className = `verdict${lethal ? " lethal" : ""}`;
+    verdict.replaceChildren(
+      h("div", { class: "arrow" }, ARROW[applied]),
+      h("div", {}, h("div", { class: "what" }, t(applied)),
+        h("div", { class: "sub" }, applied !== chosen ? t("overridden", { m: t(chosen), a: t(applied) })
+          : t("chose", { p: pct(answer.probabilities[chosen]), e: answer.uncertainty.entropy_nats.toFixed(3) }))));
+  }
+  if (!looks) { bars.replaceChildren(); $("#danger").hidden = true; return; }
+  const probs = game.phase === "thinking" ? null : game.last.answer.probabilities;
+  const logits = game.phase === "thinking" ? null : game.last.answer.option_logits;
+  bars.replaceChildren(...["up", "left", "right", "down"].filter((d) => looks.some((l) => l.dir === d)).map((d) => {
+    const l = looks.find((x) => x.dir === d), p = probs ? probs[d] : 0;
+    const bar = h("div", { class: `bar${probs && d === game.last.chosen ? " win" : ""}${l.lethal ? " lethal" : ""}`, title: logits ? `logit ${logits[d].toFixed(3)}` : null },
+      h("div", { class: "name" }, `${ARROW[d]} ${t(d)}`, h("small", {}, l.lethal ? `${t(l.what)} · ${t("tagLethal")}` : t(l.what))),
+      h("div", { class: "letter" }, LETTERS[order.indexOf(d)]),
+      h("div", { class: "track" }, h("i", { style: `width:${(p * 100).toFixed(2)}%` })),
+      h("div", { class: "num" }, probs ? pct(p) : "…"));
+    return bar;
+  }));
+
+  const danger = game.phase === "thinking" ? null : game.last.danger;
+  $("#danger").hidden = !danger;
+  if (danger) {
+    const names = I18N[lang].dangerLevels;
+    const ids = Object.keys(danger.probabilities);
+    const top = ids.reduce((a, b) => (danger.probabilities[b] > danger.probabilities[a] ? b : a));
+    $("#danger").replaceChildren(h("h2", {}, t("dangerTitle")), ...ids.map((id, i) =>
+      h("div", { class: `bar${id === top ? " win" : ""}${id === top && i === 2 ? " lethal" : ""}` },
+        h("div", { class: "name" }, names[i] ?? id), h("div", { class: "letter" }, LETTERS[i]),
+        h("div", { class: "track" }, h("i", { style: `width:${(danger.probabilities[id] * 100).toFixed(2)}%` })),
+        h("div", { class: "num" }, pct(danger.probabilities[id])))));
+  }
+}
+
+function renderMetrics() {
+  const last = game.last, timing = last?.timing || {};
+  $("#metrics").replaceChildren(
+    metric(last ? `${Math.round(last.roundtrip)} ms` : "—", t("mRoundtrip")),
+    metric(ms(timing.inference_seconds), t("mInference")),
+    metric(ms(timing.prefill_seconds), t("mPrefill")),
+    metric(timing.logical_input_tokens ?? last?.answer.input_tokens ?? "—", t("mInput")),
+    metric(timing.shared_prefix_tokens ?? "—", t("mCached")),
+    metric(last ? timing.generated_tokens ?? 0 : "—", t("mGenerated")));
+  $("#note").textContent = modelName ? t("note", { model: modelName }) : "";
+}
+
+function renderLog() {
+  if (!game.log.length) { $("#log").replaceChildren(h("div", { class: "empty", style: "display:block" }, t("logEmpty"))); return; }
+  $("#log").replaceChildren(...game.log.map((e) => h("div", {},
+    h("span", { class: "n" }, `#${e.step}`), h("span", {}, ARROW[e.dir]), h("span", {}, pct(e.p)),
+    h("span", { class: "tags" }, e.tags.map(([key, tone]) => h("span", { class: `pill ${tone}` }, t(key)))),
+    h("span", { class: "ms" }, `${Math.round(e.ms)} ms`))));
+}
+
+function renderAll() {
+  $("#toggle").textContent = t(game.running ? "pause" : game.steps && game.alive ? "resume" : "start");
+  $("#step").disabled = game.running || game.busy || !game.alive;
+  $("#gameover").hidden = game.alive;
+  if (!game.alive) {
+    $("#overTitle").textContent = t(game.over.titleKey);
+    $("#overText").textContent = `${game.over.text} ${t("finalScore", { s: game.score })}`.trim();
+  }
+  $("#holdValue").textContent = `${$("#hold").value} ms`;
+  renderScore();
+  renderDecision();
+  renderMetrics();
+  renderLog();
+  draw();
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll("[data-i18n-attr]").forEach((el) => {
+    for (const pair of el.dataset.i18nAttr.split(",")) { const [attr, key] = pair.split(":"); el.setAttribute(attr, t(key)); }
+  });
+  $("#lang-it").classList.toggle("on", lang === "it");
+  $("#lang-en").classList.toggle("on", lang === "en");
+  renderAll();
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("rizzo-lang", lang); } catch { /* optional */ }
+  applyLang();
+}
+
+async function health() {
+  const badge = $("#health");
+  badge.className = "badge";
+  badge.textContent = t("checking");
+  try {
+    const json = await (await fetch("/health")).json();
+    modelName = [json.model?.source, json.model?.precision].filter(Boolean).join(" · ");
+    badge.className = "badge ok";
+    badge.textContent = modelName || json.status;
+    renderMetrics();
+  } catch {
+    badge.className = "badge bad";
+    badge.textContent = t("offline");
+  }
+}
+
+$("#toggle").addEventListener("click", toggle);
+$("#step").addEventListener("click", () => { if (!game.running) decide(); });
+$("#reset").addEventListener("click", reset);
+$("#size").addEventListener("change", reset);
+$("#hold").addEventListener("input", renderAll);
+$("#net").addEventListener("change", renderAll);
+$("#lang-it").addEventListener("click", () => setLang("it"));
+$("#lang-en").addEventListener("click", () => setLang("en"));
+window.addEventListener("resize", draw);
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+document.addEventListener("keydown", (event) => {
+  if (event.target.closest("input, select, button, summary")) return;
+  if (event.code === "Space") { event.preventDefault(); toggle(); }
+});
+
+newGame();
+applyLang();
+health();
+</script>
+</body>
+</html>
