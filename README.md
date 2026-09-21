@@ -542,8 +542,21 @@ Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (It
   downloaded as official prebuilt binaries. Optional second runtime: the official
   [Spark MLX runtime](https://github.com/XHToken/Spark-MLX-LLM) (commit `de2b4379…`, Apache-2.0)
   with MLX `0.32.2` and MLX-LM `0.31.3`.
-- [BiG86](https://github.com/BiG86), whose pull request first ran Rizzo Flow on llama.cpp on an
-  AMD GPU and prompted the change of runtime. The code here is a separate implementation.
+
+## Contributors
+
+- [**Simone Rizzo**](https://github.com/simone-rizzo) — author and maintainer.
+- [**BiG86**](https://github.com/BiG86) — the reason Rizzo Flow runs on llama.cpp. Their
+  [pull request #1](https://github.com/Rizzo-AI-Academy/rizzo-flow/pull/1) was the first to run
+  the project outside MLX, on an AMD GPU through llama.cpp, with a pinned and verified toolchain
+  and honest measurements. It convinced us to make llama.cpp the default runtime for every
+  GPU vendor. The implementation on `main` is a separate one (prebuilt binaries instead of a
+  build step); their fix to `.gitignore` for local result files is merged as their commit.
+
+Want to be next? The most useful contribution right now is a run on hardware we do not have:
+an AMD or Intel GPU, a Mac, Linux, or a machine without a GPU —
+[open an issue](https://github.com/Rizzo-AI-Academy/rizzo-flow/issues) with the output of
+`rizzo devices` and your timings.
 
 ## License
 
