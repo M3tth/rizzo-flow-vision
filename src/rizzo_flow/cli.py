@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from .config import DEFAULT_MODEL_PATH, download_model
+from .config import DEFAULT_SIZE, MODELS, download_model
 
 
 def write_json(value, destination):
@@ -26,7 +26,8 @@ def main():
     parser = argparse.ArgumentParser(description="Rizzo Flow — local Spark typed decisions")
     commands = parser.add_subparsers(dest="command", required=True)
     download = commands.add_parser("download", help="Download the pinned original Spark checkpoint")
-    download.add_argument("--destination", type=Path, default=DEFAULT_MODEL_PATH)
+    download.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
+    download.add_argument("--destination", type=Path, help="Default: models/<checkpoint name>")
     schema = commands.add_parser("schema", help="Print the JSON Schema for requests")
     schema.add_argument("--output")
     schema.add_argument("--response", action="store_true", help="Print the output schema")
@@ -36,7 +37,8 @@ def main():
     fit.add_argument("--output", required=True)
     for name in ("decide", "serve", "evaluate"):
         p = commands.add_parser(name)
-        p.add_argument("--model", type=Path, default=DEFAULT_MODEL_PATH)
+        p.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
+        p.add_argument("--model", type=Path, help="Checkpoint directory; overrides --size")
         p.add_argument("--bits", type=int, choices=(4, 8))
         p.add_argument("--device", choices=("gpu", "cpu"), default="gpu")
         p.add_argument("--batch-size", type=int, default=4)
@@ -54,7 +56,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "download":
-            print(download_model(args.destination))
+            print(download_model(args.destination, args.size))
             return
         if args.command == "schema":
             from .responses import Response
@@ -79,7 +81,10 @@ def main():
 
             request = Request.model_validate_json(args.input.read_text())
         backend = SparkBackend.load(
-            args.model, bits=args.bits, device=args.device, batch_size=args.batch_size
+            args.model or MODELS[args.size].path,
+            bits=args.bits,
+            device=args.device,
+            batch_size=args.batch_size,
         )
         calibration = Calibration.from_file(args.calibration) if args.calibration else None
         engine = Engine(backend, max_tokens=args.max_tokens, calibration=calibration)

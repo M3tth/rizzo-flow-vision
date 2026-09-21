@@ -10,9 +10,15 @@ decisioni tipizzate con probabilità, zero generazione di testo), ispirata a **S
 di risposta in un forward pass. Modello: **XHToken/Spark-X2.5-4B** (architettura `spark2_5`, pesi
 originali, rev. `0bcb356…`) su **MLX / Apple Silicon** (sviluppo su M4 Pro 24 GiB). Precisione
 BF16 di default; Q8/Q4 quantizzati in memoria (affine, group size 64). Config d'uso normale: **Q8**.
+`config.MODELS` elenca i checkpoint supportati: `4b` (default) e `1.7b` (XHToken/Spark-X2.5-1.7B, rev.
+`14d6e83…`, stessa architettura/tokenizer/contesto 1M, ~3.4 GB). CLI: `--size 4b|1.7b` su
+`download/decide/serve/evaluate`; `backend.load` riconosce il checkpoint da `hidden_size`
+(`config.identify`) e l'ID servito diventa `rizzo-spark-x2.5-1.7b-q8`. **Il supporto 1.7B è stato
+aggiunto senza eseguire alcun test, né unitario né sul modello** (richiesta esplicita dell'utente).
 
 README, doc e messaggi all'utente sono in italiano; codice, commenti e docstring in inglese.
-Non è un repository git.
+Repository pubblico: <https://github.com/Rizzo-AI-Academy/rizzo-flow> (remote `origin` via SSH, branch `main`;
+il README pubblico è in inglese, quello italiano storico è in `docs/README.it.md`).
 
 ## Comandi
 

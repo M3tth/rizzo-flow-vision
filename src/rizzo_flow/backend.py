@@ -7,7 +7,7 @@ import json
 import time
 from pathlib import Path
 
-from .config import MODEL_ID, MODEL_REVISION, RUNTIME_REVISION
+from .config import RUNTIME_REVISION, identify
 from .prompts import PROMPT_VERSION, Compiled, canonical
 
 
@@ -104,6 +104,7 @@ class SparkBackend:
         config = json.loads((path / "config.json").read_text())
         if config.get("model_type") != "spark2_5":
             raise ValueError("Only the Spark2.5 architecture is supported")
+        spec = identify(config)
         model, tokenizer = load(
             path,
             lazy=True,
@@ -117,8 +118,8 @@ class SparkBackend:
         mx.eval(model.parameters())
         mx.synchronize()
         identity = {
-            "source": MODEL_ID,
-            "requested_revision": MODEL_REVISION,
+            "source": spec.repo,
+            "requested_revision": spec.revision,
             "runtime_revision": RUNTIME_REVISION,
             "source_files": hashes,
             "precision": f"q{bits}" if bits else "bf16",

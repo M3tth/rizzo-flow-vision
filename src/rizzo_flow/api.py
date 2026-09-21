@@ -19,7 +19,7 @@ def create_app(engine, api_key=None):
     app = FastAPI(
         title="Rizzo Flow",
         version="0.2.0",
-        description="Typed decisions with local Spark-X2.5-4B; no text generation.",
+        description="Typed decisions with a local Spark-X2.5 model; no text generation.",
     )
     api_key = api_key if api_key is not None else os.environ.get(API_KEY_ENV)
 

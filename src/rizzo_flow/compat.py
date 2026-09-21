@@ -8,6 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
+from .config import MODEL_ID
 from .prompts import canonical
 from .schema import MAX_SLOTS, Request
 
@@ -66,7 +67,8 @@ class SystemOneRequest(Wire):
 
 
 def model_name(metadata: dict) -> str:
-    return f"rizzo-spark-x2.5-4b-{metadata.get('precision', 'unknown')}"
+    checkpoint = metadata.get("source", MODEL_ID).split("/")[-1].lower()  # spark-x2.5-4b
+    return f"rizzo-{checkpoint}-{metadata.get('precision', 'unknown')}"
 
 
 def resolve_model(requested: str, metadata: dict) -> str:

@@ -15,7 +15,7 @@
 </p>
 
 <p>
-<img src="https://img.shields.io/badge/model-Spark--X2.5--4B-blue" alt="Spark-X2.5-4B" />
+<img src="https://img.shields.io/badge/models-Spark--X2.5%204B%20·%201.7B-blue" alt="Spark-X2.5 4B and 1.7B" />
 <img src="https://img.shields.io/badge/native%20context-1M%20tokens-blue" alt="1M-token native context" />
 <img src="https://img.shields.io/badge/runtime-MLX%20·%20Apple%20Silicon-blue" alt="MLX on Apple Silicon" />
 <img src="https://img.shields.io/badge/latency-~250%20ms%20%2F%20decision%20(Q8%2C%20M4%20Pro)-brightgreen" alt="about 250 ms per decision" />
@@ -186,8 +186,9 @@ Pro at 8 bit), not 8 full passes.
 
 ## A model with a native 1M-token context
 
-Rizzo Flow runs [**XHToken/Spark-X2.5-4B**](https://huggingface.co/XHToken/Spark-X2.5-4B)
-(Apache-2.0, original weights, pinned revision). The model has a **native 1,048,576-token context
+Rizzo Flow runs [**XHToken/Spark-X2.5-4B**](https://huggingface.co/XHToken/Spark-X2.5-4B) by
+default, or the smaller [**Spark-X2.5-1.7B**](https://huggingface.co/XHToken/Spark-X2.5-1.7B)
+(both Apache-2.0, original weights, pinned revisions). Both have a **native 1,048,576-token context
 window** and a hybrid attention design — one full-attention layer for every three sliding-window
 layers (window 512) — so the KV cache grows far more slowly than in a standard transformer. That
 is what makes the "prefill a large state once, ask many cheap questions" pattern attractive.
@@ -205,14 +206,65 @@ What is true *today* in this repository, so you can plan around it:
 
 ## Quickstart (Apple Silicon)
 
+You need a Mac with Apple Silicon, Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/).
+
+**1 · Install**
+
 ```bash
 git clone https://github.com/Rizzo-AI-Academy/rizzo-flow
 cd rizzo-flow
 uv sync --extra mlx --extra test --locked
-.venv/bin/rizzo download                       # ~8 GB into models/Spark-X2.5-4B
-.venv/bin/rizzo decide examples/ticket.json --bits 8
-.venv/bin/rizzo serve --bits 8                 # API + playground on 127.0.0.1:8017
 ```
+
+**2 · Download a model** — pick one; weights go to `models/` (git-ignored):
+
+```bash
+.venv/bin/rizzo download                 # Spark-X2.5-4B   · ~8 GB   · default
+.venv/bin/rizzo download --size 1.7b     # Spark-X2.5-1.7B · ~3.4 GB · smaller and faster
+```
+
+| `--size` | Checkpoint | Weights | Status |
+| --- | --- | ---: | --- |
+| `4b` (default) | [XHToken/Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) | ~8 GB | every result in this README |
+| `1.7b` | [XHToken/Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) | ~3.4 GB | wired in, **not run or benchmarked yet** |
+
+Both are the same Spark2.5 architecture with the same tokenizer and native 1M-token context, at
+pinned revisions. Expect the smaller model to be faster and less accurate; we have not measured
+either claim yet, and the 1.7B path has not been exercised end to end.
+
+**3 · Start the backend**
+
+```bash
+.venv/bin/rizzo serve --bits 8                 # 4B, 8 bit, ~5 GiB
+.venv/bin/rizzo serve --size 1.7b --bits 8     # 1.7B
+```
+
+Loading takes a few seconds; the server is ready when it prints
+`Uvicorn running on http://127.0.0.1:8017`. Useful flags: `--bits 4|8` (omit for BF16),
+`--port`, `--host`, `--batch-size` (question micro-batch, default 4), `--max-tokens`,
+`--model /path/to/checkpoint` (overrides `--size`), `--calibration fit.json`.
+Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compatible endpoints.
+
+**4 · Open the playground**
+
+```bash
+open http://127.0.0.1:8017/playground
+```
+
+Pick an example from the **Esempi…** menu (or write your own state and questions), press
+**Esegui** or `Cmd/Ctrl + Enter`, and read the probabilities, the timings and the generated cURL.
+The badge in the header shows which checkpoint and precision is answering.
+
+**5 · Or call it from code**
+
+```bash
+curl http://127.0.0.1:8017/v1/systemone \
+  -H 'Content-Type: application/json' \
+  -d '{"state": "Help! My payouts have been failing for 3 days.", "model": "rizzo-latest",
+       "questions": {"is_urgent": {"type": "noul", "instructions": "Does this convey urgency?"}}}'
+```
+
+No server needed for one-off runs: `.venv/bin/rizzo decide examples/ticket.json --bits 8`.
 
 BF16 is the default precision; `--bits 8` / `--bits 4` quantize in memory (affine, group size 64).
 Quantization changes probabilities: compare on your own workload. The runtime is
@@ -221,10 +273,11 @@ supported yet.
 
 ### Playground
 
-With the server running, open <http://127.0.0.1:8017/playground>: a question builder for
-noul / choice / score, ready-made examples, a raw JSON editor for both endpoints, probability
-bars, timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
-equivalent cURL. One self-contained page, no external calls.
+<http://127.0.0.1:8017/playground> is a single self-contained page served by the backend, with no
+external calls: a question builder for noul / choice / score, ready-made examples, a raw JSON
+editor for both endpoints (so you can try `numeric` and abstention too), probability bars,
+timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
+equivalent cURL.
 
 Interactive OpenAPI docs: <http://127.0.0.1:8017/docs>. Schemas: `request.schema.json`,
 `response.schema.json`. `GET /health` reports model provenance and file hashes.
@@ -340,7 +393,8 @@ Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (It
 - [SemIf](https://github.com/TheoLeeCJ/SemIf) by TheoLeeCJ (MIT): the open option-logit baseline
   that inspired this work, and the fixtures and evaluator used for the comparison. No SemIf source
   files are copied here.
-- [Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) (revision `0bcb3567…`) and the
+- [Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) (revision `0bcb3567…`),
+  [Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) (revision `14d6e83c…`) and the
   official [Spark MLX runtime](https://github.com/XHToken/Spark-MLX-LLM) (commit `de2b4379…`),
   both Apache-2.0. MLX `0.32.2`, MLX-LM `0.31.3`.
 
