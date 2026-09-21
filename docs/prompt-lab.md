@@ -1,7 +1,10 @@
 # Prompt lab — varianti provate e risultati
 
-Stato al 21 settembre 2026. **Il prompt spedito è ancora il v2** (`PROMPT_VERSION = "spark-decisions-v2"`).
-Le varianti qui sotto esistono solo in [`scripts/prompt_lab.py`](../scripts/prompt_lab.py), che le
+Stato al 21 settembre 2026. **Aggiornamento:** dopo questi giri è stata adottata la variante
+`a-text-all` (`PROMPT_VERSION = "spark-decisions-v3"`, scelta dell'utente; l'held-out resta non
+eseguito e i confronti SemIf pubblicati sono ancora del v2). Il resto del documento descrive lo
+stato al momento dei test, quando il prompt spedito era il v2.
+Le varianti qui sotto sono definite in [`scripts/prompt_lab.py`](../scripts/prompt_lab.py), che le
 applica a runtime per monkeypatch di `rizzo_flow.prompts`. I log grezzi dei due giri sono in
 [`results/prompt-lab/`](../results/prompt-lab/).
 
