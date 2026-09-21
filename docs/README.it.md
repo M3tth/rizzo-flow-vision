@@ -47,6 +47,23 @@ esempi pronti, editor JSON grezzo per entrambi gli endpoint, barre di probabilit
 (round-trip, inferenza, prefill), token dello state in cache, numero di microbatch e comando cURL.
 Pagina singola senza dipendenze esterne, servita dallo stesso processo.
 
+## Demo Snake
+
+Con il server avviato: <http://127.0.0.1:8017/snake>. Ogni mossa del serpente è una richiesta
+`POST /v1/decisions` (una domanda `choice` con le mosse legali); le probabilità del modello
+compaiono in tempo reale sulle celle candidate, con barre, logit, tempi e registro delle
+decisioni. Zero token generati. **Registra GIF** cattura griglia e pannello delle decisioni
+direttamente nella pagina (encoder GIF89a scritto a mano, nessuna dipendenza) e, quando la fermi,
+salva il file nei download.
+
+Si può scegliere cosa vede il modello. Con i *sensori per mossa* (contenuto della cella, distanza
+dal cibo, celle libere raggiungibili: calcolati dal gioco, la scelta è del modello) Q8 su M4 Pro
+gioca a circa 2 mosse/s (≈ 490 ms a decisione, ~300 token): in tre partite informali 10×10 ha
+mangiato 12 e 7 cibi in 80 mosse senza morire e 22 cibi in 208 mosse prima di chiudersi senza
+mosse sicure. Con la *sola griglia ASCII* è morto entro 26 e 13 mosse con 0 punti in due partite.
+Sono poche partite, non un benchmark. Le opzioni vengono mescolate a ogni mossa per attenuare il
+bias di posizione; la rete di sicurezza è facoltativa, spenta di default e segnata nel registro.
+
 ## API compatibile con TypeSafe
 
 `POST /v1/systemone` e `GET /v1/models` seguono la forma pubblica documentata in

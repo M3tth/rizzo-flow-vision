@@ -106,6 +106,16 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
   `data-i18n-html`, `data-i18n-attr`; ogni nuova stringa UI va aggiunta in entrambe le lingue.
   Logo servito da `/playground/logo.png` (`src/rizzo_flow/logo.png`, copia ridotta di `assets/`).
 
+- `GET /snake` (`snake.html`, stessa impostazione del playground: pagina singola, nessuna dipendenza,
+  bilingue con `I18N`/`data-i18n`): Snake in cui ogni mossa è una `POST /v1/decisions` (`choice` sulle
+  mosse legali, opzioni mescolate, opzionale domanda `score` "pericolo" sullo stesso state). Lo state
+  è costruito in `buildRequest()` in tre viste: sensori per mossa (default; il modello gioca bene),
+  sensori + griglia ASCII, sola griglia (muore subito). Il testo del prompt lato gioco è sempre in
+  inglese ed è stato provato sul modello reale: numeri in README. Registratore GIF integrato
+  (`startRecording`/`capture`/`gifFrame`: canvas offscreen 800×480 griglia + pannello decisioni,
+  palette per frame da istogramma a 15 bit, LZW, durata reale dei frame, max 900 frame, download via
+  `<a download>`). `paintBoard` è condivisa tra canvas visibile e registratore.
+
 ### Sito del progetto (GitHub Pages)
 
 `docs/index.html` è la landing page statica, **nello stile del sito di rizzo-pii** (chiaro, centrato,

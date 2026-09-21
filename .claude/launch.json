@@ -24,16 +24,6 @@
         "127.0.0.1"
       ],
       "port": 8020
-    },
-    {
-      "name": "snake-dev",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "/private/tmp/claude-501/-Users-simonerizzo-Git-projects-rizzo-flow-test/f90ee72b-ff4b-424c-9468-7669ee9f94de/scratchpad/proxy.py",
-        "src/rizzo_flow"
-      ],
-      "port": 8047,
-      "autoPort": true
     }
   ]
 }

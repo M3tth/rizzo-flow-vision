@@ -293,6 +293,25 @@ editor for both endpoints (so you can try `numeric` and abstention too), probabi
 timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
 equivalent cURL.
 
+### Snake demo
+
+<http://127.0.0.1:8017/snake> is a Snake game where **every move is one `POST /v1/decisions`
+request**: the state describes the board, a `choice` question lists the legal moves, and the model's
+answer-letter probabilities are drawn live on the candidate cells, next to bars, logits, timings
+and a decision log. No text is generated. **Record GIF** captures the board plus the decision
+panel in the page itself (hand-written GIF89a encoder, no dependencies) and saves the file to your
+downloads when you stop.
+
+What the model sees is selectable, and it matters. With *per-move sensors* (content of the next
+cell, distance to the food, reachable free cells — all computed by the game; only the choice is
+the model's) Q8 on an M4 Pro plays at about 2 moves/s (≈ 490 ms per decision, ~300 input tokens):
+in three informal 10×10 games it ate 12 and 7 foods in 80 moves without dying, and 22 foods in
+208 moves before boxing itself in with no safe move left. With the *ASCII grid only* it died
+within 26 and 13 moves with 0 points in two games: a 4B model does not read a grid spatially.
+These are a handful of games, not a benchmark. Options are shuffled every move to dampen position
+bias; an optional safety net (off by default, every intervention logged) replaces a lethal pick
+with the most probable safe move.
+
 Interactive OpenAPI docs: <http://127.0.0.1:8017/docs>. Schemas: `request.schema.json`,
 `response.schema.json`. `GET /health` reports model provenance and file hashes.
 
