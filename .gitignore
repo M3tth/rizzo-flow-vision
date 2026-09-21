@@ -219,6 +219,7 @@ __marimo__/
 
 # Rizzo Flow
 models/
+runtimes/
 .research/
 .cache/
 results/local-*/

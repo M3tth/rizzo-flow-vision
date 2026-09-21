@@ -1031,6 +1031,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "jinja2" },
     { name = "pydantic" },
     { name = "uvicorn" },
 ]
@@ -1063,6 +1064,7 @@ test = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115,<1" },
     { name = "httpx", marker = "extra == 'test'", specifier = ">=0.28,<1" },
+    { name = "jinja2", specifier = ">=3.1,<4" },
     { name = "mlx", marker = "extra == 'cpu'", specifier = "==0.32.2" },
     { name = "mlx", marker = "extra == 'cuda'", specifier = "==0.32.2" },
     { name = "mlx", marker = "extra == 'mlx'", specifier = "==0.32.2" },

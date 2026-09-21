@@ -4,13 +4,13 @@
     {
       "name": "rizzo-q8",
       "runtimeExecutable": "uv",
-      "runtimeArgs": ["run", "--no-sync", "rizzo", "serve", "--bits", "8"],
+      "runtimeArgs": ["run", "--no-sync", "rizzo", "serve"],
       "port": 8017
     },
     {
       "name": "rizzo-1.7b-q8",
       "runtimeExecutable": "uv",
-      "runtimeArgs": ["run", "--no-sync", "rizzo", "serve", "--size", "1.7b", "--bits", "8"],
+      "runtimeArgs": ["run", "--no-sync", "rizzo", "serve", "--size", "1.7b"],
       "port": 8017
     },
     {
