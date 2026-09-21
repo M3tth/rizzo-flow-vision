@@ -6,6 +6,12 @@
       "runtimeExecutable": ".venv/bin/rizzo",
       "runtimeArgs": ["serve", "--bits", "8"],
       "port": 8017
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8020", "--directory", "docs", "--bind", "127.0.0.1"],
+      "port": 8020
     }
   ]
 }

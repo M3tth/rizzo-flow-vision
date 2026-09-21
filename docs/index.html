@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rizzo Flow — typed decisions from a local LLM, zero generated tokens</title>
+<meta name="description" content="Rizzo Flow is the open, local take on Jev: unstructured state in, typed probabilistic decisions out. Jev-compatible API, Spark-X2.5 models, MLX. A project by Rizzo AI Academy.">
+<meta property="og:title" content="Rizzo Flow">
+<meta property="og:description" content="The open, local take on Jev: typed decisions from an LLM without generating a single token.">
+<meta property="og:image" content="https://rizzo-ai-academy.github.io/rizzo-flow/assets/icon.png">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<style>
+:root {
+  --bg: #faf8ff; --panel: #ffffff; --ink: #1a1523; --muted: #675f78; --line: #e5dff2;
+  --brand: #7c3aed; --brand-ink: #ffffff; --brand-soft: #efe7ff; --cyan: #0ea5d6; --sun: #d99a00;
+  --code-bg: #15111f; --code-ink: #e9e4f5; --code-dim: #8f86a6; --ok: #0b8f6c; --track: #ece6f7;
+  --round: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0c16; --panel: #17131f; --ink: #efeaf8; --muted: #a39ab8; --line: #2a2337;
+    --brand: #a78bfa; --brand-ink: #1b1033; --brand-soft: #241a3d; --cyan: #38cdf5; --sun: #facc15;
+    --code-bg: #0b0911; --ok: #3fd6ab; --track: #241d31;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+html[data-lang="en"] [lang="it"], html[data-lang="it"] [lang="en"] { display: none !important; }
+a { color: var(--brand); text-underline-offset: 3px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+h1, h2, h3 { font-family: var(--round); letter-spacing: -.01em; line-height: 1.15; margin: 0; }
+h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 10px; }
+h3 { font-size: 18px; margin-bottom: 6px; }
+p { margin: 0 0 14px; }
+.lead { color: var(--muted); max-width: 720px; font-size: 17px; }
+section { padding: 64px 0; scroll-margin-top: 60px; }
+section + section { border-top: 1px solid var(--line); }
+.eyebrow { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--brand); margin-bottom: 10px; }
+
+nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(12px); background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; gap: 18px; height: 60px; }
+nav .brand { display: flex; align-items: center; gap: 9px; font: 700 17px var(--round); color: var(--ink); text-decoration: none; }
+nav .brand img { width: 34px; height: 34px; }
+nav .links { display: flex; gap: 18px; margin-left: auto; font-size: 14px; }
+nav .links a { color: var(--muted); text-decoration: none; }
+nav .links a:hover { color: var(--ink); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--muted); font: 600 12px var(--mono); padding: 5px 10px; cursor: pointer; }
+.seg button.on { background: var(--brand-soft); color: var(--brand); }
+@media (max-width: 760px) { nav .links a.opt { display: none; } }
+nav .brand, .seg { flex: none; white-space: nowrap; }
+@media (max-width: 520px) { nav .wrap { gap: 10px; } nav .links { gap: 12px; } nav .links a.hide-s { display: none; } }
+
+.hero { padding: 56px 0 40px; }
+.hero .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; }
+.hero h1 { font-size: clamp(38px, 6.4vw, 66px); }
+.hero h1 em { font-style: normal; background: linear-gradient(95deg, var(--brand), var(--cyan) 60%, var(--sun)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .sub { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); margin: 18px 0 24px; max-width: 560px; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 12px; font: 600 15px var(--round); text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--panel); transition: transform .15s ease, border-color .15s ease; }
+.btn:hover { transform: translateY(-2px); border-color: var(--brand); }
+.btn.primary { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.chip { font: 600 12px var(--mono); padding: 5px 10px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); }
+.stage { position: relative; display: grid; place-items: center; }
+.stage img { width: min(330px, 78%); height: auto; animation: float 4s ease-in-out infinite; filter: drop-shadow(0 22px 26px rgb(60 20 120 / .28)); }
+.stage::before { content: ""; position: absolute; inset: 8% 6%; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--brand) 26%, transparent), transparent 66%); }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1.5deg); } }
+@media (max-width: 860px) { .hero .grid { grid-template-columns: 1fr; } .stage { order: -1; } .stage img { width: 210px; } }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 26px; }
+.step .n { font: 700 13px var(--mono); color: var(--brand); }
+.step p, .card p { color: var(--muted); font-size: 15px; margin: 0; }
+.card code, p code, li code, td code { font: 13px var(--mono); background: var(--brand-soft); color: var(--brand); padding: 1px 6px; border-radius: 6px; }
+
+.flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 28px; align-items: stretch; }
+.flow .node { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px; font-size: 14px; position: relative; }
+.flow .node b { display: block; font-family: var(--round); font-size: 15px; margin-bottom: 4px; }
+.flow .node span { color: var(--muted); }
+.flow .node:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 50%; transform: translate(50%, -50%); color: var(--brand); font-weight: 700; z-index: 1; }
+@media (max-width: 760px) { .flow { grid-template-columns: 1fr; } .flow .node:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -11px; transform: translate(50%, 50%); } }
+
+.demo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
+@media (max-width: 860px) { .demo { grid-template-columns: 1fr; } }
+pre { margin: 0; background: var(--code-bg); color: var(--code-ink); border-radius: 14px; padding: 16px 18px; overflow: auto; font: 13px/1.6 var(--mono); position: relative; }
+pre .c { color: var(--code-dim); }
+pre .k { color: #c4a7ff; }
+pre .s { color: #8fe3c0; }
+.copy { position: absolute; top: 9px; right: 9px; border: 1px solid #ffffff22; background: #ffffff10; color: var(--code-ink); font: 600 11px var(--mono); padding: 4px 8px; border-radius: 7px; cursor: pointer; }
+.copy:hover { background: #ffffff22; }
+.answer + .answer { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.answer .top { display: flex; justify-content: space-between; font: 600 13px var(--mono); }
+.answer .top span { color: var(--muted); font-weight: 400; text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+.answer .big { font: 700 24px var(--mono); margin: 2px 0 6px; }
+.answer .big small { font: 400 12px var(--sans); color: var(--muted); margin-left: 6px; }
+.bar { display: grid; grid-template-columns: 92px 1fr 52px; gap: 8px; align-items: center; font-size: 13px; margin-top: 5px; }
+.bar i { display: block; height: 9px; border-radius: 99px; background: var(--track); position: relative; overflow: hidden; }
+.bar i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 99px; background: var(--muted); opacity: .45; animation: grow 1.1s cubic-bezier(.2, .8, .2, 1) both; }
+.bar.win i::after { background: linear-gradient(90deg, var(--brand), var(--cyan)); opacity: 1; }
+.bar.win b { font-weight: 700; }
+.bar em { font: normal 12px var(--mono); color: var(--muted); text-align: right; }
+@keyframes grow { from { width: 0; } }
+.metrics { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.metrics div { border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; font-size: 11px; color: var(--muted); }
+.metrics b { display: block; font: 700 15px var(--mono); color: var(--ink); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 22px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td.num, th.num { text-align: right; font-family: var(--mono); }
+.tablewrap { overflow-x: auto; }
+.shot { margin-top: 28px; border-radius: 16px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 30px 60px -30px rgb(60 20 120 / .45); }
+.shot img { display: block; width: 100%; height: auto; }
+.note { border-left: 3px solid var(--brand); background: var(--brand-soft); border-radius: 0 12px 12px 0; padding: 14px 16px; font-size: 15px; margin-top: 22px; }
+.note p:last-child { margin: 0; }
+ul.plain { margin: 14px 0 0; padding-left: 20px; color: var(--muted); font-size: 15px; }
+ul.plain li { margin-bottom: 6px; }
+footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+footer img { width: 44px; height: 44px; }
+@media (prefers-reduced-motion: reduce) { .stage img, .bar i::after { animation: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/logo.webp" alt="">Rizzo Flow</a>
+    <div class="links">
+      <a class="opt" href="#how"><span lang="en">How it works</span><span lang="it">Come funziona</span></a>
+      <a class="opt" href="#primitives"><span lang="en">Primitives</span><span lang="it">Primitive</span></a>
+      <a class="opt" href="#results"><span lang="en">Results</span><span lang="it">Risultati</span></a>
+      <a class="hide-s" href="#quickstart">Quickstart</a>
+      <a href="https://github.com/Rizzo-AI-Academy/rizzo-flow">GitHub</a>
+    </div>
+    <div class="seg" role="group" aria-label="Language">
+      <button id="lang-it">IT</button><button id="lang-en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap grid">
+    <div>
+      <div class="eyebrow"><span lang="en">The open, local take on Jev</span><span lang="it">La versione open e locale di Jev</span></div>
+      <h1>
+        <span lang="en">Typed decisions from an LLM. <em>Zero generated tokens.</em></span>
+        <span lang="it">Decisioni tipizzate da un LLM. <em>Zero token generati.</em></span>
+      </h1>
+      <p class="sub">
+        <span lang="en">Unstructured state in, typed probabilistic decisions out: a yes/no, a choice, a score, a number. On your own machine, with open weights and a Jev-compatible API.</span>
+        <span lang="it">State non strutturato in ingresso, decisioni tipizzate con probabilità in uscita: un sì/no, una scelta, un punteggio, un numero. Sulla tua macchina, con pesi open e un'API compatibile con Jev.</span>
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/Rizzo-AI-Academy/rizzo-flow">★ <span lang="en">View on GitHub</span><span lang="it">Vai su GitHub</span></a>
+        <a class="btn" href="#quickstart"><span lang="en">Run it in 4 steps</span><span lang="it">Avvialo in 4 passi</span> ↓</a>
+      </div>
+      <div class="chips">
+        <span class="chip">100% local</span><span class="chip">Spark-X2.5 · 4B / 1.7B</span>
+        <span class="chip">1M-token native context</span><span class="chip">MLX · Apple Silicon</span><span class="chip">Apache-2.0</span>
+      </div>
+    </div>
+    <div class="stage"><img src="assets/logo.webp" width="640" height="640" alt="Rizzo Flow mascot: a purple hedgehog holding an infinity-shaped flow of arrows"></div>
+  </div>
+</header>
+
+<section id="why">
+  <div class="wrap">
+    <div class="eyebrow">System One</div>
+    <h2><span lang="en">You don't need text. You need a decision.</span><span lang="it">Non ti serve testo. Ti serve una decisione.</span></h2>
+    <p class="lead">
+      <span lang="en">An LLM asked to classify something writes an answer, token by token, in a format you hope is valid JSON. But the decision is already inside the model after one forward pass: it is the probability it gives to each possible answer. Rizzo Flow reads exactly that, and nothing else.</span>
+      <span lang="it">Un LLM a cui chiedi di classificare qualcosa scrive una risposta, token dopo token, in un formato che speri sia JSON valido. Ma la decisione è già dentro il modello dopo un solo forward pass: è la probabilità che assegna a ogni risposta possibile. Rizzo Flow legge esattamente quella, e nient'altro.</span>
+    </p>
+    <div class="note">
+      <p>
+        <span lang="en"><b>About Jev.</b> <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a> is TypeSafe's closed, hosted "System One" model. Rizzo Flow is an independent open-source project, not affiliated with TypeSafe: it reproduces the <i>interface pattern</i> with an off-the-shelf open model, in the spirit of <a href="https://github.com/TheoLeeCJ/SemIf">SemIf</a>. It does not reproduce Jev's architecture or its RLCD training, and its probabilities are uncalibrated unless you calibrate them on your data.</span>
+        <span lang="it"><b>A proposito di Jev.</b> <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a> è il modello "System One" di TypeSafe, chiuso e ospitato. Rizzo Flow è un progetto open source indipendente, non affiliato a TypeSafe: riproduce il <i>pattern di interfaccia</i> con un modello open già esistente, nello spirito di <a href="https://github.com/TheoLeeCJ/SemIf">SemIf</a>. Non riproduce l'architettura di Jev né il suo training RLCD, e le probabilità non sono calibrate finché non le calibri sui tuoi dati.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow"><span lang="en">How it works</span><span lang="it">Come funziona</span></div>
+    <h2><span lang="en">Prefill once. Ask many. Read the logits.</span><span lang="it">Un prefill. Tante domande. Si leggono i logit.</span></h2>
+    <div class="flow">
+      <div class="node"><b>state</b><span lang="en">Text or JSON: a ticket, a CV, a record, a chat log.</span><span lang="it">Testo o JSON: un ticket, un CV, un record, una chat.</span></div>
+      <div class="node"><b><span lang="en">Prefill once</span><span lang="it">Prefill una volta</span></b><span lang="en">The state's KV cache is computed a single time and cloned per question.</span><span lang="it">La KV cache dello state si calcola una sola volta e si clona per ogni domanda.</span></div>
+      <div class="node"><b><span lang="en">N questions in parallel</span><span lang="it">N domande in parallelo</span></b><span lang="en">Short suffixes run in padded micro-batches.</span><span lang="it">I suffissi corti girano in microbatch.</span></div>
+      <div class="node"><b><span lang="en">Typed JSON</span><span lang="it">JSON tipizzato</span></b><span lang="en">Softmax over the answer letters only. No decoding loop, no parsing.</span><span lang="it">Softmax sulle sole lettere di risposta. Nessun ciclo di generazione, nessun parsing.</span></div>
+    </div>
+    <div class="cols">
+      <div class="card step"><div class="n">01</div><h3><span lang="en">Every question is a multiple choice</span><span lang="it">Ogni domanda è una scelta multipla</span></h3><p><span lang="en">Each candidate is one uppercase letter, verified to be a single token in context. 26 letters, 26 answer slots.</span><span lang="it">Ogni candidato è una lettera maiuscola, verificata come token singolo nel contesto. 26 lettere, 26 slot di risposta.</span></p></div>
+      <div class="card step"><div class="n">02</div><h3><span lang="en">Only the logits you need</span><span lang="it">Solo i logit che servono</span></h3><p><span lang="en">The last hidden state is multiplied by just the vocabulary rows of the allowed letters, also with quantized weights. Identical to the full projection.</span><span lang="it">L'ultimo hidden state si moltiplica solo per le righe di vocabolario delle lettere ammesse, anche con pesi quantizzati. Identico alla proiezione completa.</span></p></div>
+      <div class="card step"><div class="n">03</div><h3><span lang="en">It can say "I don't know"</span><span lang="it">Sa dire "non lo so"</span></h3><p><span lang="en">Built-in abstention and out-of-range options. When they win, the value is <code>null</code> with an explicit <code>status</code>.</span><span lang="it">Opzioni di astensione e fuori scala integrate. Quando vincono, il valore è <code>null</code> con uno <code>status</code> esplicito.</span></p></div>
+      <div class="card step"><div class="n">04</div><h3><span lang="en">Auditable by design</span><span lang="it">Verificabile per costruzione</span></h3><p><span lang="en">Responses carry logits, prompt hashes and weight hashes. Inputs over a limit are rejected, never truncated.</span><span lang="it">Le risposte riportano logit, hash dei prompt e dei pesi. Gli input oltre i limiti sono rifiutati, mai troncati.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <div class="wrap">
+    <div class="eyebrow"><span lang="en">Jev-compatible API</span><span lang="it">API compatibile con Jev</span></div>
+    <h2><span lang="en">Same request, same response. Just change the URL.</span><span lang="it">Stessa richiesta, stessa risposta. Cambia solo l'URL.</span></h2>
+    <p class="lead">
+      <span lang="en"><code>POST /v1/systemone</code> mirrors the public <a href="https://docs.typesafe.ai/api">TypeSafe API</a>: <code>state</code>, <code>model</code>, <code>questions</code> in, <code>answers</code> and <code>usage</code> out. The response always reports the local model id: nothing ever presents itself as Jev.</span>
+      <span lang="it"><code>POST /v1/systemone</code> ricalca l'<a href="https://docs.typesafe.ai/api">API pubblica di TypeSafe</a>: entrano <code>state</code>, <code>model</code>, <code>questions</code>, escono <code>answers</code> e <code>usage</code>. La risposta riporta sempre l'ID del modello locale: niente si presenta mai come Jev.</span>
+    </p>
+    <div class="demo">
+      <pre><button class="copy">copy</button><code>curl http://127.0.0.1:8017/v1/systemone \
+  -H 'Content-Type: application/json' -d '{
+  <span class="k">"state"</span>: <span class="s">"Help! My payouts have been failing for 3 days."</span>,
+  <span class="k">"model"</span>: <span class="s">"rizzo-latest"</span>,
+  <span class="k">"questions"</span>: {
+    <span class="k">"is_urgent"</span>: {
+      <span class="k">"type"</span>: <span class="s">"noul"</span>,
+      <span class="k">"instructions"</span>: <span class="s">"Does this convey urgency?"</span> },
+    <span class="k">"department"</span>: {
+      <span class="k">"type"</span>: <span class="s">"choice"</span>,
+      <span class="k">"instructions"</span>: <span class="s">"Which team should handle this?"</span>,
+      <span class="k">"criteria"</span>: {
+        <span class="k">"billing"</span>: <span class="s">"Payments, invoicing, refunds"</span>,
+        <span class="k">"technical"</span>: <span class="s">"Bugs, outages, integrations"</span>,
+        <span class="k">"sales"</span>: <span class="s">"Pricing, upgrades, new accounts"</span> } },
+    <span class="k">"frustration"</span>: {
+      <span class="k">"type"</span>: <span class="s">"score"</span>,
+      <span class="k">"instructions"</span>: <span class="s">"How frustrated is the customer?"</span>,
+      <span class="k">"criteria"</span>: [<span class="s">"Calm"</span>, <span class="s">"Frustrated"</span>, <span class="s">"Very angry"</span>] }
+  }
+}'</code></pre>
+      <div class="card">
+        <div class="metrics">
+          <div><b>536 ms</b><span lang="en">total, 3 questions</span><span lang="it">totale, 3 domande</span></div>
+          <div><b>161 ms</b><span lang="en">state prefill, once</span><span lang="it">prefill state, 1 volta</span></div>
+          <div><b>287</b><span lang="en">input tokens</span><span lang="it">token input</span></div>
+          <div><b>0</b><span lang="en">generated tokens</span><span lang="it">token generati</span></div>
+        </div>
+        <div class="answer"><div class="top">is_urgent<span>noul</span></div><div class="big">1.000<small><span lang="en">yes</span><span lang="it">sì</span></small></div></div>
+        <div class="answer"><div class="top">department<span>choice</span></div><div class="big">billing</div>
+          <div class="bar win"><b>billing</b><i style="--w:100%"></i><em>100.0%</em></div>
+          <div class="bar"><b>technical</b><i style="--w:1%"></i><em>0.00%</em></div>
+          <div class="bar"><b>sales</b><i style="--w:1%"></i><em>0.00%</em></div></div>
+        <div class="answer"><div class="top">frustration<span>score</span></div><div class="big">1.00<small><span lang="en">of 2 · Frustrated</span><span lang="it">su 2 · Frustrated</span></small></div></div>
+        <p style="margin-top:14px;font-size:13px"><span lang="en">A real response from Spark-X2.5-4B at 8 bit on an M4 Pro. Note how peaked the raw probabilities are: calibrate before trusting thresholds.</span><span lang="it">Una risposta reale di Spark-X2.5-4B a 8 bit su M4 Pro. Nota quanto sono concentrate le probabilità grezze: calibra prima di fidarti delle soglie.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="primitives">
+  <div class="wrap">
+    <div class="eyebrow"><span lang="en">Primitives</span><span lang="it">Primitive</span></div>
+    <h2><span lang="en">Four native types, three Jev-compatible ones.</span><span lang="it">Quattro tipi nativi, tre compatibili con Jev.</span></h2>
+    <div class="cols">
+      <div class="card"><h3><code>boolean</code> · <code>noul</code></h3><p><span lang="en">A yes/no question. Returns the probability of yes; natively also a value that can be <code>null</code> when evidence is missing.</span><span lang="it">Una domanda sì/no. Restituisce la probabilità di sì; nativamente anche un valore che può essere <code>null</code> se manca l'evidenza.</span></p></div>
+      <div class="card"><h3><code>choice</code></h3><p><span lang="en">Pick one of up to 26 described options. Returns the winner and the full distribution.</span><span lang="it">Sceglie una fra massimo 26 opzioni descritte. Restituisce la vincente e la distribuzione completa.</span></p></div>
+      <div class="card"><h3><code>score</code></h3><p><span lang="en">Rate the state on an ordered rubric. The score is probability-weighted, so it can land between levels.</span><span lang="it">Valuta lo state su una rubrica ordinata. Il punteggio è pesato per probabilità, quindi può cadere fra due livelli.</span></p></div>
+      <div class="card"><h3><code>numeric</code></h3><p><span lang="en">Estimate a number from anchors you define, with a unit, a median, a spread, and below/above-range probabilities. Native API only.</span><span lang="it">Stima un numero da ancore che definisci, con unità, mediana, dispersione e probabilità di fuori scala. Solo API nativa.</span></p></div>
+    </div>
+    <p class="lead" style="margin-top:22px">
+      <span lang="en">Asking many questions at once is the point: 8 yes/no questions on one document cost one prefill plus two micro-batches (932 ms on an M4 Pro at 8 bit), not eight full passes.</span>
+      <span lang="it">Fare tante domande insieme è il punto: 8 domande sì/no su un documento costano un prefill più due microbatch (932 ms su M4 Pro a 8 bit), non otto passaggi completi.</span>
+    </p>
+  </div>
+</section>
+
+<section id="playground">
+  <div class="wrap">
+    <div class="eyebrow">Playground</div>
+    <h2><span lang="en">A playground ships with the backend.</span><span lang="it">Il backend include un playground.</span></h2>
+    <p class="lead">
+      <span lang="en">Question builder, ready-made examples, raw JSON editor for both endpoints, probability bars, timings and the equivalent cURL. One self-contained page, in Italian or English, with no external calls.</span>
+      <span lang="it">Builder di domande, esempi pronti, editor JSON per entrambi gli endpoint, barre di probabilità, tempi e cURL equivalente. Una pagina autonoma, in italiano o inglese, senza chiamate esterne.</span>
+    </p>
+    <a class="shot" href="assets/playground.webp" style="display:block"><img src="assets/playground.webp" width="2998" height="1660" loading="lazy" alt="The Rizzo Flow playground: a support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens"></a>
+  </div>
+</section>
+
+<section id="context">
+  <div class="wrap">
+    <div class="eyebrow"><span lang="en">Long context</span><span lang="it">Contesto lungo</span></div>
+    <h2><span lang="en">A model with a native 1M-token context.</span><span lang="it">Un modello con contesto nativo da 1M di token.</span></h2>
+    <p class="lead">
+      <span lang="en">Spark-X2.5 keeps full attention in only 9 of its 36 layers; the rest use a 512-token sliding window. The KV cache therefore costs about 36 KiB per token, which is what makes "prefill a big state once, ask many cheap questions" practical. You set the limit with <code>--ctx</code>: it is a guard, not a memory reservation.</span>
+      <span lang="it">Spark-X2.5 tiene l'attenzione piena solo in 9 layer su 36; gli altri usano una finestra scorrevole di 512 token. La KV cache costa quindi circa 36 KiB per token, ed è ciò che rende praticabile "prefill di uno state grande una volta, tante domande economiche". Il limite si imposta con <code>--ctx</code>: è una guardia, non una prenotazione di memoria.</span>
+    </p>
+    <div class="tablewrap"><table>
+      <tr><th><span lang="en">State tokens</span><span lang="it">Token di state</span></th><th class="num">KV cache</th><th class="num"><span lang="en">with <code>--batch-size 4</code></span><span lang="it">con <code>--batch-size 4</code></span></th></tr>
+      <tr><td>8,192 (default <code>--ctx</code>)</td><td class="num">0.3 GiB</td><td class="num">1.1 GiB</td></tr>
+      <tr><td>60,000</td><td class="num">2.1 GiB</td><td class="num">8.2 GiB</td></tr>
+      <tr><td>131,072</td><td class="num">4.5 GiB</td><td class="num">18 GiB</td></tr>
+      <tr><td>1,048,576</td><td class="num">36 GiB</td><td class="num">144 GiB</td></tr>
+    </table></div>
+    <ul class="plain">
+      <li><span lang="en">Computed from the 4B model's configuration, BF16 cache; weights add about 4.5 GiB at 8 bit.</span><span lang="it">Calcolato dalla configurazione del modello 4B, cache in BF16; i pesi aggiungono circa 4.5 GiB a 8 bit.</span></li>
+      <li><span lang="en">Today a request's state is also capped at 256 KB (about 60k tokens), and the longest states we have actually measured are about 2,000 tokens. Beyond that it is the model's published capability, not something validated here.</span><span lang="it">Oggi lo state di una richiesta ha anche un tetto di 256 KB (circa 60k token), e gli state più lunghi realmente misurati sono di circa 2.000 token. Oltre, è la capacità dichiarata del modello, non qualcosa di validato qui.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <div class="eyebrow"><span lang="en">Results so far</span><span lang="it">Risultati finora</span></div>
+    <h2><span lang="en">Measured, committed, and honest about the gaps.</span><span lang="it">Misurati, committati, e onesti sui limiti.</span></h2>
+    <p class="lead">
+      <span lang="en">We ran SemIf's own fixtures through Rizzo Flow and scored them with SemIf's own metric code. Apple M4 Pro, 24 GiB, 8 bit, prompt v2. Every report is in the repository with logits and hashes.</span>
+      <span lang="it">Abbiamo eseguito le fixture di SemIf con Rizzo Flow e le abbiamo valutate con il codice di metrica di SemIf. Apple M4 Pro, 24 GiB, 8 bit, prompt v2. Ogni report è nel repository con logit e hash.</span>
+    </p>
+    <div class="tablewrap"><table>
+      <tr><th><span lang="en">Measure</span><span lang="it">Misura</span></th><th class="num">Rizzo Flow · Spark-X2.5-4B Q8</th><th class="num">SemIf · Qwen3.5-4B Q8 <span lang="en">(published)</span><span lang="it">(pubblicato)</span></th></tr>
+      <tr><td><code>authored144</code> · <span lang="en">balanced accuracy</span><span lang="it">balanced accuracy</span></td><td class="num">0.758</td><td class="num">0.819</td></tr>
+      <tr><td><code>perturbations108</code></td><td class="num">0.706</td><td class="num">0.766</td></tr>
+      <tr><td><span lang="en">Latency per decision, short state (p50 / p95)</span><span lang="it">Latenza per decisione, state corto (p50 / p95)</span></td><td class="num">254 / 259 ms</td><td class="num">—</td></tr>
+      <tr><td><span lang="en">37 states of ~2k tokens × 21 criteria, shared cache</span><span lang="it">37 state da ~2k token × 21 criteri, cache condivisa</span></td><td class="num">3.92 dec/s</td><td class="num">—</td></tr>
+      <tr><td><span lang="en">Shared cache vs fresh scoring</span><span lang="it">Cache condivisa vs calcolo da zero</span></td><td class="num">12.6× · 0 flips</td><td class="num">—</td></tr>
+    </table></div>
+    <ul class="plain">
+      <li><span lang="en">Rizzo Flow is about 6 points behind SemIf's published quality with the current prompt. The weakest family is rule application.</span><span lang="it">Con il prompt attuale Rizzo Flow è circa 6 punti sotto la qualità pubblicata da SemIf. La famiglia più debole è l'applicazione di regole.</span></li>
+      <li><span lang="en">SemIf's numbers come from a different Mac: valid for quality, not for timing. The same-hardware run is not done yet.</span><span lang="it">I numeri di SemIf vengono da un altro Mac: valgono per la qualità, non per i tempi. Il confronto sullo stesso hardware non è ancora stato fatto.</span></li>
+      <li><span lang="en">A better prompt is in the works: on the dev split it moves 0.754 → 0.806 and 0.711 → 0.852 and cuts order-reversal flips from 6 to 1. The held-out half has not been run, so it is not shipped. <a href="https://github.com/Rizzo-AI-Academy/rizzo-flow/blob/main/docs/prompt-lab.md">Prompts and numbers</a>.</span><span lang="it">Un prompt migliore è in lavorazione: sul dev split porta 0.754 → 0.806 e 0.711 → 0.852 e riduce i flip da inversione d'ordine da 6 a 1. La metà held-out non è stata eseguita, quindi non è ancora in uso. <a href="https://github.com/Rizzo-AI-Academy/rizzo-flow/blob/main/docs/prompt-lab.md">Prompt e numeri</a>.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="wrap">
+    <div class="eyebrow">Quickstart · Apple Silicon</div>
+    <h2><span lang="en">From clone to playground in four steps.</span><span lang="it">Dal clone al playground in quattro passi.</span></h2>
+    <p class="lead"><span lang="en">You need a Mac with Apple Silicon, Python 3.11+ and <a href="https://docs.astral.sh/uv/">uv</a>.</span><span lang="it">Servono un Mac con Apple Silicon, Python 3.11+ e <a href="https://docs.astral.sh/uv/">uv</a>.</span></p>
+    <div class="demo" style="grid-template-columns:1fr">
+      <pre><button class="copy">copy</button><code><span class="c"># 1 · install</span>
+git clone https://github.com/Rizzo-AI-Academy/rizzo-flow && cd rizzo-flow
+uv sync --extra mlx --extra test --locked
+
+<span class="c"># 2 · download a model (pick one)</span>
+.venv/bin/rizzo download                <span class="c"># Spark-X2.5-4B   · ~8 GB</span>
+.venv/bin/rizzo download --size 1.7b    <span class="c"># Spark-X2.5-1.7B · ~3.4 GB · wired in, not benchmarked yet</span>
+
+<span class="c"># 3 · start the backend (8 bit, ~5 GiB)</span>
+.venv/bin/rizzo serve --bits 8 --ctx 8192
+
+<span class="c"># 4 · open the playground</span>
+open http://127.0.0.1:8017/playground</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/logo.webp" alt="">
+    <div>
+      <b style="color:var(--ink)">Rizzo Flow</b> · <span lang="en">a project by</span><span lang="it">un progetto</span> <a href="https://www.rizzoaiacademy.com">Rizzo AI Academy</a><br>
+      <span lang="en">Apache-2.0 · Author: Simone Rizzo · "Jev" and "TypeSafe" belong to their owners; this project is independent.</span>
+      <span lang="it">Apache-2.0 · Autore: Simone Rizzo · "Jev" e "TypeSafe" appartengono ai rispettivi titolari; questo progetto è indipendente.</span>
+    </div>
+    <div style="margin-left:auto"><a href="https://github.com/Rizzo-AI-Academy/rizzo-flow">GitHub</a> · <a href="https://github.com/Rizzo-AI-Academy/rizzo-flow/blob/main/README.md">README</a> · <a href="https://www.rizzoaiacademy.com">rizzoaiacademy.com</a></div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const root = document.documentElement;
+function setLang(code) {
+  root.dataset.lang = code; root.lang = code;
+  for (const c of ["it", "en"]) document.getElementById(`lang-${c}`).classList.toggle("on", c === code);
+  try { localStorage.setItem("rizzo-lang", code); } catch { /* optional */ }
+}
+let lang = "en";
+try { lang = localStorage.getItem("rizzo-lang") || ((navigator.language || "").toLowerCase().startsWith("it") ? "it" : "en"); } catch { /* optional */ }
+setLang(lang === "it" ? "it" : "en");
+for (const c of ["it", "en"]) document.getElementById(`lang-${c}`).onclick = () => setLang(c);
+
+for (const button of document.querySelectorAll(".copy")) {
+  button.onclick = async () => {
+    const text = button.parentElement.querySelector("code").innerText;
+    try { await navigator.clipboard.writeText(text); button.textContent = "copied"; }
+    catch { button.textContent = "select + copy"; }
+    setTimeout(() => (button.textContent = "copy"), 1600);
+  };
+}
+</script>
+</body>
+</html>

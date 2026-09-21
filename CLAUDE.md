@@ -106,6 +106,15 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
   `data-i18n-html`, `data-i18n-attr`; ogni nuova stringa UI va aggiunta in entrambe le lingue.
   Logo servito da `/playground/logo.png` (`src/rizzo_flow/logo.png`, copia ridotta di `assets/`).
 
+### Sito del progetto (GitHub Pages)
+
+`docs/index.html` è la landing page statica (nessuna dipendenza esterna, bilingue con coppie
+`<span lang="en">`/`<span lang="it">` e `html[data-lang]`, tema chiaro/scuro). Pages serve **solo**
+`docs/`: gli asset del sito stanno in `docs/assets/` (copie di `assets/`), `docs/.nojekyll` disattiva
+Jekyll. URL: <https://rizzo-ai-academy.github.io/rizzo-flow/> (Settings → Pages → branch `main`,
+cartella `/docs`). Anteprima locale: server `site` in `.claude/launch.json` (porta 8020). I numeri
+sulla pagina vanno tenuti allineati a README e `results/`.
+
 ## Regole del progetto
 
 - **Onestà sulle misure.** Probabilità dichiarate non calibrate; mai presentarsi come Jev; mai
