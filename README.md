@@ -359,6 +359,7 @@ compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*
 A plain-text multiple-choice question and a short, decision-focused system prompt both help and
 reduce position bias; longer instructions do not. **The held-out half has not been run and the
 shipped prompt is still v2** — these numbers chose a candidate, they do not prove it.
+Exact prompts, every variant and the per-family numbers: [docs/prompt-lab.md](docs/prompt-lab.md) (Italian).
 
 ---
 

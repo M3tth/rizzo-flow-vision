@@ -156,7 +156,8 @@ lungo shared 2.8× direct) e limiti osservati: `results/README.md`.
 
 `scripts/prompt_lab.py dev|held [varianti]` — split per `group_id` alternato dentro ogni famiglia
 (72 base + 54 perturbate per parte), Q8, più lo smoke proprio come controllo sui tipi nativi.
-Log dei due giri su **dev**: `results/prompt-lab/`.
+Log dei due giri su **dev**: `results/prompt-lab/`. Testo esatto di ogni prompt, tabelle complete e
+conclusioni: `docs/prompt-lab.md`.
 
 | Variante (dev) | base | perturbato | flip inversione ordine | smoke |
 | --- | ---: | ---: | ---: | ---: |
