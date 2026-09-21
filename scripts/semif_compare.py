@@ -1,4 +1,4 @@
-"""Run SemIf's own fixtures through Rizzo Flow or SemIf's MLX backend, on this machine.
+"""Run SemIf's own fixtures through Rizzo Flow (llama.cpp or MLX) or SemIf's MLX backend.
 
 Both systems see the same rows, are scored by SemIf's `benchmarks/evaluate.py`, and are timed
 with the scope SemIf documents: warm model; prompt construction, tokenization, forward passes
@@ -6,6 +6,7 @@ and CPU readout included; model loading and file writes excluded. Each system ke
 prompt and model, so this compares complete systems, not checkpoints in isolation.
 
   .venv/bin/python scripts/semif_compare.py --system rizzo --semif /path/SemIf --output results/x
+  .venv/bin/python scripts/semif_compare.py --system rizzo --backend mlx --bits 8 ...
   /path/semif-venv/bin/python scripts/semif_compare.py --system semif --semif /path/SemIf --output ...
 """
 
@@ -35,14 +36,53 @@ def write(path, value):
             stream.write(json.dumps(value, indent=2, allow_nan=False) + "\n")
 
 
+class MlxMemory:
+    key = "peak_mlx_bytes"
+
+    def reset(self):
+        import mlx.core as mx
+
+        mx.clear_cache()
+        mx.reset_peak_memory()
+
+    def peak(self):
+        import mlx.core as mx
+
+        return mx.get_peak_memory()
+
+
+class LlamaMemory:
+    """Largest drop in free device memory since before the load; never resets."""
+
+    key = "peak_device_bytes"
+
+    def __init__(self, backend):
+        self.backend = backend
+
+    def reset(self):
+        pass
+
+    def peak(self):
+        return self.backend.peak_device_bytes()
+
+
 class Rizzo:
     def __init__(self, args):
-        from rizzo_flow.backend import SparkBackend
         from rizzo_flow.engine import Engine
+        from rizzo_flow.loader import load_backend
 
-        backend = SparkBackend.load(args.model, bits=args.bits, batch_size=args.batch_size)
+        backend = load_backend(
+            args.backend,
+            size=args.size,
+            model=args.model,
+            quant=args.quant,
+            bits=args.bits,
+            device=args.device,
+            batch_size=args.batch_size,
+        )
         self.engine = Engine(backend)
         self.metadata = {**backend.metadata, "batch_size": args.batch_size}
+        self.memory = MlxMemory() if args.backend == "mlx" else LlamaMemory(backend)
 
     def _run(self, rows, mode):
         questions = {
@@ -83,8 +123,9 @@ class SemIf:
         from semif_phase1 import mlx_backend
 
         self.backend = mlx_backend
+        self.memory = MlxMemory()
         self.model, self.tokenizer, self.metadata = mlx_backend.load_model(
-            args.model, args.revision, args.bits
+            args.model or "Qwen/Qwen3.5-4B", args.revision, args.bits
         )
 
     def direct(self, row):
@@ -167,19 +208,19 @@ def main():
     parser.add_argument("--system", choices=("rizzo", "semif"), required=True)
     parser.add_argument("--semif", type=Path, required=True, help="SemIf repository checkout")
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--model")
+    parser.add_argument("--backend", choices=("llama", "mlx"), default="llama", help="Rizzo only")
+    parser.add_argument("--size", default="4b", help="Rizzo checkpoint: 4b or 1.7b")
+    parser.add_argument("--quant", help="Rizzo on llama.cpp: q8_0 (default), q4_k_m, bf16")
+    parser.add_argument("--device", default="auto")
+    parser.add_argument("--model", help="Rizzo: GGUF file or MLX directory; SemIf: repository")
     parser.add_argument("--revision", default="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a")
-    parser.add_argument("--bits", type=int, choices=(4, 8))
+    parser.add_argument("--bits", type=int, choices=(4, 8), help="MLX quantization")
     parser.add_argument("--batch-size", type=int, default=4, help="Rizzo suffix microbatch")
     parser.add_argument("--shape-states", type=int, default=37, help="Shared-mode states")
     parser.add_argument("--direct-states", type=int, default=3, help="Fresh-mode states (slow)")
     args = parser.parse_args()
-    args.model = args.model or (
-        "models/Spark-X2.5-4B" if args.system == "rizzo" else "Qwen/Qwen3.5-4B"
-    )
     sys.path[:0] = [str(args.semif / "benchmarks"), str(args.semif / "src")]
     import evaluate
-    import mlx.core as mx
 
     args.output.mkdir(parents=True)
     data = args.semif / "benchmarks" / "data"
@@ -191,7 +232,7 @@ def main():
     for name in ("authored144", "perturbations108"):
         gold = golds[name] = read(data / f"{name}.jsonl")
         system.direct(gold[0])
-        mx.reset_peak_memory()
+        system.memory.reset()
         predictions, seconds = [], []
         for index, row in enumerate(gold):
             mark = time.perf_counter()
@@ -209,7 +250,7 @@ def main():
             },
             "errors": len(result["errors"]),
             "latency": latency(seconds),
-            "peak_mlx_bytes": mx.get_peak_memory(),
+            system.memory.key: system.memory.peak(),
         }
         scored[name] = predictions
         write(args.output / f"{name}.jsonl", predictions)
@@ -239,8 +280,7 @@ def main():
             return [system.direct(row) for row in group]
 
         run(groups[0])
-        mx.clear_cache()
-        mx.reset_peak_memory()
+        system.memory.reset()
         predictions, seconds = [], []
         for index, group in enumerate(selected):
             mark = time.perf_counter()
@@ -255,7 +295,7 @@ def main():
             "decisions_per_second": len(predictions) / sum(seconds),
             "state_latency": latency(seconds),
             "input_tokens_per_decision": statistics.mean(p["input_tokens"] for p in predictions),
-            "peak_mlx_bytes": mx.get_peak_memory(),
+            system.memory.key: system.memory.peak(),
         }
         write(args.output / f"shape777-{mode}.jsonl", predictions)
     if "direct" in runs and "shared" in runs:

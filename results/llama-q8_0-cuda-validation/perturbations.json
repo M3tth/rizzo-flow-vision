@@ -1,0 +1,1546 @@
+{
+  "dataset_sha256": "abbbd248c9116294be92af5b003b6f1f8c78563f0418bef08715eb6faaaa0050",
+  "summary": {
+    "requests": 9,
+    "repeats": 1,
+    "warmup_excluded": true,
+    "decisions_per_second": 18.941179640057264,
+    "latency_seconds": {
+      "median": 0.05249409999669297,
+      "p95": 0.056967500000610016
+    },
+    "labeled_decision_coverage": 0.8888888888888888,
+    "status_accuracy": 1,
+    "categorical": {
+      "rows": 9,
+      "accuracy": 1,
+      "accepted_accuracy": 1,
+      "nll": 0.01772689140757868,
+      "brier": 0.0020358926032161555,
+      "ece_10_bins": 0.017192819196020892,
+      "reliability_bins": [
+        {
+          "lower": 0.9,
+          "count": 9,
+          "accuracy": 1,
+          "mean_top_probability": 0.9828071808039791
+        }
+      ]
+    },
+    "numeric": {
+      "rows": 0,
+      "by_type_unit_and_support": {}
+    },
+    "mode_comparison": {
+      "decisions": 9,
+      "changed_argmaxes": 0,
+      "max_probability_delta": 0.0,
+      "median_seconds": {
+        "shared": 0.05249409999669297,
+        "direct": 0.05307869999523973
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "paid-irrelevant",
+      "expected": {
+        "paid": {
+          "label": "true",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "status": "ok",
+            "probabilities": {
+              "false": 4.3963339465850685e-05,
+              "true": 0.9986535794249797,
+              "__insufficient__": 0.0013024572355543201
+            },
+            "option_logits": {
+              "false": -9.986676216125488,
+              "true": 0.044130921363830566,
+              "__insufficient__": -6.598024368286133
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9986535794249797,
+              "entropy_nats": 0.01043943880962593,
+              "concentration": 0.9904976132915079,
+              "unavailable_probability": 0.0013024572355543201
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "750eb154ef3a82c2eb50a99383f1792e0127e440bbff9fe1187ac9dc79ad63fd",
+            "input_tokens": 253,
+            "type": "boolean",
+            "value": true,
+            "probability_true_given_available": 0.9999559793254881
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.05328929999814136,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 253,
+          "logical_input_tokens": 253,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.00006091594696e-07,
+          "compile_seconds": 0.0028128999983891845,
+          "total_seconds": 0.056237100005091634
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.05328929999814136,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 253,
+          "logical_input_tokens": 253,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.00006091594696e-07,
+          "compile_seconds": 0.0028128999983891845,
+          "total_seconds": 0.056237100005091634
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "status": "ok",
+            "probabilities": {
+              "false": 4.3963339465850685e-05,
+              "true": 0.9986535794249797,
+              "__insufficient__": 0.0013024572355543201
+            },
+            "option_logits": {
+              "false": -9.986676216125488,
+              "true": 0.044130921363830566,
+              "__insufficient__": -6.598024368286133
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9986535794249797,
+              "entropy_nats": 0.01043943880962593,
+              "concentration": 0.9904976132915079,
+              "unavailable_probability": 0.0013024572355543201
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "750eb154ef3a82c2eb50a99383f1792e0127e440bbff9fe1187ac9dc79ad63fd",
+            "input_tokens": 253,
+            "type": "boolean",
+            "value": true,
+            "probability_true_given_available": 0.9999559793254881
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.045865100000810344,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 253,
+          "logical_input_tokens": 253,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.002751100000750739,
+          "total_seconds": 0.04874249999556923
+        }
+      }
+    },
+    {
+      "id": "unpaid-irrelevant",
+      "expected": {
+        "paid": {
+          "label": "false",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "status": "ok",
+            "probabilities": {
+              "false": 0.9386736986006815,
+              "true": 0.00046702954891158545,
+              "__insufficient__": 0.06085927185040685
+            },
+            "option_logits": {
+              "false": -0.7732052803039551,
+              "true": -8.379035949707031,
+              "__insufficient__": -3.5091090202331543
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9386736986006815,
+              "entropy_nats": 0.23334461612492327,
+              "concentration": 0.7876005770809136,
+              "unavailable_probability": 0.06085927185040685
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "15687bc4675a397fb3d788976d13641c786366a08bfa086395945e24f141d1f1",
+            "input_tokens": 257,
+            "type": "boolean",
+            "value": false,
+            "probability_true_given_available": 0.0004972945320258687
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.053965799997968134,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0028769999989890493,
+          "total_seconds": 0.056967500000610016
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.053965799997968134,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0028769999989890493,
+          "total_seconds": 0.056967500000610016
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "status": "ok",
+            "probabilities": {
+              "false": 0.9386736986006815,
+              "true": 0.00046702954891158545,
+              "__insufficient__": 0.06085927185040685
+            },
+            "option_logits": {
+              "false": -0.7732052803039551,
+              "true": -8.379035949707031,
+              "__insufficient__": -3.5091090202331543
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9386736986006815,
+              "entropy_nats": 0.23334461612492327,
+              "concentration": 0.7876005770809136,
+              "unavailable_probability": 0.06085927185040685
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "15687bc4675a397fb3d788976d13641c786366a08bfa086395945e24f141d1f1",
+            "input_tokens": 257,
+            "type": "boolean",
+            "value": false,
+            "probability_true_given_available": 0.0004972945320258687
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.05673779999779072,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0026907999999821186,
+          "total_seconds": 0.05955389999871841
+        }
+      }
+    },
+    {
+      "id": "payment-unknown-irrelevant",
+      "expected": {
+        "paid": {
+          "label": "__insufficient__",
+          "status": "insufficient_evidence"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "paid": {
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "false": 0.0015945960006061035,
+              "true": 0.0001338101201393205,
+              "__insufficient__": 0.9982715938792547
+            },
+            "option_logits": {
+              "false": -6.517937660217285,
+              "true": -8.995891571044922,
+              "__insufficient__": -0.07853269577026367
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9982715938792547,
+              "entropy_nats": 0.01319138380299463,
+              "concentration": 0.9879926850090244,
+              "unavailable_probability": 0.9982715938792547
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "ded379f5c6d6f8a7e5c529a36cf91fdcd171078515806c459e1b3ef4671ea279",
+            "input_tokens": 257,
+            "type": "boolean",
+            "value": null,
+            "probability_true_given_available": 0.07741821701117971
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.05028009999659844,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0028001999962725677,
+          "total_seconds": 0.053208099998300895
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.05028009999659844,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0028001999962725677,
+          "total_seconds": 0.053208099998300895
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "paid": {
+            "status": "insufficient_evidence",
+            "probabilities": {
+              "false": 0.0015945960006061035,
+              "true": 0.0001338101201393205,
+              "__insufficient__": 0.9982715938792547
+            },
+            "option_logits": {
+              "false": -6.517937660217285,
+              "true": -8.995891571044922,
+              "__insufficient__": -0.07853269577026367
+            },
+            "legend": {
+              "false": "No. The evidence supports a negative answer to the question.",
+              "true": "Yes. The evidence supports an affirmative answer to the question.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9982715938792547,
+              "entropy_nats": 0.01319138380299463,
+              "concentration": 0.9879926850090244,
+              "unavailable_probability": 0.9982715938792547
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "ded379f5c6d6f8a7e5c529a36cf91fdcd171078515806c459e1b3ef4671ea279",
+            "input_tokens": 257,
+            "type": "boolean",
+            "value": null,
+            "probability_true_given_available": 0.07741821701117971
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.050747699999192264,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 257,
+          "logical_input_tokens": 257,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 1.1000010999850929e-06,
+          "compile_seconds": 0.002697800002351869,
+          "total_seconds": 0.05357260000164388
+        }
+      }
+    },
+    {
+      "id": "login-reordered",
+      "expected": {
+        "route": {
+          "label": "access",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 2.5823350710546584e-07,
+              "billing": 5.795317946828883e-07,
+              "access": 0.9999930172866128,
+              "__insufficient__": 6.144948085313186e-06
+            },
+            "option_logits": {
+              "sales": -15.770532608032227,
+              "billing": -14.962176322937012,
+              "access": -0.6011379957199097,
+              "__insufficient__": -12.601011276245117
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999930172866128,
+              "entropy_nats": 9.296126039227826e-05,
+              "concentration": 0.9999329426253186,
+              "unavailable_probability": 6.144948085313186e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "1e254cc4829e9fadec79fa251e9508e2807da8bfec9e21aa77c3355ad6a6900f",
+            "input_tokens": 221,
+            "type": "choice",
+            "choice": "access"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04612020000058692,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 221,
+          "logical_input_tokens": 221,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.999995770864189e-07,
+          "compile_seconds": 0.003146099996229168,
+          "total_seconds": 0.04939459999877727
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.04612020000058692,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 221,
+          "logical_input_tokens": 221,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.999995770864189e-07,
+          "compile_seconds": 0.003146099996229168,
+          "total_seconds": 0.04939459999877727
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 2.5823350710546584e-07,
+              "billing": 5.795317946828883e-07,
+              "access": 0.9999930172866128,
+              "__insufficient__": 6.144948085313186e-06
+            },
+            "option_logits": {
+              "sales": -15.770532608032227,
+              "billing": -14.962176322937012,
+              "access": -0.6011379957199097,
+              "__insufficient__": -12.601011276245117
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999930172866128,
+              "entropy_nats": 9.296126039227826e-05,
+              "concentration": 0.9999329426253186,
+              "unavailable_probability": 6.144948085313186e-06
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "1e254cc4829e9fadec79fa251e9508e2807da8bfec9e21aa77c3355ad6a6900f",
+            "input_tokens": 221,
+            "type": "choice",
+            "choice": "access"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.048754199997347314,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 221,
+          "logical_input_tokens": 221,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.00005330145359e-07,
+          "compile_seconds": 0.0028782000008504838,
+          "total_seconds": 0.05175900000176625
+        }
+      }
+    },
+    {
+      "id": "login-irrelevant",
+      "expected": {
+        "route": {
+          "label": "access",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 0.928515233509482,
+              "billing": 7.119935950972139e-06,
+              "sales": 1.7927918334746954e-06,
+              "__insufficient__": 0.07147585376273352
+            },
+            "option_logits": {
+              "access": -1.3686437606811523,
+              "billing": -13.147087097167969,
+              "sales": -14.526211738586426,
+              "__insufficient__": -3.932870864868164
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.928515233509482,
+              "entropy_nats": 0.2575562637999004,
+              "concentration": 0.8142124277329971,
+              "unavailable_probability": 0.07147585376273352
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "11a75f7fb142a91911c6cbe130608dfa3fd674d0458e9abede07f7cf7a68a8eb",
+            "input_tokens": 243,
+            "type": "choice",
+            "choice": "access"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04919080000399845,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 243,
+          "logical_input_tokens": 243,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0031780999997863546,
+          "total_seconds": 0.05249409999669297
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.04919080000399845,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 243,
+          "logical_input_tokens": 243,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0031780999997863546,
+          "total_seconds": 0.05249409999669297
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 0.928515233509482,
+              "billing": 7.119935950972139e-06,
+              "sales": 1.7927918334746954e-06,
+              "__insufficient__": 0.07147585376273352
+            },
+            "option_logits": {
+              "access": -1.3686437606811523,
+              "billing": -13.147087097167969,
+              "sales": -14.526211738586426,
+              "__insufficient__": -3.932870864868164
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.928515233509482,
+              "entropy_nats": 0.2575562637999004,
+              "concentration": 0.8142124277329971,
+              "unavailable_probability": 0.07147585376273352
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "11a75f7fb142a91911c6cbe130608dfa3fd674d0458e9abede07f7cf7a68a8eb",
+            "input_tokens": 243,
+            "type": "choice",
+            "choice": "access"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.049881099999765866,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 243,
+          "logical_input_tokens": 243,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.999988156370819e-07,
+          "compile_seconds": 0.0032862000007298775,
+          "total_seconds": 0.053377000003820285
+        }
+      }
+    },
+    {
+      "id": "refund-reordered",
+      "expected": {
+        "route": {
+          "label": "billing",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 3.706573943252603e-06,
+              "billing": 0.9991793341235113,
+              "access": 5.562494050351997e-07,
+              "__insufficient__": 0.0008164030531404059
+            },
+            "option_logits": {
+              "sales": -12.898107528686523,
+              "billing": -0.39352595806121826,
+              "access": -14.794754028320312,
+              "__insufficient__": -7.503307342529297
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9991793341235113,
+              "entropy_nats": 0.006679809867287354,
+              "concentration": 0.9951815357151916,
+              "unavailable_probability": 0.0008164030531404059
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "aa9f17e7501c0e3cfc9d1de4d5419e8ba66e7f2d4ea01626dab44f2742d7a304",
+            "input_tokens": 223,
+            "type": "choice",
+            "choice": "billing"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04603779999888502,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 223,
+          "logical_input_tokens": 223,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0030483000009553507,
+          "total_seconds": 0.04921509999985574
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.04603779999888502,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 223,
+          "logical_input_tokens": 223,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0030483000009553507,
+          "total_seconds": 0.04921509999985574
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 3.706573943252603e-06,
+              "billing": 0.9991793341235113,
+              "access": 5.562494050351997e-07,
+              "__insufficient__": 0.0008164030531404059
+            },
+            "option_logits": {
+              "sales": -12.898107528686523,
+              "billing": -0.39352595806121826,
+              "access": -14.794754028320312,
+              "__insufficient__": -7.503307342529297
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9991793341235113,
+              "entropy_nats": 0.006679809867287354,
+              "concentration": 0.9951815357151916,
+              "unavailable_probability": 0.0008164030531404059
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "aa9f17e7501c0e3cfc9d1de4d5419e8ba66e7f2d4ea01626dab44f2742d7a304",
+            "input_tokens": 223,
+            "type": "choice",
+            "choice": "billing"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04653669999970589,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 223,
+          "logical_input_tokens": 223,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 7.00005330145359e-07,
+          "compile_seconds": 0.0029670999938389286,
+          "total_seconds": 0.049634200004220475
+        }
+      }
+    },
+    {
+      "id": "refund-irrelevant",
+      "expected": {
+        "route": {
+          "label": "billing",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 8.783567227311718e-07,
+              "billing": 0.9999523611732996,
+              "sales": 3.9050735285655275e-07,
+              "__insufficient__": 4.636996262486453e-05
+            },
+            "option_logits": {
+              "access": -14.373647689819336,
+              "billing": -0.4284822940826416,
+              "sales": -15.184253692626953,
+              "__insufficient__": -10.407293319702148
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999523611732996,
+              "entropy_nats": 0.000528368122767099,
+              "concentration": 0.9996188629647601,
+              "unavailable_probability": 4.636996262486453e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "ec5494f9b5d696c22afa7f1bd309cc1c4c52c9cc7b2b3dd76f13ecab9af41541",
+            "input_tokens": 245,
+            "type": "choice",
+            "choice": "billing"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04906779999873834,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 245,
+          "logical_input_tokens": 245,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.999995770864189e-07,
+          "compile_seconds": 0.0032798000029288232,
+          "total_seconds": 0.05248569999821484
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.04906779999873834,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 245,
+          "logical_input_tokens": 245,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.999995770864189e-07,
+          "compile_seconds": 0.0032798000029288232,
+          "total_seconds": 0.05248569999821484
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 8.783567227311718e-07,
+              "billing": 0.9999523611732996,
+              "sales": 3.9050735285655275e-07,
+              "__insufficient__": 4.636996262486453e-05
+            },
+            "option_logits": {
+              "access": -14.373647689819336,
+              "billing": -0.4284822940826416,
+              "sales": -15.184253692626953,
+              "__insufficient__": -10.407293319702148
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9999523611732996,
+              "entropy_nats": 0.000528368122767099,
+              "concentration": 0.9996188629647601,
+              "unavailable_probability": 4.636996262486453e-05
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "ec5494f9b5d696c22afa7f1bd309cc1c4c52c9cc7b2b3dd76f13ecab9af41541",
+            "input_tokens": 245,
+            "type": "choice",
+            "choice": "billing"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04999060000409372,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 245,
+          "logical_input_tokens": 245,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 8.00006091594696e-07,
+          "compile_seconds": 0.00311429999419488,
+          "total_seconds": 0.05323010000574868
+        }
+      }
+    },
+    {
+      "id": "purchase-reordered",
+      "expected": {
+        "route": {
+          "label": "sales",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 0.9822679135277298,
+              "billing": 4.5654884759573806e-06,
+              "access": 8.457523296200805e-07,
+              "__insufficient__": 0.01772667523146448
+            },
+            "option_logits": {
+              "sales": -1.12651526927948,
+              "billing": -13.405609130859375,
+              "access": -15.091663360595703,
+              "__insufficient__": -5.141308784484863
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9822679135277298,
+              "entropy_nats": 0.08912799535463474,
+              "concentration": 0.9357077415487469,
+              "unavailable_probability": 0.01772667523146448
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "2baeb9ed7e2f72d85a06c14bf0844d396365dc430977a12ac7d86e462fa8e920",
+            "input_tokens": 226,
+            "type": "choice",
+            "choice": "sales"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.048787600004288834,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 226,
+          "logical_input_tokens": 226,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.003252200003771577,
+          "total_seconds": 0.052172499999869615
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.048787600004288834,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 226,
+          "logical_input_tokens": 226,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.003252200003771577,
+          "total_seconds": 0.052172499999869615
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "sales": 0.9822679135277298,
+              "billing": 4.5654884759573806e-06,
+              "access": 8.457523296200805e-07,
+              "__insufficient__": 0.01772667523146448
+            },
+            "option_logits": {
+              "sales": -1.12651526927948,
+              "billing": -13.405609130859375,
+              "access": -15.091663360595703,
+              "__insufficient__": -5.141308784484863
+            },
+            "legend": {
+              "sales": "Requests to purchase a new product.",
+              "billing": "Invoice, payment or refund problems.",
+              "access": "Login, password or account access problems.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.9822679135277298,
+              "entropy_nats": 0.08912799535463474,
+              "concentration": 0.9357077415487469,
+              "unavailable_probability": 0.01772667523146448
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "2baeb9ed7e2f72d85a06c14bf0844d396365dc430977a12ac7d86e462fa8e920",
+            "input_tokens": 226,
+            "type": "choice",
+            "choice": "sales"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.048760500001662876,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 226,
+          "logical_input_tokens": 226,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.00296580000576796,
+          "total_seconds": 0.051853199998731725
+        }
+      }
+    },
+    {
+      "id": "purchase-irrelevant",
+      "expected": {
+        "route": {
+          "label": "sales",
+          "status": "ok"
+        }
+      },
+      "response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "shared",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 8.325684897113317e-07,
+              "billing": 6.28498541914935e-06,
+              "sales": 0.999757895710261,
+              "__insufficient__": 0.00023498673583016415
+            },
+            "option_logits": {
+              "access": -14.388553619384766,
+              "billing": -12.36715030670166,
+              "sales": -0.3900454044342041,
+              "__insufficient__": -8.745784759521484
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999757895710261,
+              "entropy_nats": 0.0022925521647304253,
+              "concentration": 0.9983462731804821,
+              "unavailable_probability": 0.00023498673583016415
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "01310e0120298794b81a6ae8ef9c87fb1ebbc15f1abe693d9deb73f8963af108",
+            "input_tokens": 248,
+            "type": "choice",
+            "choice": "sales"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.049733300002117176,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 248,
+          "logical_input_tokens": 248,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0031209000007947907,
+          "total_seconds": 0.052980499996920116
+        }
+      },
+      "repeat_timings": [
+        {
+          "inference_seconds": 0.049733300002117176,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 248,
+          "logical_input_tokens": 248,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.0031209000007947907,
+          "total_seconds": 0.052980499996920116
+        }
+      ],
+      "alternate_mode_response": {
+        "model": {
+          "source": "XHToken/Spark-X2.5-4B",
+          "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+          "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+          "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+          "source_files": {
+            "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+          },
+          "precision": "q8_0",
+          "device": "gpu",
+          "backend": "cuda",
+          "runtime": "llama.cpp",
+          "llama_cpp_release": "b11081",
+          "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+          "prompt_version": "spark-decisions-v3",
+          "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+          "device_name": "NVIDIA GeForce RTX 5060 Ti",
+          "context_cells": 10240,
+          "load_seconds": 12.010803199998918
+        },
+        "mode": "direct",
+        "answers": {
+          "route": {
+            "status": "ok",
+            "probabilities": {
+              "access": 8.325684897113317e-07,
+              "billing": 6.28498541914935e-06,
+              "sales": 0.999757895710261,
+              "__insufficient__": 0.00023498673583016415
+            },
+            "option_logits": {
+              "access": -14.388553619384766,
+              "billing": -12.36715030670166,
+              "sales": -0.3900454044342041,
+              "__insufficient__": -8.745784759521484
+            },
+            "legend": {
+              "access": "Login, password or account access problems.",
+              "billing": "Invoice, payment or refund problems.",
+              "sales": "Requests to purchase a new product.",
+              "__insufficient__": "Cannot determine the answer: the required information is not provided or is contradictory. A known value outside the numeric range is not missing information."
+            },
+            "uncertainty": {
+              "top_probability": 0.999757895710261,
+              "entropy_nats": 0.0022925521647304253,
+              "concentration": 0.9983462731804821,
+              "unavailable_probability": 0.00023498673583016415
+            },
+            "probability_status": "uncalibrated_conditional_option_scores",
+            "temperature": 1.0,
+            "prompt_sha256": "01310e0120298794b81a6ae8ef9c87fb1ebbc15f1abe693d9deb73f8963af108",
+            "input_tokens": 248,
+            "type": "choice",
+            "choice": "sales"
+          }
+        },
+        "calibration": null,
+        "timing": {
+          "inference_seconds": 0.04977399999916088,
+          "prefill_seconds": 0.0,
+          "shared_prefix_tokens": 0,
+          "evaluated_tokens_including_padding": 248,
+          "logical_input_tokens": 248,
+          "batches": 1,
+          "generated_tokens": 0,
+          "peak_device_bytes": 6008340480,
+          "queue_seconds": 6.999980541877449e-07,
+          "compile_seconds": 0.003177099999447819,
+          "total_seconds": 0.05307869999523973
+        }
+      }
+    }
+  ]
+}

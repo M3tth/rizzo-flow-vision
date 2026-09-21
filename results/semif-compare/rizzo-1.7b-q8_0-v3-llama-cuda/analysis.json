@@ -1,0 +1,79 @@
+{
+  "run": "rizzo-1.7b-q8_0-v3-llama-cuda",
+  "held_out": {
+    "authored144": 0.6895061728395061,
+    "perturbations108": 0.513888888888889
+  },
+  "against": {
+    "rizzo-4b-llama-q8_0": {
+      "folder": "../results/semif-compare/rizzo-q8_0-v3-llama-cuda",
+      "held_out": {
+        "authored144": 0.79320987654321,
+        "perturbations108": 0.8611111111111112
+      },
+      "paired_difference_ours_minus_theirs": {
+        "authored144": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": -0.13421380248005632,
+          "paired_source_group_bootstrap_95": [
+            -0.21234567901234547,
+            -0.05141883114019341
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        },
+        "perturbations108": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": -0.20864197530864192,
+          "paired_source_group_bootstrap_95": [
+            -0.3294753086419754,
+            -0.11763468013468004
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        }
+      },
+      "different_argmax": 79,
+      "rows": 252
+    },
+    "rizzo-1.7b-mlx-q8": {
+      "folder": "../results/semif-compare/rizzo-1.7b-q8-v3-cuda",
+      "held_out": {
+        "authored144": 0.6969135802469135,
+        "perturbations108": 0.513888888888889
+      },
+      "paired_difference_ours_minus_theirs": {
+        "authored144": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": -0.022564581388110794,
+          "paired_source_group_bootstrap_95": [
+            -0.05980861244019131,
+            0.01238390092879249
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        },
+        "perturbations108": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.006172839506172867,
+          "paired_source_group_bootstrap_95": [
+            0.0,
+            0.02083333333333337
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        }
+      },
+      "different_argmax": 10,
+      "rows": 252
+    }
+  }
+}

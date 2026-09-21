@@ -1,0 +1,114 @@
+{
+  "run": "rizzo-bf16-v3-llama-cuda",
+  "held_out": {
+    "authored144": 0.8240740740740741,
+    "perturbations108": 0.875
+  },
+  "against": {
+    "semif-bf16": {
+      "folder": "../.research/SemIf/results/mlx/2026-09-17-bf16-fixed",
+      "held_out": {
+        "authored144": 0.8021604938271606,
+        "perturbations108": 0.8240740740740741
+      },
+      "paired_difference_ours_minus_theirs": {
+        "authored144": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.015333267810047957,
+          "paired_source_group_bootstrap_95": [
+            -0.04131079332317733,
+            0.07907647907647908
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        },
+        "perturbations108": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.0793650793650793,
+          "paired_source_group_bootstrap_95": [
+            -0.00802469135802475,
+            0.16919191919191923
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        }
+      },
+      "different_argmax": 53,
+      "rows": 252
+    },
+    "rizzo-mlx-bf16": {
+      "folder": "../results/semif-compare/rizzo-bf16-v3-cuda-full",
+      "held_out": {
+        "authored144": 0.8055555555555555,
+        "perturbations108": 0.8425925925925926
+      },
+      "paired_difference_ours_minus_theirs": {
+        "authored144": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.0092592592592593,
+          "paired_source_group_bootstrap_95": [
+            0.0,
+            0.02777777777777779
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        },
+        "perturbations108": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.01728395061728394,
+          "paired_source_group_bootstrap_95": [
+            0.0,
+            0.04629629629629639
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        }
+      },
+      "different_argmax": 4,
+      "rows": 252
+    },
+    "rizzo-llama-cuda-q8_0": {
+      "folder": "../results/semif-compare/rizzo-q8_0-v3-llama-cuda",
+      "held_out": {
+        "authored144": 0.79320987654321,
+        "perturbations108": 0.8611111111111112
+      },
+      "paired_difference_ours_minus_theirs": {
+        "authored144": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.01666666666666683,
+          "paired_source_group_bootstrap_95": [
+            0.0,
+            0.04344729344729348
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        },
+        "perturbations108": {
+          "metric": "mean_family_balanced_accuracy",
+          "difference": 0.011111111111111183,
+          "paired_source_group_bootstrap_95": [
+            0.0,
+            0.03703703703703698
+          ],
+          "source_groups": 36,
+          "samples": 1000,
+          "seed": 217,
+          "method": "Paired source-group bootstrap stratified by family; represented gold classes per draw"
+        }
+      },
+      "different_argmax": 3,
+      "rows": 252
+    }
+  }
+}

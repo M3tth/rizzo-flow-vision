@@ -1,0 +1,238 @@
+{
+  "system": "rizzo",
+  "model": {
+    "source": "XHToken/Spark-X2.5-4B",
+    "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+    "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+    "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+    "source_files": {
+      "Spark-X2.5-4B-Q4_K_M.gguf": "adfcfa19a4ed6a5985da8bf565fe15f8e1a7e131d79bae2d19d48d1c40109428"
+    },
+    "precision": "q4_k_m",
+    "device": "gpu",
+    "backend": "cuda",
+    "runtime": "llama.cpp",
+    "llama_cpp_release": "b11081",
+    "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+    "prompt_version": "spark-decisions-v3",
+    "fingerprint": "f41bf49870fcb7a8428267605cb1938f712cc7c7828e42d2a837e547ebb03020",
+    "device_name": "NVIDIA GeForce RTX 5060 Ti",
+    "context_cells": 10240,
+    "load_seconds": 6.92743459999474,
+    "batch_size": 4
+  },
+  "quality": {
+    "authored144": {
+      "mean_family_balanced_accuracy": 0.7692843219159009,
+      "mean_family_macro_f1": 0.7613130902604587,
+      "families": {
+        "evidence_interpretation": {
+          "n": 48,
+          "accuracy": 0.7708333333333334,
+          "balanced_accuracy": 0.765079365079365,
+          "macro_f1": 0.7682539682539682,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.3333333333333333,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 0.8207993752200777,
+          "nll_valid_distributions_only": 0.8207993752200777,
+          "brier": 0.35334053101046536,
+          "brier_valid_distributions_only": 0.35334053101046536,
+          "nll_probability_floor": 1e-12
+        },
+        "rule_application": {
+          "n": 48,
+          "accuracy": 0.7083333333333334,
+          "balanced_accuracy": 0.7269841269841271,
+          "macro_f1": 0.6975013290802764,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.25,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 1.1166925650651682,
+          "nll_valid_distributions_only": 1.1166925650651682,
+          "brier": 0.48049113177866887,
+          "brier_valid_distributions_only": 0.48049113177866887,
+          "nll_probability_floor": 1e-12
+        },
+        "candidate_selection": {
+          "n": 48,
+          "accuracy": 0.8541666666666666,
+          "balanced_accuracy": 0.8157894736842105,
+          "macro_f1": 0.8181839734471313,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.4166666666666667,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 0.7294658626838407,
+          "nll_valid_distributions_only": 0.7294658626838407,
+          "brier": 0.22465533488599318,
+          "brier_valid_distributions_only": 0.22465533488599318,
+          "nll_probability_floor": 1e-12
+        }
+      },
+      "errors": 32,
+      "latency": {
+        "calls": 144,
+        "total_seconds": 7.231854100013152,
+        "p50_seconds": 0.05054085000301711,
+        "p95_seconds": 0.05403600000136066,
+        "max_seconds": 0.055521399997815024
+      },
+      "peak_device_bytes": 4232052736
+    },
+    "perturbations108": {
+      "mean_family_balanced_accuracy": 0.834567901234568,
+      "mean_family_macro_f1": 0.8349329181563064,
+      "families": {
+        "evidence_interpretation": {
+          "n": 36,
+          "accuracy": 0.8888888888888888,
+          "balanced_accuracy": 0.9259259259259259,
+          "macro_f1": 0.91,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.8333333333333334,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 0.24455841210178633,
+          "nll_valid_distributions_only": 0.24455841210178633,
+          "brier": 0.13900251320069434,
+          "brier_valid_distributions_only": 0.13900251320069434,
+          "nll_probability_floor": 1e-12
+        },
+        "rule_application": {
+          "n": 36,
+          "accuracy": 0.5277777777777778,
+          "balanced_accuracy": 0.6111111111111112,
+          "macro_f1": 0.6120401337792643,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.3333333333333333,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 1.8482134925837852,
+          "nll_valid_distributions_only": 1.8482134925837852,
+          "brier": 0.7153428748338104,
+          "brier_valid_distributions_only": 0.7153428748338104,
+          "nll_probability_floor": 1e-12
+        },
+        "candidate_selection": {
+          "n": 36,
+          "accuracy": 0.9722222222222222,
+          "balanced_accuracy": 0.9666666666666667,
+          "macro_f1": 0.9827586206896552,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.9166666666666666,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 0.1136998132252504,
+          "nll_valid_distributions_only": 0.1136998132252504,
+          "brier": 0.05899663760805402,
+          "brier_valid_distributions_only": 0.05899663760805402,
+          "nll_probability_floor": 1e-12
+        }
+      },
+      "errors": 22,
+      "latency": {
+        "calls": 108,
+        "total_seconds": 5.671346599971002,
+        "p50_seconds": 0.05103210000015679,
+        "p95_seconds": 0.05574490000435617,
+        "max_seconds": 0.06042429999797605
+      },
+      "peak_device_bytes": 4232052736
+    }
+  },
+  "shape": {
+    "shared": {
+      "states": 37,
+      "decisions": 777,
+      "decisions_per_second": 19.984249222361402,
+      "state_latency": {
+        "calls": 37,
+        "total_seconds": 38.880620000003546,
+        "p50_seconds": 1.0530788999967626,
+        "p95_seconds": 1.0781145000000834,
+        "max_seconds": 1.116564299998572
+      },
+      "input_tokens_per_decision": 2111.063063063063,
+      "peak_device_bytes": 4236247040
+    },
+    "direct": {
+      "states": 3,
+      "decisions": 63,
+      "decisions_per_second": 2.3864522605231206,
+      "state_latency": {
+        "calls": 3,
+        "total_seconds": 26.399019599994062,
+        "p50_seconds": 8.806326499994611,
+        "p95_seconds": 8.813599799999793,
+        "max_seconds": 8.813599799999793
+      },
+      "input_tokens_per_decision": 2144.3333333333335,
+      "peak_device_bytes": 4236247040
+    },
+    "shared_vs_direct": {
+      "rows": 63,
+      "argmax_flips": 2,
+      "max_probability_difference": 0.20417696072473568
+    }
+  },
+  "stability": {
+    "base_original": {
+      "mean_family_balanced_accuracy": 0.7999999999999999,
+      "accuracy": 0.7777777777777778
+    },
+    "variants": {
+      "option_reversal": {
+        "mean_family_balanced_accuracy": 0.9074074074074074,
+        "accuracy": 0.8611111111111112,
+        "argmax_flips": 6,
+        "flip_rows": [
+          "aef33dfba4338b1af990",
+          "d6a681055a01ed788b91",
+          "7c1aefb79903e6234b4b",
+          "994e845d231fbbc1b314",
+          "854da63689519c5eeffe",
+          "9cb7a576fead7fc845ab"
+        ],
+        "mean_max_probability_movement": 0.14072527716552546,
+        "max_probability_movement": 0.9106018180778229
+      },
+      "criterion_wrapper": {
+        "mean_family_balanced_accuracy": 0.7592592592592592,
+        "accuracy": 0.75,
+        "argmax_flips": 3,
+        "flip_rows": [
+          "d300f689be3cf2daa666",
+          "b7848a79b779fa6213a6",
+          "cbebaf6e14bfd85ee672"
+        ],
+        "mean_max_probability_movement": 0.07325672921552212,
+        "max_probability_movement": 0.4233885859387081
+      },
+      "irrelevant_context": {
+        "mean_family_balanced_accuracy": 0.837037037037037,
+        "accuracy": 0.7777777777777778,
+        "argmax_flips": 2,
+        "flip_rows": [
+          "24c4e34db7cfbd13c409",
+          "2b41fd051743512b14f8"
+        ],
+        "mean_max_probability_movement": 0.06090131458546915,
+        "max_probability_movement": 0.5284718601311891
+      }
+    },
+    "missing_evidence": {
+      "mean_family_balanced_accuracy": 0.7222222222222222,
+      "accuracy": 0.7222222222222222,
+      "confident_non_insufficient_at_0_8": 5
+    }
+  }
+}

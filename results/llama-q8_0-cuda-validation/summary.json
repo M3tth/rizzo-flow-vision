@@ -1,0 +1,161 @@
+{
+  "model": {
+    "source": "XHToken/Spark-X2.5-4B",
+    "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+    "gguf_source": "XHToken/Spark-X2.5-4B-GGUF",
+    "gguf_revision": "9826e0be84e6e6e8b9668abc91421109a1df1e2d",
+    "source_files": {
+      "Spark-X2.5-4B-Q8_0.gguf": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2"
+    },
+    "precision": "q8_0",
+    "device": "gpu",
+    "backend": "cuda",
+    "runtime": "llama.cpp",
+    "llama_cpp_release": "b11081",
+    "llama_cpp_commit": "161755f29e415e2c33efe906e91843c068efd664",
+    "prompt_version": "spark-decisions-v3",
+    "fingerprint": "e331fea17ede161547eb2db79833a868c2f2c893d06a93ac4b498163c7106421",
+    "device_name": "NVIDIA GeForce RTX 5060 Ti",
+    "context_cells": 10240,
+    "load_seconds": 12.010803199998918
+  },
+  "selected_projection_max_logit_delta": null,
+  "validation_seconds": 6.2720109000001685,
+  "suites": {
+    "smoke": {
+      "requests": 17,
+      "repeats": 1,
+      "warmup_excluded": true,
+      "decisions_per_second": 16.811185423116967,
+      "latency_seconds": {
+        "median": 0.06624200000078417,
+        "p95": 0.16898509999737144
+      },
+      "labeled_decision_coverage": 0.8,
+      "status_accuracy": 0.95,
+      "categorical": {
+        "rows": 20,
+        "accuracy": 0.95,
+        "accepted_accuracy": 0.9375,
+        "nll": 0.4586705342154236,
+        "brier": 0.07761407639236649,
+        "ece_10_bins": 0.03891390060044464,
+        "reliability_bins": [
+          {
+            "lower": 0.6,
+            "count": 1,
+            "accuracy": 0,
+            "mean_top_probability": 0.6527235913257087
+          },
+          {
+            "lower": 0.9,
+            "count": 19,
+            "accuracy": 1,
+            "mean_top_probability": 0.9933918725956219
+          }
+        ]
+      },
+      "numeric": {
+        "rows": 7,
+        "by_type_unit_and_support": {
+          "{\"support\":[0.0,2.0],\"type\":\"score\",\"unit\":null}": {
+            "rows": 3,
+            "answered": 3,
+            "mae_on_answered": 0.00020923848978510277,
+            "rmse_on_answered": 0.00035776413838168794
+          },
+          "{\"support\":[0.0,100.0],\"type\":\"numeric\",\"unit\":\"percent\"}": {
+            "rows": 4,
+            "answered": 4,
+            "mae_on_answered": 0.00044645136831830955,
+            "rmse_on_answered": 0.0007035259897537774
+          }
+        }
+      },
+      "mode_comparison": {
+        "decisions": 20,
+        "changed_argmaxes": 0,
+        "max_probability_delta": 1.4723382000350962e-05,
+        "median_seconds": {
+          "shared": 0.06624200000078417,
+          "direct": 0.0574614999932237
+        }
+      }
+    },
+    "perturbations": {
+      "requests": 9,
+      "repeats": 1,
+      "warmup_excluded": true,
+      "decisions_per_second": 18.941179640057264,
+      "latency_seconds": {
+        "median": 0.05249409999669297,
+        "p95": 0.056967500000610016
+      },
+      "labeled_decision_coverage": 0.8888888888888888,
+      "status_accuracy": 1,
+      "categorical": {
+        "rows": 9,
+        "accuracy": 1,
+        "accepted_accuracy": 1,
+        "nll": 0.01772689140757868,
+        "brier": 0.0020358926032161555,
+        "ece_10_bins": 0.017192819196020892,
+        "reliability_bins": [
+          {
+            "lower": 0.9,
+            "count": 9,
+            "accuracy": 1,
+            "mean_top_probability": 0.9828071808039791
+          }
+        ]
+      },
+      "numeric": {
+        "rows": 0,
+        "by_type_unit_and_support": {}
+      },
+      "mode_comparison": {
+        "decisions": 9,
+        "changed_argmaxes": 0,
+        "max_probability_delta": 0.0,
+        "median_seconds": {
+          "shared": 0.05249409999669297,
+          "direct": 0.05307869999523973
+        }
+      }
+    },
+    "long-state": {
+      "requests": 1,
+      "repeats": 2,
+      "warmup_excluded": true,
+      "decisions_per_second": 8.500658163506394,
+      "latency_seconds": {
+        "median": 0.4705517999973381,
+        "p95": 0.47215099999448285
+      },
+      "labeled_decision_coverage": null,
+      "status_accuracy": null,
+      "categorical": {
+        "rows": 0,
+        "accuracy": null,
+        "accepted_accuracy": null,
+        "nll": null,
+        "brier": null,
+        "ece_10_bins": null,
+        "reliability_bins": []
+      },
+      "numeric": {
+        "rows": 0,
+        "by_type_unit_and_support": {}
+      },
+      "mode_comparison": {
+        "decisions": 4,
+        "changed_argmaxes": 0,
+        "max_probability_delta": 0.01168029402239279,
+        "median_seconds": {
+          "shared": 0.4705517999973381,
+          "direct": 1.2967084999982035
+        }
+      }
+    }
+  }
+}
