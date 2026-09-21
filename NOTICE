@@ -1,0 +1,15 @@
+Rizzo Flow
+Copyright 2026 Simone Rizzo — Rizzo AI Academy (https://www.rizzoaiacademy.com)
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project downloads and runs, but does not redistribute, third-party components
+that keep their own licenses:
+
+- XHToken/Spark-X2.5-4B and XHToken/Spark-X2.5-1.7B model weights — Apache-2.0, Copyright 2026 XHToken
+- Spark-MLX-LLM runtime (https://github.com/XHToken/Spark-MLX-LLM) — Apache-2.0
+- MLX and MLX-LM (https://github.com/ml-explore) — MIT
+
+"Jev" and "TypeSafe" are names of TypeSafe's products; this project is independent and not affiliated.
+The SemIf fixtures and evaluator used for the published comparison are MIT-licensed by their author
+and are not included in this repository.

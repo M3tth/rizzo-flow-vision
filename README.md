@@ -20,7 +20,7 @@
 <img src="https://img.shields.io/badge/runtime-MLX%20·%20Apple%20Silicon-blue" alt="MLX on Apple Silicon" />
 <img src="https://img.shields.io/badge/latency-~250%20ms%20%2F%20decision%20(Q8%2C%20M4%20Pro)-brightgreen" alt="about 250 ms per decision" />
 <img src="https://img.shields.io/badge/memory-~5%20GiB%20(Q8)-brightgreen" alt="about 5 GiB at 8 bit" />
-<img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT license" />
+<img src="https://img.shields.io/badge/license-Apache--2.0-brightgreen" alt="Apache-2.0 license" />
 </p>
 
 <sub>A project by <a href="https://www.rizzoaiacademy.com"><b>Rizzo AI Academy</b></a> · 🇮🇹 <a href="docs/README.it.md">Documentazione dettagliata in italiano</a></sub>
@@ -400,8 +400,9 @@ Architecture notes and the current state of the work: [CLAUDE.md](CLAUDE.md) (It
 
 ## License
 
-Released under the **[MIT License](LICENSE)** © 2026 Simone Rizzo — Rizzo AI Academy.
-Model weights and the Spark runtime keep their own Apache-2.0 licenses.
+Released under the **[Apache License 2.0](LICENSE)** © 2026 Simone Rizzo — Rizzo AI Academy — the
+same license as the Spark-X2.5 models it runs. Third-party attributions are in [NOTICE](NOTICE);
+model weights and the Spark runtime are downloaded from their sources and keep their own licenses.
 
 ---
 
