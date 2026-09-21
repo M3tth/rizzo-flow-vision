@@ -108,8 +108,12 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
 
 ### Sito del progetto (GitHub Pages)
 
-`docs/index.html` è la landing page statica (nessuna dipendenza esterna, bilingue con coppie
-`<span lang="en">`/`<span lang="it">` e `html[data-lang]`, tema chiaro/scuro). Pages serve **solo**
+`docs/index.html` è la landing page statica, **nello stile del sito di rizzo-pii** (chiaro, centrato,
+poco testo: hero con mascotte, badge, stats, card brevi, tabella di confronto, footer scuro), senza
+dipendenze esterne, bilingue con `<span class="it">`/`<span class="en">` e `body.lang-it|en`.
+La sezione `#demo` è un'animazione interattiva (state → riccio → bool/classe/score): usa risposte
+e tempi **reali** registrati dal server Q8 (oggetto `DEMO` inline; ~250 ms a decisione) e la fase
+"pensa" dura davvero quei millisecondi. Se cambiano modello o prompt, rigenerare quei dati. Pages serve **solo**
 `docs/`: gli asset del sito stanno in `docs/assets/` (copie di `assets/`), `docs/.nojekyll` disattiva
 Jekyll. URL: <https://rizzo-ai-academy.github.io/rizzo-flow/> (Settings → Pages → branch `main`,
 cartella `/docs`). Anteprima locale: server `site` in `.claude/launch.json` (porta 8020). I numeri
