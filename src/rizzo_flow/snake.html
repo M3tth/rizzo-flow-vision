@@ -781,8 +781,13 @@ function paintFrame(ctx) {
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   if (logo.complete && logo.naturalWidth) ctx.drawImage(logo, x0 - 4, 14, 42, 42);
-  ctx.fillStyle = ink; ctx.font = `600 17px ${sans}`; ctx.fillText("Rizzo Flow snake", x0 + 46, 34);
-  ctx.fillStyle = muted; ctx.font = `11px ${mono}`; ctx.fillText(modelName, x0 + 46, 51);
+  // "Rizzo Flow" in bold, the tagline lighter on the same baseline so both fit the sidebar width.
+  ctx.fillStyle = ink; ctx.font = `600 17px ${sans}`; ctx.fillText("Rizzo Flow", x0 + 46, 34);
+  const tagX = x0 + 46 + ctx.measureText("Rizzo Flow").width + 6;
+  ctx.fillStyle = muted; ctx.font = `13px ${sans}`; ctx.fillText("(local take on Jev)", tagX, 34, right - tagX);
+  // In the recording show only the model's own name: "XHToken/Spark-X2.5-4B · q8" → "Spark X2.5 4B".
+  const gifModel = modelName.split(" · ")[0].split("/").pop().replaceAll("-", " ");
+  ctx.fillStyle = muted; ctx.font = `11px ${mono}`; ctx.fillText(gifModel, x0 + 46, 51);
 
   const stats = [[game.score, t("score")], [game.snake.length, t("length")], [game.steps, t("moves")]];
   stats.forEach(([value, label], i) => {
@@ -791,7 +796,9 @@ function paintFrame(ctx) {
     ctx.fillStyle = muted; ctx.font = `11px ${sans}`; ctx.fillText(label, x, 116);
   });
 
-  const thinking = game.phase === "thinking", last = game.last;
+  // The sidebar keeps the latest finished decision while the next one is computed: with a short hold
+  // the "reveal" frame is merged into the following "thinking" frame, and its bars would never be seen.
+  const last = game.last, thinking = game.phase === "thinking" && !last;
   const looks = thinking ? game.pending.looks : last?.looks, order = thinking ? game.pending.order : last?.order;
   const lethal = !thinking && last && last.looks.find((l) => l.dir === last.applied).lethal;
   ctx.fillStyle = thinking || !last ? muted : lethal ? bad : accent;

@@ -8,9 +8,18 @@
       "port": 8017
     },
     {
+      "name": "rizzo-1.7b-q8",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "--no-sync", "rizzo", "serve", "--size", "1.7b", "--bits", "8"],
+      "port": 8017
+    },
+    {
       "name": "site",
-      "runtimeExecutable": "python3",
+      "runtimeExecutable": "uv",
       "runtimeArgs": [
+        "run",
+        "--no-sync",
+        "python",
         "-m",
         "http.server",
         "8020",

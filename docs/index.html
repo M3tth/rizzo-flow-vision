@@ -281,6 +281,22 @@
   </div>
 </section>
 
+<!-- REAL TIME -->
+<section id="realtime">
+  <div class="wrap">
+    <h2><span class="it">Abbastanza veloce da giocare a Snake</span><span class="en">Fast enough to play Snake</span></h2>
+    <p class="sub">
+      <span class="it">Ogni mossa è una decisione del modello: una <code>POST /v1/decisions</code>, zero token generati.</span>
+      <span class="en">Every move is one model decision: one <code>POST /v1/decisions</code>, zero generated tokens.</span>
+    </p>
+    <a class="shot" href="assets/snake_run.gif" style="max-width:800px;margin-left:auto;margin-right:auto"><img src="assets/snake_run.gif" width="800" height="480" loading="lazy" alt="Una partita a Snake giocata da rizzo-flow: a ogni mossa le barre mostrano la probabilità di ogni direzione, circa 150 ms a decisione" /></a>
+    <p class="small" style="text-align:center;margin-top:12px">
+      <span class="it">Registrazione a <b>velocità reale</b>, non accelerata: 140 mosse in 25,6 s (≈ 5,5 al secondo), circa 150 ms a decisione andata e ritorno. Spark-X2.5-4B a 8 bit su una RTX 5060 Ti (CUDA). È una sola partita, non un benchmark; la demo è inclusa nel backend su <code>/snake</code>.</span>
+      <span class="en">Recorded at <b>real speed</b>, not sped up: 140 moves in 25.6 s (≈ 5.5 per second), about 150 ms per decision round trip. Spark-X2.5-4B at 8 bit on an RTX 5060 Ti (CUDA). One game, not a benchmark; the demo ships with the backend at <code>/snake</code>.</span>
+    </p>
+  </div>
+</section>
+
 <!-- HOW IT WORKS -->
 <section id="how" class="how">
   <div class="wrap">

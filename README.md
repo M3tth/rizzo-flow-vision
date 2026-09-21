@@ -52,6 +52,15 @@ one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</
 Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English · <a href="#quickstart">run it yourself ↓</a></sub>
 </div>
 
+<div align="center">
+<br />
+<a href="assets/snake_run.gif"><img src="assets/snake_run.gif" alt="A game of Snake played by Rizzo Flow: on every move the bars show the probability of each direction, about 150 ms per decision" width="800" /></a>
+
+<sub>🐍 <b>Fast enough to play Snake</b> — every move is one <code>POST /v1/decisions</code>. Recorded at <b>real speed</b>, not sped up:
+140 moves in 25.6 s (≈ 5.5 per second), about <b>150 ms per decision</b> round trip, <b>0 generated tokens</b>.<br />
+Spark-X2.5-4B at 8 bit on an RTX 5060 Ti (CUDA) · one game, not a benchmark · <a href="#snake-demo">about the demo ↓</a></sub>
+</div>
+
 ---
 
 ## Why "System One"
