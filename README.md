@@ -197,22 +197,19 @@ Pro at 8 bit), not 8 full passes.
 
 Rizzo Flow runs [**XHToken/Spark-X2.5-4B**](https://huggingface.co/XHToken/Spark-X2.5-4B) by
 default, or the smaller [**Spark-X2.5-1.7B**](https://huggingface.co/XHToken/Spark-X2.5-1.7B)
-(both Apache-2.0, original weights, pinned revisions). Both have a **native 1,048,576-token context
-window** and a hybrid attention design — one full-attention layer for every three sliding-window
-layers (window 512) — so the KV cache grows far more slowly than in a standard transformer. That
-is what makes the "prefill a large state once, ask many cheap questions" pattern attractive.
+(both Apache-2.0). The model handles up to **1M tokens** (1,048,576, native). Out of the box a
+question (state + question) is limited to **8,192 tokens**; raise it with `--ctx` — it is a
+guard, not a memory reservation. Beyond ~60k tokens also raise the 256 KB `state` cap in
+`schema.py`. Budget ~36 KiB of cache per token on the 4B (× `--batch-size`), and note that we
+have only measured states up to ~2,000 tokens. Oversized inputs are rejected, never truncated.
 
-What is true *today* in this repository, so you can plan around it:
+| Input context | Rizzo Flow | Jev (TypeSafe) | SemIf |
+| --- | ---: | ---: | ---: |
+| Model maximum | **1M tokens** (native) | 32k for state + longest question · 64k per request | 262k native (Qwen3.5-4B; ~1M with YaRN) |
+| Default limit | 8,192 (`--ctx`) | — | 4,096 (`--max-tokens`) |
 
-- The context limit per question (state + question) defaults to **8,192** tokens and is set with
-  `--ctx`. It is a guard, not a reservation: the KV cache grows only with the tokens you actually
-  send, about **36 KiB per token** for the 4B model (only 9 of its 36 layers keep full attention),
-  multiplied by `--batch-size` while questions run. Use `--batch-size 1` for long states.
-- A request's `state` is capped at **256 KB** of JSON (roughly 60k tokens). Inputs over a limit
-  are **rejected, never truncated**.
-- The longest states we have measured are **~2,000 tokens** (the 37×21 systems benchmark below).
-  Long-context behaviour beyond that is the model's published capability, **not something we have
-  validated here**; memory, not the architecture, is the practical ceiling on a 24 GiB machine.
+Sources: [TypeSafe models](https://docs.typesafe.ai/models),
+[Qwen3.5-4B model card](https://huggingface.co/Qwen/Qwen3.5-4B), SemIf's CLI at commit `ca3ba65`.
 
 ---
 

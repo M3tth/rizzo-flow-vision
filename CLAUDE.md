@@ -70,7 +70,9 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
   (state + domanda): guardia, non prenotazione di memoria. KV ≈ 36 KiB/token nel 4B (9 layer su 36 a
   attenzione piena; gli sliding sono fissi, 54 MiB), × `--batch-size` durante i microbatch perché
   `branch_cache` replica il prefisso. Lo `state` ha inoltre un tetto fisso di 256 KB in `schema.py`
-  (~60k token). 1M token = ~36 GiB di sola cache.
+  (~60k token). 1M token = ~36 GiB di sola cache. Confronto pubblicato in README e landing: Jev
+  32k token per state + domanda più lunga, 64k per richiesta (<https://docs.typesafe.ai/models>,
+  `jev-1.13.0`); SemIf = Qwen3.5-4B, 262.144 nativi (~1M con YaRN), default `--max-tokens 4096`.
 - **Proiezione selettiva.** `selected_logits` moltiplica l'hidden state solo per le righe di
   vocabolario delle lettere ammesse (anche con pesi quantizzati): delta 0 rispetto al vocabolario
   pieno.
