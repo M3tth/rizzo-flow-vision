@@ -45,20 +45,11 @@ TypeSafe API can point at `localhost` by changing one URL.
 
 <div align="center">
 <br />
-<a href="assets/playground.webp"><img src="assets/playground.webp" alt="The Rizzo Flow playground: an Italian support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens" width="100%" /></a>
-
-<sub>🦔 <b>The built-in playground</b> — one support ticket, two questions answered in parallel in <b>484 ms</b>:
-one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</b>.<br />
-Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English · <a href="#quickstart">run it yourself ↓</a></sub>
-</div>
-
-<div align="center">
-<br />
 <a href="assets/snake_run.gif"><img src="assets/snake_run.gif" alt="A game of Snake played by Rizzo Flow: on every move the bars show the probability of each direction, about 150 ms per decision" width="800" /></a>
 
 <sub>🐍 <b>Fast enough to play Snake</b> — every move is one <code>POST /v1/decisions</code>. Recorded at <b>real speed</b>, not sped up:
 140 moves in 25.6 s (≈ 5.5 per second), about <b>150 ms per decision</b> round trip, <b>0 generated tokens</b>.<br />
-Spark-X2.5-4B at 8 bit on an RTX 5060 Ti (CUDA) · one game, not a benchmark · <a href="#snake-demo">about the demo ↓</a></sub>
+Spark-X2.5-4B at 8 bit on an RTX 5060 Ti (CUDA) · one game, not a benchmark · <a href="#snake-demo">about the demo ↓</a> · <a href="#quickstart">run it yourself ↓</a></sub>
 </div>
 
 ---
@@ -333,6 +324,15 @@ Set `RIZZO_API_KEY=...` before starting if you want Bearer auth on the Jev-compa
 
 Open <http://127.0.0.1:8017/playground> in your browser.
 
+<div align="center">
+<br />
+<a href="assets/playground.webp"><img src="assets/playground.webp" alt="The Rizzo Flow playground: an Italian support ticket as JSON state on the left with a choice and a score question; on the right the answers as probability bars, with timings and zero generated tokens" width="100%" /></a>
+
+<sub>🦔 <b>The built-in playground</b> — one support ticket, two questions answered in parallel in <b>484 ms</b>:
+one state prefill (116 tokens, 187 ms), one micro-batch, <b>0 generated tokens</b>.<br />
+Spark-X2.5-4B at 8 bit on an M4 Pro · interface in Italian or English</sub>
+</div>
+
 Pick an example from the **Examples…** menu (or write your own state and questions), press
 **Run** or `Cmd/Ctrl + Enter` — or click the hedgehog — and read the probabilities, the timings and
 the generated cURL. The badge in the header shows which checkpoint and precision is answering.
@@ -366,7 +366,7 @@ CUDA round differently, and a calibration is bound to the backend it was fitted 
 
 ### Playground
 
-<http://127.0.0.1:8017/playground> ([screenshot above](#rizzo-flow)) is a single self-contained page served by the backend, with no
+<http://127.0.0.1:8017/playground> ([screenshot above](#quickstart), in step 4) is a single self-contained page served by the backend, with no
 external calls: a question builder for noul / choice / score, ready-made examples, a raw JSON
 editor for both endpoints (so you can try `numeric` and abstention too), probability bars,
 timings (round-trip, inference, state prefill, micro-batches, cached state tokens) and the
