@@ -1,0 +1,241 @@
+{
+  "system": "rizzo",
+  "model": {
+    "source": "XHToken/Spark-X2.5-4B",
+    "requested_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+    "runtime_revision": "de2b4379fa1e2f2e1f99d84c83f0e008f651d86c",
+    "source_files": {
+      "model-00001-of-00005.safetensors": "cc36bfe9ca2b839df89fd8c0c94f566f6717bd07ae859dfad074b303f90bdf5b",
+      "model-00002-of-00005.safetensors": "d98ea6b9059433181042c1ff9fbec167ae2f0850029787c82520d04a04942952",
+      "model-00003-of-00005.safetensors": "0ba22891378cf0ef3d9bf1f73c3159df3fc3dab8aa6e17679a9ffe7e9d867526",
+      "model-00004-of-00005.safetensors": "6aae0314fdf8fc3801677c017f296bcb14bc16095286c3bd1e7ce27e0398a113",
+      "model-00005-of-00005.safetensors": "ffe48ea1c2ee668407dd6ded0c02529da9c54580a8c38f6e53cf902b85a1bd95",
+      "config.json": "767161ece8ed2891e44345afdf98d29c1cacb964116cb6db7d20dc1c757490ad",
+      "tokenizer.json": "710cce15cf3565674c499f9413997c6e8101f2bdd96245cff8f0311fb501248c",
+      "tokenizer_config.json": "0729b0aeb1b88e000687b51c72d5aece759233bb4f6fb353eb497676e04d43b0",
+      "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba"
+    },
+    "precision": "q8",
+    "quantization_group_size": 64,
+    "device": "gpu",
+    "backend": "cuda",
+    "mlx": "0.32.2",
+    "mlx_lm": "0.31.3",
+    "prompt_version": "spark-decisions-v3",
+    "fingerprint": "60c40e2dd559cb920b54c49e4077d49039bc1a749cfdc496a89f1d046f226c70",
+    "load_seconds": 21.958522399999993,
+    "batch_size": 4
+  },
+  "quality": {
+    "authored144": {
+      "mean_family_balanced_accuracy": 0.8285714285714286,
+      "mean_family_macro_f1": 0.8251797804429385,
+      "families": {
+        "evidence_interpretation": {
+          "n": 48,
+          "accuracy": 0.8125,
+          "balanced_accuracy": 0.8095238095238094,
+          "macro_f1": 0.8113652113652114,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.4166666666666667,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 0.8311592817801058,
+          "nll_valid_distributions_only": 0.8311592817801058,
+          "brier": 0.31649630562887077,
+          "brier_valid_distributions_only": 0.31649630562887077,
+          "nll_probability_floor": 1e-12
+        },
+        "rule_application": {
+          "n": 48,
+          "accuracy": 0.7708333333333334,
+          "balanced_accuracy": 0.7873015873015873,
+          "macro_f1": 0.765928515928516,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.3333333333333333,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 0.8949330217927406,
+          "nll_valid_distributions_only": 0.8949330217927406,
+          "brier": 0.39694310044558584,
+          "brier_valid_distributions_only": 0.39694310044558584,
+          "nll_probability_floor": 1e-12
+        },
+        "candidate_selection": {
+          "n": 48,
+          "accuracy": 0.9166666666666666,
+          "balanced_accuracy": 0.8888888888888888,
+          "macro_f1": 0.8982456140350877,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.6666666666666666,
+          "probability_rows": 48,
+          "probability_coverage": 1.0,
+          "nll": 0.6382586520899093,
+          "nll_valid_distributions_only": 0.6382586520899093,
+          "brier": 0.19018937760051605,
+          "brier_valid_distributions_only": 0.19018937760051605,
+          "nll_probability_floor": 1e-12
+        }
+      },
+      "errors": 24,
+      "latency": {
+        "calls": 144,
+        "total_seconds": 12.359205800000154,
+        "p50_seconds": 0.08730945000002066,
+        "p95_seconds": 0.09449370000004365,
+        "max_seconds": 0.10345489999997426
+      },
+      "peak_mlx_bytes": 5111882928
+    },
+    "perturbations108": {
+      "mean_family_balanced_accuracy": 0.865432098765432,
+      "mean_family_macro_f1": 0.884950547981823,
+      "families": {
+        "evidence_interpretation": {
+          "n": 36,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "macro_f1": 1.0,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 1.0,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 0.027432883490860416,
+          "nll_valid_distributions_only": 0.027432883490860416,
+          "brier": 0.011147283644840229,
+          "brier_valid_distributions_only": 0.011147283644840229,
+          "nll_probability_floor": 1e-12
+        },
+        "rule_application": {
+          "n": 36,
+          "accuracy": 0.6111111111111112,
+          "balanced_accuracy": 0.6296296296296295,
+          "macro_f1": 0.672093023255814,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.4166666666666667,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 1.628419012668553,
+          "nll_valid_distributions_only": 1.628419012668553,
+          "brier": 0.6448692568516203,
+          "brier_valid_distributions_only": 0.6448692568516203,
+          "nll_probability_floor": 1e-12
+        },
+        "candidate_selection": {
+          "n": 36,
+          "accuracy": 0.9722222222222222,
+          "balanced_accuracy": 0.9666666666666667,
+          "macro_f1": 0.9827586206896552,
+          "source_groups": 12,
+          "invalid_or_missing": 0,
+          "all_decisions_correct_group_rate": 0.9166666666666666,
+          "probability_rows": 36,
+          "probability_coverage": 1.0,
+          "nll": 0.08148657269761574,
+          "nll_valid_distributions_only": 0.08148657269761574,
+          "brier": 0.04929361772472837,
+          "brier_valid_distributions_only": 0.04929361772472837,
+          "nll_probability_floor": 1e-12
+        }
+      },
+      "errors": 15,
+      "latency": {
+        "calls": 108,
+        "total_seconds": 9.625367200000142,
+        "p50_seconds": 0.08914774999999509,
+        "p95_seconds": 0.09244919999991907,
+        "max_seconds": 0.10417480000000978
+      },
+      "peak_mlx_bytes": 5259682992
+    }
+  },
+  "shape": {
+    "shared": {
+      "states": 37,
+      "decisions": 777,
+      "decisions_per_second": 7.52114882437228,
+      "state_latency": {
+        "calls": 37,
+        "total_seconds": 103.30868569999996,
+        "p50_seconds": 1.7604596000001038,
+        "p95_seconds": 1.8273508999999422,
+        "max_seconds": 39.94205599999998
+      },
+      "input_tokens_per_decision": 2111.063063063063,
+      "peak_mlx_bytes": 7033168056
+    },
+    "direct": {
+      "states": 37,
+      "decisions": 777,
+      "decisions_per_second": 1.6470691996289422,
+      "state_latency": {
+        "calls": 37,
+        "total_seconds": 471.74702810000053,
+        "p50_seconds": 12.722635099999934,
+        "p95_seconds": 13.078170499999942,
+        "max_seconds": 13.11743720000004
+      },
+      "input_tokens_per_decision": 2111.063063063063,
+      "peak_mlx_bytes": 7033200824
+    },
+    "shared_vs_direct": {
+      "rows": 777,
+      "argmax_flips": 2,
+      "max_probability_difference": 0.14408027054878147
+    }
+  },
+  "stability": {
+    "base_original": {
+      "mean_family_balanced_accuracy": 0.8703703703703703,
+      "accuracy": 0.8611111111111112
+    },
+    "variants": {
+      "option_reversal": {
+        "mean_family_balanced_accuracy": 0.8888888888888888,
+        "accuracy": 0.8888888888888888,
+        "argmax_flips": 4,
+        "flip_rows": [
+          "80970cf7e755a58a049e",
+          "aef33dfba4338b1af990",
+          "d6a681055a01ed788b91",
+          "6ed6a1f9c601b82a11d9"
+        ],
+        "mean_max_probability_movement": 0.11378018366088961,
+        "max_probability_movement": 0.8766230949015248
+      },
+      "criterion_wrapper": {
+        "mean_family_balanced_accuracy": 0.8333333333333334,
+        "accuracy": 0.8611111111111112,
+        "argmax_flips": 2,
+        "flip_rows": [
+          "d300f689be3cf2daa666",
+          "f806bba07a63e30f7181"
+        ],
+        "mean_max_probability_movement": 0.08919206208932016,
+        "max_probability_movement": 0.5367577670316177
+      },
+      "irrelevant_context": {
+        "mean_family_balanced_accuracy": 0.8740740740740741,
+        "accuracy": 0.8333333333333334,
+        "argmax_flips": 3,
+        "flip_rows": [
+          "24c4e34db7cfbd13c409",
+          "507f126320b35c49b3b3",
+          "2b51ed50ef91d14bfb1e"
+        ],
+        "mean_max_probability_movement": 0.09190600630445213,
+        "max_probability_movement": 0.5584793072699163
+      }
+    },
+    "missing_evidence": {
+      "mean_family_balanced_accuracy": 0.7777777777777777,
+      "accuracy": 0.7777777777777778,
+      "confident_non_insufficient_at_0_8": 6
+    }
+  }
+}

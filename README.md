@@ -298,13 +298,14 @@ rizzo download --size 1.7b     # Spark-X2.5-1.7B · ~3.4 GB · smaller and faste
 
 | `--size` | Checkpoint | Weights | Status |
 | --- | --- | ---: | --- |
-| `4b` (default) | [XHToken/Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) | ~8 GB | every result in this README |
+| `4b` (default) | [XHToken/Spark-X2.5-4B](https://huggingface.co/XHToken/Spark-X2.5-4B) | ~8 GB | every result in this README unless it says 1.7B |
 | `1.7b` | [XHToken/Spark-X2.5-1.7B](https://huggingface.co/XHToken/Spark-X2.5-1.7B) | ~3.4 GB | runs, ~2× faster, **much less accurate** (below) |
 
 Both are the same Spark2.5 architecture with the same tokenizer and native 1M-token context, at
-pinned revisions. The only measurement of the 1.7B so far (CUDA, 8 bit, prompt v3, our own 20-decision
-smoke set): accuracy 0.45 against 0.95 for the 4B, at about half the latency. With abstention
-enabled it picks "cannot determine" almost every time; use it with `"allow_abstain": false` (the
+pinned revisions. Measured on CUDA at 8 bit with prompt v3: on our own 20-decision smoke set the
+1.7B scores 0.45 against 0.95 for the 4B; on SemIf's fixtures 0.700 / 0.633 against 0.829 / 0.865
+([below](#same-fixtures-with-the-shipped-prompt-v3-windows--cuda-rtx-5060-ti)), at about half
+the latency. With abstention enabled it picks "cannot determine" almost every time; use it with `"allow_abstain": false` (the
 Jev-compatible endpoint always does) and check it on your own data before relying on it.
 
 **3 · Start the backend**
@@ -415,7 +416,10 @@ create-only, with logits, prompt hashes and weight hashes: [results/](results/RE
 These fixtures are small and were read while writing the prompt: they are a smoke test, not an
 independent benchmark.
 
-### SemIf's fixtures, SemIf's metric code (prompt v2, 8 bit)
+### SemIf's fixtures, SemIf's metric code (historical: prompt v2, 8 bit, Mac)
+
+> These are the first numbers, measured with the **previous** prompt (v2). The shipped prompt is
+> v3: its numbers are in the next section.
 
 We ran [SemIf](https://github.com/TheoLeeCJ/SemIf)'s committed fixtures (file hashes verified)
 through Rizzo Flow and scored them with SemIf's own `benchmarks/evaluate.py`
@@ -433,8 +437,8 @@ prompt and model.
 
 Reading this honestly:
 
-- **Rizzo Flow is ~6 points behind SemIf's published quality** on these sets with the current
-  prompt. The weakest family is `rule_application` (0.689; 0.481 under perturbation, NLL 1.83 —
+- **With prompt v2 Rizzo Flow was ~6 points behind SemIf's published quality** on these sets.
+  The weakest family is `rule_application` (0.689; 0.481 under perturbation, NLL 1.83 —
   confidently wrong).
 - **Shared-state reuse is ~12.6× faster** than fresh scoring here, with no argmax change.
 - SemIf's numbers were measured on a different Mac: **valid for quality, not for timing**. The
@@ -442,7 +446,38 @@ Reading this honestly:
 - Not included: WANLI, the TypeSafe subset (not redistributable) and Every sets. SemIf states its
   labels are model-reviewed, not human-adjudicated; 6 points on 144 rows is about 9 rows.
 
-### Prompt work in progress (dev split only — not a result)
+### Same fixtures with the shipped prompt (v3), Windows + CUDA (RTX 5060 Ti)
+
+| Measure | Rizzo v3 Q8 | Rizzo v3 BF16 | SemIf Q8 (MLX, published) | SemIf BF16 (RTX 3090, published) |
+| --- | ---: | ---: | ---: | ---: |
+| `authored144`, mean-family balanced accuracy | 0.829 | 0.819 | 0.819 | 0.813 |
+| — held-out half only (72 rows) | 0.824 | 0.806 | 0.811 | 0.802 |
+| `perturbations108` | 0.865 | 0.842 | 0.766 | 0.766 |
+| — held-out half only (54 rows) | 0.875 | 0.843 | 0.824 | 0.824 |
+| Argmax flips: option reversal / wrapper / irrelevant context | 4 / 2 / 3 | 4 / 3 / 4 | 9 / 7 / 4 | 10 / 9 / 4 |
+| Missing evidence (36 rows): accuracy | 0.778 | 0.750 | 0.861 | 0.861 |
+| — confident (p ≥ 0.8) answers where `insufficient` was right | **6** | **6** | 1 | 1 |
+| Per-decision latency, short state (p50 / p95) | 87 / 94 ms | 76 / 78 ms | not comparable | not comparable |
+| `shape777` shared, 777 decisions | 7.52 decisions/s · 1.76 s per state | 15.99 decisions/s · 1.31 s per state | not comparable | not comparable |
+| `shape777` fresh, 777 decisions | 1.65 decisions/s | 1.97 decisions/s | not comparable | not comparable |
+| Argmax changes, shared vs fresh (777 decisions) | 2 (max Δp 0.144) | 2 (max Δp 0.100) | — | 6 |
+
+- **Half of these rows are the dev split the v3 prompt was chosen on**, so the totals are
+  optimistic. The held-out half, looked at once, agrees (0.824 / 0.875).
+- **On `authored144` the two systems are tied**: paired source-group bootstrap (SemIf's code)
+  gives +0.010, 95% interval [−0.051, +0.076]. We claim no superiority.
+- **Rizzo Flow is worse at admitting missing evidence**: 6 confident wrong answers out of 36
+  against SemIf's 1. `rule_application` is still weak under perturbation (0.630, NLL 1.63).
+- **On this GPU BF16 is faster than Q8** (2.1× on shared microbatches, peak 10.13 GiB against
+  6.55 GiB): MLX-CUDA's quantized kernels cost more than a BF16 matmul, so Q8 only buys memory.
+- **The 1.7B checkpoint** on the same run (Q8): `authored144` 0.700, `perturbations108` 0.633
+  (held-out halves 0.697 / 0.514), 17 of 36 argmax flips under option reversal, `rule_application`
+  0.296 under perturbation. It is 2.2–2.7× faster (40 ms per decision, 20.6 decisions/s shared,
+  2.8 GiB peak) but clearly worse: paired difference from the 4B −0.128 [−0.211, −0.046].
+- Still not run: WANLI, Every, the TypeSafe subset, SemIf on this same GPU. Details and reports:
+  [`results/README.md`](results/README.md).
+
+### How prompt v3 was chosen (dev split only)
 
 The fixtures were split by source group into dev and held-out halves, and prompt variants were
 compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*.txt`):
@@ -456,9 +491,10 @@ compared **on dev only** (`scripts/prompt_lab.py`, logs in `results/prompt-lab/*
 
 A plain-text multiple-choice question and a short, decision-focused system prompt both help and
 reduce position bias; longer instructions do not. The shipped prompt is now the
-second row (`a-text-all`, `spark-decisions-v3`). **The held-out half has not been run, and every
-other number in this README was measured with prompt v2** — the dev numbers chose a candidate,
-they do not prove it.
+second row (`a-text-all`, `spark-decisions-v3`). The dev numbers chose a candidate, they do not
+prove it: the held-out half was then run once, on CUDA, and agrees (0.824 / 0.875, section
+above; the dev half reproduced there to the third decimal). Numbers measured on the Mac — the
+v2 SemIf table, the smoke and long-state results — are still prompt v2.
 Exact prompts, every variant and the per-family numbers: [docs/prompt-lab.md](docs/prompt-lab.md) (Italian).
 
 ---

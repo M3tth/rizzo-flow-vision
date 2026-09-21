@@ -112,3 +112,84 @@ altro Mac: **valgono per la qualità, non per i tempi**. Il confronto dei tempi 
 eseguire SemIf su questa macchina (`--system semif`), non ancora fatto. La famiglia più debole
 di Rizzo è `rule_application` (0.689; 0.481 sulle perturbazioni, NLL 1.83: errori molto sicuri).
 Le fixture non hanno etichette adjudicate da umani (dichiarato da SemIf) e sono piccole.
+
+### Prompt v3 su Windows/CUDA (21 settembre 2026, RTX 5060 Ti 16 GB)
+
+Stesse fixture e stesso `evaluate.py`; in più le metriche di stabilità di SemIf
+(`evaluate_perturbations.py`, riprodotte in `semif_compare.stability`: sulle predizioni pubblicate
+da SemIf la funzione ridà esattamente i loro 0.723 e 10/9/4 flip). Report:
+[Q8](semif-compare/rizzo-q8-v3-cuda/report.json) (tutto, 777 decisioni anche in direct),
+[BF16](semif-compare/rizzo-bf16-v3-cuda-full/report.json) (tutto; il primo run
+[sola qualità](semif-compare/rizzo-bf16-v3-cuda/report.json) dà numeri identici).
+
+| Misura | Rizzo v3 Q8 | Rizzo v3 BF16 | SemIf Q8 (MLX, pubbl.) | SemIf BF16 (3090, pubbl.) |
+| --- | ---: | ---: | ---: | ---: |
+| authored144, balanced accuracy media per famiglia | 0.829 | 0.819 | 0.819 | 0.813 |
+| — solo metà **held-out** (72 righe) | 0.824 | 0.806 | 0.811 | 0.802 |
+| perturbations108 | 0.865 | 0.842 | 0.766 | 0.766 |
+| — solo metà **held-out** (54 righe) | 0.875 | 0.843 | 0.824 | 0.824 |
+| 36 originali | 0.870 | 0.870 | 0.723 | 0.723 |
+| option_reversal: accuratezza / flip | 0.889 / 4 | 0.870 / 4 | 0.813 / 9 | 0.813 / 10 |
+| criterion_wrapper: accuratezza / flip | 0.833 / 2 | 0.815 / 3 | 0.682 / 7 | 0.706 / 9 |
+| irrelevant_context: accuratezza / flip | 0.874 / 3 | 0.841 / 4 | 0.802 / 4 | 0.821 / 4 |
+| evidenza mancante (36): accuratezza | 0.778 | 0.750 | 0.861 | 0.861 |
+| — scelte ≠ `insufficient` con p ≥ 0.8 | **6** | **6** | 1 | 1 |
+
+Tempi (non confrontabili con SemIf: hardware diverso; SemIf su RTX 3090, BF16: 2.33 fresh /
+20.03 parallel dec/s):
+
+| Misura (4B) | Q8 | BF16 |
+| --- | ---: | ---: |
+| Latenza stato corto p50 / p95 | 87 / 94 ms | 76 / 78 ms |
+| shape777 shared | 7.52 dec/s, 1.76 s/stato, 103 s | **15.99 dec/s**, 1.31 s/stato, 49 s |
+| shape777 direct | 1.65 dec/s, 12.7 s/stato, 472 s | 1.97 dec/s, 10.7 s/stato, 395 s |
+| shared / direct | 4.6× | 8.1× |
+| Cambi argmax shared/direct su 777 | 2 (max Δp 0.144) | 2 (max Δp 0.100) |
+| Picco MLX | 6.55 GiB | 10.13 GiB |
+
+Su questa GPU **BF16 è più veloce di Q8** (2.1× nei microbatch shared): i kernel quantizzati di
+MLX-CUDA costano più della matmul BF16; Q8 conviene solo per la memoria (−3.6 GiB).
+
+**Spark-X2.5-1.7B**, stesse prove e stessa GPU —
+[Q8](semif-compare/rizzo-1.7b-q8-v3-cuda/report.json) (completo),
+[BF16](semif-compare/rizzo-1.7b-bf16-v3-cuda-full/report.json) (completo):
+
+| Misura | 1.7B Q8 | 1.7B BF16 | 4B Q8 (sopra) |
+| --- | ---: | ---: | ---: |
+| authored144 | 0.700 | 0.683 | 0.829 |
+| — metà held-out | 0.697 | 0.690 | 0.824 |
+| perturbations108 | 0.633 | 0.646 | 0.865 |
+| — metà held-out | 0.514 | 0.532 | 0.875 |
+| 36 originali | 0.628 | 0.628 | 0.870 |
+| option_reversal: accuratezza / flip | 0.596 / **17** | 0.596 / **18** | 0.889 / 4 |
+| criterion_wrapper: accuratezza / flip | 0.633 / 6 | 0.670 / 5 | 0.833 / 2 |
+| irrelevant_context: accuratezza / flip | 0.670 / 6 | 0.670 / 4 | 0.874 / 3 |
+| evidenza mancante: accuratezza / scelte sicure sbagliate | 0.833 / 2 | 0.778 / 2 | 0.778 / 6 |
+| Latenza stato corto p50 / p95 | 40 / 44 ms | 37 / 41 ms | 87 / 94 ms |
+| shape777 shared | 20.57 dec/s, 0.99 s/stato | 26.12 dec/s, 0.79 s/stato | 7.52 dec/s |
+| shape777 direct | 3.72 dec/s | 4.37 dec/s | 1.65 dec/s |
+| Cambi argmax shared/direct su 777 | 12 (max Δp 0.142) | 22 (max Δp 0.143) | 2 |
+| Picco MLX | 2.82 GiB | 4.31 GiB | 6.55 GiB |
+
+Il 1.7B è ~2.2–2.7× più veloce ma nettamente meno accurato: differenza appaiata dal 4B su
+authored144 −0.128, intervallo 95% [−0.211, −0.046]. Forte bias di posizione (17 flip su 36
+invertendo le opzioni, movimento medio di probabilità 0.43) e `rule_application` perturbata a
+livello del caso (0.296, NLL 3.59: errori molto sicuri). Il dato migliore sull'evidenza mancante
+non è un pregio: sceglie `insufficient` 52 volte su 144 contro 36 attese, cioè si astiene troppo
+(coerente con quanto visto sullo smoke). Sta tra Qwen3-0.6B (0.440) e MiniCPM5-2B (0.686 / 0.693)
+della scala pubblicata da SemIf, con lo stesso limite: prompt e modelli diversi.
+
+Come leggerli:
+
+- **Metà delle righe è lo split dev con cui è stato scelto il prompt v3**: il totale è ottimistico.
+  La metà held-out, guardata qui per la prima e unica volta, conferma (0.824 / 0.875; il dev
+  coincide al millesimo con il prompt-lab fatto sul Mac: 0.827 / 0.852).
+- **Su authored144 Rizzo v3 e SemIf sono pari**: differenza appaiata con il bootstrap di SemIf
+  +0.010, intervallo 95% [−0.051, +0.076]. Nessuna superiorità dimostrata. Il vantaggio sulle
+  perturbazioni è più ampio ma poggia su 108 righe derivate dalle stesse 36 originali.
+- **Peggio di SemIf sull'evidenza mancante**: 6 casi su 36 in cui Rizzo sceglie con p ≥ 0.8 una
+  risposta quando quella giusta è `insufficient` (SemIf: 1). Le probabilità non sono calibrate.
+- `rule_application` resta la famiglia debole sotto perturbazione (0.630 Q8, 0.593 BF16; NLL 1.63).
+- Non eseguiti: WANLI ed Every (richiedono il download delle sorgenti), sottoinsieme TypeSafe (non
+  ridistribuibile), confronto con generazione JSON e riuso seriale del prefisso (Rizzo non ha
+  quei percorsi), SemIf sulla stessa GPU.

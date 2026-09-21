@@ -122,8 +122,10 @@ richieste HTTP concorrenti sono serializzate; il parallelismo è *dentro* la ric
 poco testo: hero con mascotte, badge, stats, card brevi, tabella di confronto, footer scuro), senza
 dipendenze esterne, bilingue con `<span class="it">`/`<span class="en">` e `body.lang-it|en`.
 La sezione `#demo` è un'animazione interattiva (state → riccio → bool/classe/score): usa risposte
-e tempi **reali** registrati dal server Q8 (oggetto `DEMO` inline; ~250 ms a decisione) e la fase
-"pensa" dura davvero quei millisecondi. Se cambiano modello o prompt, rigenerare quei dati. Pages serve **solo**
+e tempi **reali** (oggetto `DEMO` inline; ri-registrato il 21 settembre 2026 con 4B Q8, prompt v3,
+RTX 5060 Ti, via `compat.to_native`/`from_native` in-process, mediana di 5 chiamate a caldo: ~85 ms a
+decisione; nessuna risposta scelta a mano — p.es. seniority del CV: IT "Intermedio" 0.68, EN "Senior"
+0.996) e la fase "pensa" dura davvero quei millisecondi. Se cambiano modello o prompt, rigenerare quei dati. Pages serve **solo**
 `docs/`: gli asset del sito stanno in `docs/assets/` (copie di `assets/`), `docs/.nojekyll` disattiva
 Jekyll. URL: <https://rizzo-ai-academy.github.io/rizzo-flow/> (Settings → Pages → branch `main`,
 cartella `/docs`). Anteprima locale: server `site` in `.claude/launch.json` (porta 8020). I numeri
@@ -203,10 +205,31 @@ l'ordine delle chiavi dell'utente).
 valgono più). `prompt_lab.py` contiene il v2 per esteso, così `v2-current` resta riproducibile.
 Verificato su Windows/CUDA (sotto): test unitari, smoke 4B Q8 0.95 (NLL 0.428, identico al lab).
 
-**Non fatto:** l'held-out non è mai stato eseguito (`prompt_lab.py held v2-current,a-text-all`);
-`semif_compare.py` non è stato rilanciato con v3, quindi **tutti i numeri SemIf pubblicati
-(0.758 / 0.706) e i report in `results/` sono ancora del prompt v2**; i README vanno aggiornati
-quando esisteranno i numeri v3. I numeri dev non sono un risultato: sono serviti a scegliere.
+**Numeri v3 (21 settembre 2026, Windows/CUDA, RTX 5060 Ti):** `semif_compare.py` rilanciato con v3,
+`results/semif-compare/rizzo-q8-v3-cuda/` (completo, 777 decisioni anche direct) e
+`rizzo-bf16-v3-cuda/` (sola qualità). Lo script ora calcola anche la stabilità di SemIf
+(`stability`, equivalente a `evaluate_perturbations.py`; verificata sulle loro predizioni
+pubblicate: 0.723 e 10/9/4 flip). Q8: authored144 **0.829** (SemIf Q8 0.819), perturbations108
+**0.865** (0.766); BF16 0.819 / 0.842. Held-out (guardato una sola volta, qui): 0.824 / 0.875
+(SemIf Q8 sulle stesse righe 0.811 / 0.824); il dev coincide col prompt-lab (0.827 / 0.852).
+Differenza appaiata su authored144 +0.010 [−0.051, +0.076] → **pari, nessuna superiorità**.
+Flip reversal/wrapper/contesto 4/2/3 (SemIf 9/7/4). **Peggio di SemIf su evidenza mancante:** 6/36
+scelte sicure (p ≥ 0.8) sbagliate contro 1; accuratezza 0.778 contro 0.861. `rule_application`
+perturbata 0.630 (NLL 1.63). Tempi Q8: 87/94 ms p50/p95; shape777 shared 7.52 dec/s (1.76 s/stato),
+direct 1.65 dec/s, shared ≈ 4.6× direct, 2 cambi argmax su 777 (max Δp 0.144), picco 6.55 GiB.
+I numeri v2 sopra restano come storico (Mac). Tabelle in `results/README.md` e `README.md`.
+Il processo CUDA esce con codice 9 dopo aver scritto il report (innocuo, come il 127 già noto).
+**1.7B sulle stesse prove** (`rizzo-1.7b-q8-v3-cuda/`, `rizzo-1.7b-bf16-v3-cuda/`): Q8 0.700 / 0.633
+(held-out 0.697 / 0.514), BF16 0.683 / 0.646; −0.128 [−0.211, −0.046] dal 4B; 17/36 flip
+invertendo le opzioni; `rule_application` perturbata 0.296 (NLL 3.59); si astiene troppo
+(`insufficient` 52 volte su 144, attese 36). 40/44 ms, shared 20.57 dec/s, direct 3.72, 12 cambi
+argmax su 777, picco 2.82 GiB.
+**BF16 completi** (`rizzo-bf16-v3-cuda-full/`, `rizzo-1.7b-bf16-v3-cuda-full/`; le cartelle senza
+`-full` sono run di sola qualità, numeri identici): 4B held-out 0.806 / 0.843, 76/78 ms, shared
+**15.99 dec/s** (1.31 s/stato), direct 1.97, 2 cambi argmax, picco 10.13 GiB → **su CUDA BF16 è
+2.1× più veloce di Q8 in shared**; Q8 serve solo a risparmiare memoria. 1.7B BF16: shared 26.12
+dec/s, direct 4.37, 22 cambi argmax su 777, picco 4.31 GiB.
+Non eseguiti: WANLI/Every (download da confermare), TypeSafe (non ridistribuibile).
 
 ### Windows + CUDA (provato il 21 settembre 2026, RTX 5060 Ti 16 GB, prompt v3)
 

@@ -105,6 +105,58 @@ def latency(seconds):
     }
 
 
+def stability(evaluate, gold, base, perturb_gold, perturbed):
+    """Single-system version of SemIf's `evaluate_perturbations.py` (same definitions)."""
+
+    def chosen(row):
+        return row["option_ids"][row["probabilities"].index(max(row["probabilities"]))]
+
+    def headline(result):
+        return {
+            "mean_family_balanced_accuracy": result["mean_family_balanced_accuracy"],
+            "accuracy": 1 - len(result["errors"]) / result["evaluated"],
+        }
+
+    base = {row["id"]: row for row in base}
+    perturbed = {row["id"]: row for row in perturbed}
+    originals = [row for row in gold if row["provenance"]["variant"] == "original"]
+    missing = [row for row in gold if row["provenance"]["variant"] == "missing"]
+    report = {
+        "base_original": headline(evaluate.evaluate(originals, [base[r["id"]] for r in originals])),
+        "variants": {},
+    }
+    variants = defaultdict(list)
+    for row in perturb_gold:
+        variants[row["provenance"]["variant"]].append(row)
+    for variant, rows in variants.items():
+        shifts, flips = [], []
+        for row in rows:
+            reference, candidate = base[row["provenance"]["base_id"]], perturbed[row["id"]]
+            left = dict(zip(reference["option_ids"], reference["probabilities"]))
+            right = dict(zip(candidate["option_ids"], candidate["probabilities"]))
+            if set(left) != set(right):
+                raise ValueError("Semantic option IDs changed")
+            shifts.append(max(abs(left[key] - right[key]) for key in left))
+            if chosen(reference) != chosen(candidate):
+                flips.append(row["id"])
+        report["variants"][variant] = {
+            **headline(evaluate.evaluate(rows, [perturbed[r["id"]] for r in rows])),
+            "argmax_flips": len(flips),
+            "flip_rows": flips,
+            "mean_max_probability_movement": statistics.mean(shifts),
+            "max_probability_movement": max(shifts),
+        }
+    predictions = [base[row["id"]] for row in missing]
+    report["missing_evidence"] = {
+        **headline(evaluate.evaluate(missing, predictions)),
+        "confident_non_insufficient_at_0_8": sum(
+            row["predicted_id"] != "insufficient" and row["confidence"] >= 0.8
+            for row in evaluate.align(missing, predictions)
+        ),
+    }
+    return report
+
+
 def slim(prediction):
     keep = ("id", "option_ids", "probabilities", "option_logits", "input_tokens")
     return {key: prediction[key] for key in keep if key in prediction}
@@ -135,8 +187,9 @@ def main():
     report = {"system": args.system, "model": system.metadata, "quality": {}, "shape": {}}
 
     # Quality: one fresh call per row, exactly as SemIf's MLX quality suite does.
+    golds, scored = {}, {}
     for name in ("authored144", "perturbations108"):
-        gold = read(data / f"{name}.jsonl")
+        gold = golds[name] = read(data / f"{name}.jsonl")
         system.direct(gold[0])
         mx.reset_peak_memory()
         predictions, seconds = [], []
@@ -158,8 +211,16 @@ def main():
             "latency": latency(seconds),
             "peak_mlx_bytes": mx.get_peak_memory(),
         }
+        scored[name] = predictions
         write(args.output / f"{name}.jsonl", predictions)
         print(name, json.dumps(report["quality"][name]["latency"]), flush=True)
+    report["stability"] = stability(
+        evaluate,
+        golds["authored144"],
+        scored["authored144"],
+        golds["perturbations108"],
+        scored["perturbations108"],
+    )
 
     # Systems: ~2k-token states with 21 binary criteria each; no gold labels.
     groups = defaultdict(list)
