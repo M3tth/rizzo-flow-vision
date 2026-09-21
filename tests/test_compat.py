@@ -87,6 +87,7 @@ def test_validation_models_and_auth(body):
         body["questions"]["frustration"]["criteria"] = ["only one"]
         assert http.post("/v1/systemone", json=body).status_code == 422
         assert "Rizzo Flow" in http.get("/playground").text
+        assert http.get("/playground/logo.png").headers["content-type"] == "image/png"
     with client(api_key="secret") as http:
         assert http.get("/v1/models").status_code == 401
         assert http.post("/v1/systemone", json=body).status_code == 401

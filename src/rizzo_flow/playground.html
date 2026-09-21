@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rizzo Flow Playground</title>
+<link rel="icon" type="image/png" href="/playground/logo.png">
 <style>
 :root {
   --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1d1f; --muted: #6a6f76; --line: #dedcd5;
@@ -24,6 +25,20 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 20px;
   border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
 header h1 { font-size: 15px; margin: 0; letter-spacing: .01em; }
+.mascot { width: 40px; height: 40px; margin: -6px -2px -6px -4px; transform-origin: 50% 85%; cursor: pointer;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / .25)); transition: transform .25s ease; }
+.mascot:hover { animation: wiggle .6s ease-in-out; }
+body.busy .mascot { animation: hop .55s ease-in-out infinite; }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 60% { transform: rotate(10deg); } 85% { transform: rotate(-4deg); } }
+@keyframes hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 40% { transform: translateY(-7px) scale(.96, 1.05); } 70% { transform: translateY(0) scale(1.06, .94); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.hello { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 8px 30px; color: var(--muted); text-align: center; }
+.hello img { width: 150px; height: 150px; animation: float 3.2s ease-in-out infinite; filter: drop-shadow(0 10px 14px rgb(0 0 0 / .22)); }
+.hello b { color: var(--ink); }
+.hello .say { font-size: 15px; color: var(--ink); font-weight: 600; margin-top: 4px; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 26px; }
+footer a { color: inherit; }
+@media (prefers-reduced-motion: reduce) { .mascot, body.busy .mascot, .hello img { animation: none !important; } }
 header h1 span { color: var(--muted); font-weight: 400; }
 .badge { font: 12px var(--mono); padding: 3px 8px; border-radius: 999px; background: var(--track); color: var(--muted); }
 .badge.ok { background: var(--accent-soft); color: var(--accent); }
@@ -99,6 +114,7 @@ summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
 </head>
 <body>
 <header>
+  <img class="mascot" id="mascot" src="/playground/logo.png" alt="Rizzo Flow, il riccio" width="40" height="40">
   <h1>Rizzo Flow <span>playground</span></h1>
   <span id="health" class="badge">verifica…</span>
   <span class="spacer"></span>
@@ -161,11 +177,16 @@ summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
         <button id="out-curl">cURL</button>
       </div>
     </div>
-    <div id="visual"><div class="empty">Premi <b>Esegui</b> o Cmd/Ctrl + Invio.</div></div>
+    <div id="visual"><div class="hello">
+      <img src="/playground/logo.png" alt="" width="150" height="150">
+      <div class="say">Ciao! Dammi uno state e qualche domanda.</div>
+      <div>Premi <b>Esegui</b> o Cmd/Ctrl + Invio: decido senza generare nemmeno un token.</div>
+    </div></div>
     <pre id="rawout" hidden></pre>
     <pre id="curl" hidden></pre>
   </section>
 </main>
+<footer>Rizzo Flow · un progetto <a href="https://www.rizzoaiacademy.com" target="_blank" rel="noopener">Rizzo AI Academy</a></footer>
 
 <script>
 "use strict";
@@ -446,6 +467,7 @@ async function run() {
   $("#curl").textContent = curlFor(endpoint, body);
   const button = $("#run");
   button.disabled = true; button.textContent = "In esecuzione…";
+  document.body.classList.add("busy");
   const headers = { "Content-Type": "application/json" };
   if ($("#apikey").value) headers.Authorization = `Bearer ${$("#apikey").value}`;
   const started = performance.now();
@@ -463,6 +485,7 @@ async function run() {
     $("#visual").replaceChildren(h("div", { class: "error" }, `Server non raggiungibile: ${error.message}`));
   } finally {
     button.disabled = false; button.textContent = "Esegui";
+    document.body.classList.remove("busy");
   }
 }
 
@@ -481,6 +504,7 @@ $("#preset").onchange = (e) => { if (e.target.value) applyPreset(e.target.value)
 document.querySelectorAll("[data-add]").forEach((b) => (b.onclick = () => { questions.push(blank(b.dataset.add, questions.length + 1)); renderQuestions(); }));
 $("#state").oninput = save;
 $("#run").onclick = run;
+$("#mascot").onclick = run;
 document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); run(); } });
 
 let restored = false;

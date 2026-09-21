@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Header, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from .compat import SystemOneRequest, from_native, list_models, resolve_model, to_native
 from .responses import Response
@@ -13,6 +13,7 @@ from .schema import Request
 
 API_KEY_ENV = "RIZZO_API_KEY"
 PLAYGROUND = Path(__file__).with_name("playground.html")
+LOGO = Path(__file__).with_name("logo.png")
 
 
 def create_app(engine, api_key=None):
@@ -57,6 +58,10 @@ def create_app(engine, api_key=None):
     @app.get("/playground", response_class=HTMLResponse, include_in_schema=False)
     def playground():
         return PLAYGROUND.read_text(encoding="utf-8")
+
+    @app.get("/playground/logo.png", include_in_schema=False)
+    def logo():
+        return FileResponse(LOGO, media_type="image/png")
 
     @app.get("/", include_in_schema=False)
     def root():
