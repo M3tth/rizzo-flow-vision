@@ -17,14 +17,11 @@ from ctypes import (
     c_int32,
     c_int64,
     c_size_t,
-    c_uint32,
     c_void_p,
 )
 from pathlib import Path
 
-
 from . import llama_release
-
 
 
 class MtmdContextParams(ctypes.Structure):
