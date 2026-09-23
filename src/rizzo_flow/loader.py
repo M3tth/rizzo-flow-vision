@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from .config import DEFAULT_QUANT, DEFAULT_SIZE, GGUF, MODELS
+from .config import DEFAULT_QUANT, DEFAULT_SIZE, GGUF, MODELS, VISION_MODELS
 
 BACKENDS = ("llama", "mlx")
 # `auto`, `gpu` and `cpu` work everywhere. The other names ask for one GPU family: `mlx` and
@@ -23,10 +23,13 @@ def load_backend(
     batch_size=4,
     threads=None,
     mmproj=None,
+    vision=None,
 ):
     if backend not in BACKENDS:
         raise ValueError(f"Backend must be one of: {', '.join(BACKENDS)}")
     if backend == "mlx":
+        if vision:
+            raise ValueError("--vision is supported only by the llama backend")
         if mmproj:
             raise ValueError("--mmproj is supported only by the llama backend")
         if quant:
@@ -38,6 +41,13 @@ def load_backend(
         return SparkBackend.load(
             model or MODELS[size].path, bits=bits, device=device, batch_size=batch_size
         )
+    if vision:
+        if vision not in VISION_MODELS:
+            raise ValueError(f"Unknown vision model {vision}; choose one of: {', '.join(VISION_MODELS)}")
+        if model or mmproj or quant:
+            raise ValueError("--vision selects both model and projector; do not combine it with --model, --mmproj or --quant")
+        spec = VISION_MODELS[vision]
+        model, mmproj = spec.model_path, spec.mmproj_path
     if bits:
         raise ValueError(
             "--bits quantizes MLX weights in memory (--backend mlx); llama.cpp loads a "
