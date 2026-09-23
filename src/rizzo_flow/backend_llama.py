@@ -12,6 +12,7 @@ from pathlib import Path
 from . import llama_release
 from .config import GGUF, identify
 from .llama_cpp import Session
+from .mtmd_cpp import VisionContext
 from .prompts import PROMPT_VERSION, Compiled, canonical
 
 N_BATCH = 2048  # most tokens handed to one llama_decode call
@@ -47,7 +48,16 @@ class LlamaTokenizer:
 
 
 class LlamaBackend:
-    def __init__(self, session, tokenizer, metadata, batch_size=4, prefill_chunk=512):
+    def __init__(
+        self,
+        session,
+        tokenizer,
+        metadata,
+        batch_size=4,
+        prefill_chunk=512,
+        vision=None,
+        input_ctx=8192,
+    ):
         if not 1 <= batch_size <= 16 or not 1 <= prefill_chunk <= 2048:
             raise ValueError("batch_size must be 1–16 and prefill_chunk 1–2048")
         self.session = session
@@ -55,7 +65,19 @@ class LlamaBackend:
         self.metadata = metadata
         self.batch_size = batch_size
         self.prefill_chunk = prefill_chunk
+        self.vision = vision
+        self.input_ctx = input_ctx
         self._lowest_free = None
+
+    @property
+    def media_marker(self) -> str | None:
+        return self.vision.marker if self.vision else None
+
+    def close(self):
+        if self.vision:
+            self.vision.close()
+            self.vision = None
+        self.session.close()
 
     @classmethod
     def load(
@@ -67,19 +89,27 @@ class LlamaBackend:
         prefill_chunk=512,
         threads=None,
         runtime_dir=None,
+        mmproj=None,
     ):
         path = Path(path).resolve()
         if not path.is_file():
             raise ValueError(f"GGUF file not found at {path}. Run `rizzo download` first.")
+        mmproj = Path(mmproj).resolve() if mmproj else None
+        if mmproj and not mmproj.is_file():
+            raise ValueError(f"Vision projector not found at {mmproj}")
         if ctx < 1:
             raise ValueError("ctx must be positive")
         started = time.perf_counter()
-        # Hash the weights once at startup for auditability and calibration binding.
+        # Hash weights/projector once at startup for auditability and calibration binding.
         with path.open("rb") as stream:
             sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
+        mmproj_sha256 = None
+        if mmproj:
+            with mmproj.open("rb") as stream:
+                mmproj_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
         pin = next((spec for spec in GGUF.values() if spec.sha256 == sha256), None)
-        # The longest question is `ctx` tokens; a microbatch adds at most N_BATCH suffix tokens
-        # on top of the prefix they share, so this many cells always suffice.
+        # The longest question is `ctx` positions; a suffix microbatch gets extra cells so the
+        # shared-prefix path has room to branch without evicting the prefix.
         session = Session.load(
             path,
             directory=runtime_dir or llama_release.locate(device),
@@ -90,29 +120,46 @@ class LlamaBackend:
             n_seq_max=batch_size + 1,
             threads=threads,
         )
+        vision = None
         try:
             architecture = session.meta("general.architecture")
-            if architecture != ARCHITECTURE:
-                raise ValueError(f"Only the Spark2.5 architecture is supported, not {architecture}")
-            spec = identify(
-                {"hidden_size": int(session.meta(f"{ARCHITECTURE}.embedding_length") or 0)}
-            )
+            spec = None
+            if not mmproj:
+                if architecture != ARCHITECTURE:
+                    raise ValueError(
+                        f"Architecture {architecture} needs a compatible --mmproj for multimodal "
+                        "scoring; text-only mode currently supports Spark2.5"
+                    )
+                spec = identify(
+                    {"hidden_size": int(session.meta(f"{ARCHITECTURE}.embedding_length") or 0)}
+                )
             template = session.chat_template()
             if not template:
                 raise ValueError("The GGUF file carries no chat template")
             tokenizer = LlamaTokenizer(session, template)
+            if mmproj:
+                vision = VisionContext.load(session, mmproj, threads)
         except Exception:
+            if vision:
+                vision.close()
             session.close()
             raise
+
         file_type = session.meta("general.file_type")
         chosen = session.device
+        source_files = {path.name: sha256}
+        if mmproj:
+            source_files[mmproj.name] = mmproj_sha256
         identity = {
-            "source": spec.repo,
-            "requested_revision": spec.revision,
-            "gguf_source": pin.repo if pin else None,  # None: not one of the pinned files
+            "source": spec.repo if spec else (session.meta("general.name") or architecture),
+            "requested_revision": spec.revision if spec else None,
+            "gguf_source": pin.repo if pin else None,
             "gguf_revision": pin.revision if pin else None,
-            "source_files": {path.name: sha256},
+            "source_files": source_files,
             "precision": pin.quant if pin else FILE_TYPES.get(file_type, f"ftype{file_type}"),
+            "architecture": architecture,
+            "vision": bool(vision),
+            "vision_mrope": vision.uses_mrope if vision else False,
             "device": "gpu" if chosen else "cpu",
             "backend": chosen.backend.lower() if chosen else "cpu",
             "runtime": "llama.cpp",
@@ -125,9 +172,18 @@ class LlamaBackend:
             "fingerprint": hashlib.sha256(canonical(identity).encode()).hexdigest(),
             "device_name": chosen.description if chosen else None,
             "context_cells": session.n_ctx,
+            "input_context_limit": ctx,
             "load_seconds": time.perf_counter() - started,
         }
-        return cls(session, tokenizer, metadata, batch_size, prefill_chunk)
+        return cls(
+            session,
+            tokenizer,
+            metadata,
+            batch_size,
+            prefill_chunk,
+            vision=vision,
+            input_ctx=ctx,
+        )
 
     def _feed(self, tokens, start, sequence, want_logits) -> int | None:
         """Run `tokens` on one sequence, N_BATCH per call; index of the final logits row.
@@ -169,6 +225,124 @@ class LlamaBackend:
         if self._lowest_free is None:
             return None
         return max(self.session.idle_free - self._lowest_free, 0)
+
+    def score_vision(self, prefix: str, jobs: list[Compiled], images: list[bytes], mode="shared"):
+        """Score image-conditioned questions without generating text.
+
+        The image-bearing prompt prefix is evaluated once. Each question then branches the
+        resulting KV sequence and lets libmtmd evaluate only its rendered text tail. Keeping
+        suffix evaluation inside libmtmd is important for VLMs such as Qwen2.5-VL because the
+        helper owns the model-specific M-RoPE position rules.
+        """
+        if not self.vision:
+            raise ValueError("No vision projector was loaded; pass --mmproj")
+        if mode not in ("shared", "direct"):
+            raise ValueError("Unknown execution mode")
+        if not jobs:
+            raise ValueError("No decisions supplied")
+        if not isinstance(prefix, str) or any(job.suffix_text is None for job in jobs):
+            raise ValueError("Invalid multimodal compiled request")
+
+        session = self.session
+        started = time.perf_counter()
+        result = {}
+        prefix_seconds = 0.0
+        evaluated_tokens = 0
+        shared_prefix_tokens = 0
+        batches = 0
+        reuse = mode == "shared" and bool(prefix) and len(jobs) > 1
+
+        if reuse:
+            mark = time.perf_counter()
+            session.clear()
+            start, prefix_tokens, _ = self.vision.evaluate(
+                prefix, images, start=0, sequence=0, logits_last=False
+            )
+            session.synchronize()
+            prefix_seconds = time.perf_counter() - mark
+            if start > self.input_ctx:
+                raise ValueError(
+                    f"Multimodal prefix uses {start} positions; context limit is {self.input_ctx}"
+                )
+            evaluated_tokens += prefix_tokens
+            shared_prefix_tokens = prefix_tokens
+
+            # Reuse one branch at a time. Image encoding/prefill dominates document workloads;
+            # suffix batching can be added later without changing the public contract.
+            for job in jobs:
+                session.branch(0, 1)
+                try:
+                    end, suffix_tokens, row = self.vision.evaluate(
+                        job.suffix_text,
+                        [],
+                        start=start,
+                        sequence=1,
+                        logits_last=True,
+                    )
+                    if end > self.input_ctx:
+                        raise ValueError(
+                            f"Question {job.id}: multimodal input uses {end} positions; "
+                            f"context limit is {self.input_ctx}"
+                        )
+                    if row is None:
+                        raise ValueError(f"Question {job.id}: no logits were produced")
+                    result[job.id] = session.logits(row, job.slots)
+                    evaluated_tokens += suffix_tokens
+                    batches += 1
+                finally:
+                    session.drop(1)
+        else:
+            # Direct mode intentionally recomputes the image-bearing prefix for every question.
+            # A single shared question takes this path too, but still evaluates media and suffix
+            # separately: the final logits row then belongs only to the text suffix and is not
+            # affected by how many embedding tokens the image produced.
+            for job in jobs:
+                session.clear()
+                start, prefix_tokens, _ = self.vision.evaluate(
+                    prefix,
+                    images,
+                    start=0,
+                    sequence=0,
+                    logits_last=False,
+                )
+                if start > self.input_ctx:
+                    raise ValueError(
+                        f"Question {job.id}: multimodal prefix uses {start} positions; "
+                        f"context limit is {self.input_ctx}"
+                    )
+                end, suffix_tokens, row = self.vision.evaluate(
+                    job.suffix_text,
+                    [],
+                    start=start,
+                    sequence=0,
+                    logits_last=True,
+                )
+                if end > self.input_ctx:
+                    raise ValueError(
+                        f"Question {job.id}: multimodal input uses {end} positions; "
+                        f"context limit is {self.input_ctx}"
+                    )
+                if row is None:
+                    raise ValueError(f"Question {job.id}: no logits were produced")
+                result[job.id] = session.logits(row, job.slots)
+                evaluated_tokens += prefix_tokens + suffix_tokens
+                batches += 1
+
+        session.synchronize()
+        self._track_memory()
+        timing = {
+            "inference_seconds": time.perf_counter() - started,
+            "prefill_seconds": prefix_seconds,
+            "shared_prefix_tokens": shared_prefix_tokens,
+            "evaluated_tokens_including_padding": evaluated_tokens,
+            "logical_input_tokens": sum(len(job.tokens) for job in jobs),
+            "batches": batches,
+            "generated_tokens": 0,
+            "image_count": len(images),
+        }
+        if self._lowest_free is not None:
+            timing["peak_device_bytes"] = self.peak_device_bytes()
+        return result, timing
 
     def score(self, prefix: list[int], jobs: list[Compiled], mode="shared"):
         if mode not in ("shared", "direct"):

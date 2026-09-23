@@ -224,6 +224,51 @@
       ],
       "title": "ScoreQuestion",
       "type": "object"
+    },
+    "ImageInput": {
+      "additionalProperties": false,
+      "properties": {
+        "data_base64": {
+          "title": "Data Base64",
+          "type": "string"
+        },
+        "mime_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+                "image/bmp"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mime Type"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        }
+      },
+      "required": [
+        "data_base64"
+      ],
+      "title": "ImageInput",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -287,6 +332,14 @@
       ],
       "title": "Mode",
       "type": "string"
+    },
+    "images": {
+      "items": {
+        "$ref": "#/$defs/ImageInput"
+      },
+      "maxItems": 8,
+      "title": "Images",
+      "type": "array"
     }
   },
   "required": [

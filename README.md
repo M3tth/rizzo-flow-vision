@@ -107,6 +107,76 @@ the `uv run` prefix.
 equivalent cURL. Interface in Italian or English. (Screenshot taken with the earlier MLX runtime on an M4 Pro.)</sub>
 </div>
 
+### Vision: typed decisions directly from document images
+
+This fork adds an experimental **zero-generated-token vision path** for document checks. It uses
+llama.cpp's `libmtmd`: an image-bearing prefix is encoded once, kept in the shared KV cache, and
+all questions branch from that same multimodal state. Qwen2.5-VL M-RoPE positions are handled by
+the pinned llama.cpp helper rather than reconstructed in Python.
+
+The recommended development preset is Qwen2.5-VL 3B Q4_K_M; a 7B preset is also pinned:
+
+```bash
+uv run rizzo download --vision qwen2.5-vl-3b
+uv run rizzo serve --vision qwen2.5-vl-3b
+# or: --vision qwen2.5-vl-7b
+```
+
+The native `POST /v1/decisions` endpoint accepts up to eight in-memory images. Images are Base64
+bytes, not URLs or server-side paths, so the API never needs to fetch a document from a third
+party or read an arbitrary host file.
+
+```json
+{
+  "state": "Attendance register page. Judge only what is visibly present.",
+  "images": [{
+    "data_base64": "<base64 JPEG or PNG>",
+    "mime_type": "image/jpeg",
+    "label": "Register page 1"
+  }],
+  "questions": {
+    "teacher_signature": {
+      "type": "boolean",
+      "instructions": "Is the teacher signature present?"
+    },
+    "date_filled": {
+      "type": "boolean",
+      "instructions": "Is the date field filled in?"
+    },
+    "missing_signatures": {
+      "type": "boolean",
+      "instructions": "Are any required attendance signatures missing?"
+    },
+    "absent_total": {
+      "type": "boolean",
+      "instructions": "Is the total number of absent participants indicated?"
+    },
+    "corrections": {
+      "type": "boolean",
+      "instructions": "Are visible corrections, erasures or cancellations present?"
+    },
+    "times_complete": {
+      "type": "boolean",
+      "instructions": "Do the recorded attendance times appear complete?"
+    },
+    "obvious_anomaly": {
+      "type": "boolean",
+      "instructions": "Does the document show any obvious visual anomaly?"
+    },
+    "signature_position": {
+      "type": "boolean",
+      "instructions": "Is the teacher signature inside the field intended for it?"
+    }
+  }
+}
+```
+
+The response format is unchanged: each answer contains option logits and probabilities, and
+`timing.generated_tokens` remains `0`. In `mode: "shared"` the vision prefix is evaluated once;
+`mode: "direct"` deliberately recomputes it for every question and is useful as a benchmark
+baseline. The probabilities are still uncalibrated until fitted on representative labeled
+register pages.
+
 ### Which hardware, and what we have actually run
 
 `rizzo download` picks an official prebuilt llama.cpp package for your machine and checks its

@@ -123,6 +123,76 @@ def download_gguf(size=DEFAULT_SIZE, quant=DEFAULT_QUANT, destination=None, prog
     return fetch(spec.url, Path(destination) if destination else spec.path, spec.sha256, progress)
 
 
+@dataclass(frozen=True)
+class VisionSpec:
+    """Pinned llama.cpp multimodal pair: text-model GGUF plus its vision projector."""
+
+    name: str
+    repo: str
+    revision: str
+    model_file: str
+    model_sha256: str
+    mmproj_file: str
+    mmproj_sha256: str
+
+    @property
+    def directory(self) -> Path:
+        return Path("models") / self.repo.split("/")[1]
+
+    @property
+    def model_path(self) -> Path:
+        return self.directory / self.model_file
+
+    @property
+    def mmproj_path(self) -> Path:
+        return self.directory / self.mmproj_file
+
+    def url(self, filename: str) -> str:
+        return f"https://huggingface.co/{self.repo}/resolve/{self.revision}/{filename}"
+
+
+VISION_MODELS = {
+    spec.name: spec
+    for spec in (
+        VisionSpec(
+            "qwen2.5-vl-3b",
+            "ggml-org/Qwen2.5-VL-3B-Instruct-GGUF",
+            "5037fcf163dd95d1e41d1974465f0898ed108ca2",
+            "Qwen2.5-VL-3B-Instruct-Q4_K_M.gguf",
+            "d02fe9b69ad8cadbbd228e387667af66612c44bed29ffc8eb1e7caf9ac486c12",
+            "mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf",
+            "980c9b2f78c04e6cff93d277ada09e768394f112d75db3b4e9dea8a69f9fb904",
+        ),
+        VisionSpec(
+            "qwen2.5-vl-7b",
+            "ggml-org/Qwen2.5-VL-7B-Instruct-GGUF",
+            "508edd0afaa66bb9e9f40587acc2184f02daf1f6",
+            "Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf",
+            "9258bf05b12686d097ff3b6b18d968ab393649780aa2b3cd67fec43d50554392",
+            "mmproj-Qwen2.5-VL-7B-Instruct-Q8_0.gguf",
+            "2ddb555391bae966e412deab9e07b58afa18bcc06930ba0f1c78a3695ab9e506",
+        ),
+    )
+}
+DEFAULT_VISION_MODEL = "qwen2.5-vl-3b"
+
+
+def download_vision(name=DEFAULT_VISION_MODEL, destination=None, progress=None):
+    """Fetch a pinned Qwen2.5-VL model/projector pair and verify both SHA-256 hashes."""
+    from .llama_release import fetch
+
+    spec = VISION_MODELS[name]
+    directory = Path(destination) if destination else spec.directory
+    directory.mkdir(parents=True, exist_ok=True)
+    model = fetch(
+        spec.url(spec.model_file), directory / spec.model_file, spec.model_sha256, progress
+    )
+    mmproj = fetch(
+        spec.url(spec.mmproj_file), directory / spec.mmproj_file, spec.mmproj_sha256, progress
+    )
+    return model, mmproj
+
+
 def download_model(destination=None, size=DEFAULT_SIZE):
     from huggingface_hub import snapshot_download
 

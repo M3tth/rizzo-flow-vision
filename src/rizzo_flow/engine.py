@@ -35,11 +35,25 @@ class Engine:
         started = time.perf_counter()
         with self._lock:
             acquired = time.perf_counter()
-            prefix, jobs = compile_request(self.backend.tokenizer, request, self.ctx)
+            prefix, jobs = compile_request(
+                self.backend.tokenizer,
+                request,
+                self.ctx,
+                getattr(self.backend, "media_marker", None),
+            )
             encoded = time.perf_counter()
-            logits, timing = self._worker.submit(
-                self.backend.score, prefix, jobs, request.mode
-            ).result()
+            if request.images:
+                score_vision = getattr(self.backend, "score_vision", None)
+                if score_vision is None:
+                    raise ValueError("This backend does not support image evidence")
+                images = [image.bytes() for image in request.images]
+                logits, timing = self._worker.submit(
+                    score_vision, prefix, jobs, images, request.mode
+                ).result()
+            else:
+                logits, timing = self._worker.submit(
+                    self.backend.score, prefix, jobs, request.mode
+                ).result()
             answers = {}
             for job in jobs:
                 question = request.questions[job.id]
