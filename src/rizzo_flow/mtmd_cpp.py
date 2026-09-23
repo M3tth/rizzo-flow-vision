@@ -6,7 +6,6 @@ llama_context, and report the resulting logical position. No sampling or text ge
 """
 
 import ctypes
-import io
 import os
 import sys
 from ctypes import (
@@ -16,17 +15,16 @@ from ctypes import (
     c_float,
     c_int,
     c_int32,
+    c_int64,
     c_size_t,
     c_uint32,
     c_void_p,
 )
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
 
 from . import llama_release
 
-MAX_IMAGE_PIXELS = 50_000_000
 
 
 class MtmdContextParams(ctypes.Structure):
@@ -49,6 +47,22 @@ class MtmdContextParams(ctypes.Structure):
     ]
 
 
+class MtmdHelperVideoInitParams(ctypes.Structure):
+    _fields_ = [
+        ("fps_target", c_float),
+        ("ffmpeg_bin_dir", c_char_p),
+        ("timestamp_interval_ms", c_int64),
+    ]
+
+
+class MtmdHelperInitOpt(ctypes.Structure):
+    _fields_ = [("video_params", MtmdHelperVideoInitParams)]
+
+
+class MtmdHelperBitmapWrapper(ctypes.Structure):
+    _fields_ = [("bitmap", c_void_p), ("video_ctx", c_void_p)]
+
+
 class MtmdInputText(ctypes.Structure):
     _fields_ = [
         ("text", c_char_p),
@@ -65,8 +79,11 @@ SIGNATURES = {
     "mtmd_support_vision": (c_bool, [c_void_p]),
     "mtmd_decode_use_mrope": (c_bool, [c_void_p]),
     "mtmd_get_marker": (c_char_p, [c_void_p]),
-    "mtmd_bitmap_init": (c_void_p, [c_uint32, c_uint32, POINTER(ctypes.c_ubyte)]),
-    "mtmd_bitmap_set_id": (None, [c_void_p, c_char_p]),
+    "mtmd_helper_init_opt_default": (MtmdHelperInitOpt, []),
+    "mtmd_helper_bitmap_init_from_buf": (
+        MtmdHelperBitmapWrapper,
+        [c_void_p, POINTER(ctypes.c_ubyte), c_size_t, c_bool, MtmdHelperInitOpt],
+    ),
     "mtmd_bitmap_free": (None, [c_void_p]),
     "mtmd_input_chunks_init": (c_void_p, []),
     "mtmd_input_chunks_free": (None, [c_void_p]),
@@ -155,22 +172,6 @@ class VisionContext:
             self.library.mtmd_free(self.context)
             self.context = None
 
-    @staticmethod
-    def _rgb(raw: bytes):
-        try:
-            with Image.open(io.BytesIO(raw)) as image:
-                width, height = image.size
-                if width < 1 or height < 1 or width * height > MAX_IMAGE_PIXELS:
-                    raise ValueError(
-                        f"Invalid image dimensions {width}x{height}; "
-                        f"limit is {MAX_IMAGE_PIXELS:,} pixels"
-                    )
-                converted = image.convert("RGB")
-                data = converted.tobytes()
-        except (UnidentifiedImageError, OSError) as error:
-            raise ValueError("Unsupported or corrupt image data") from error
-        return width, height, data
-
     def _chunks(self, text: str, images: list[bytes]):
         raw_text = text.encode("utf-8")
         if text.count(self.marker) != len(images):
@@ -184,14 +185,19 @@ class VisionContext:
         bitmaps = []
         backing = []
         try:
+            options = self.library.mtmd_helper_init_opt_default()
             for index, raw in enumerate(images):
-                width, height, rgb = self._rgb(raw)
-                buffer = (ctypes.c_ubyte * len(rgb)).from_buffer_copy(rgb)
-                bitmap = self.library.mtmd_bitmap_init(width, height, buffer)
-                if not bitmap:
-                    raise ValueError(f"libmtmd could not create image {index + 1}")
-                self.library.mtmd_bitmap_set_id(bitmap, f"image-{index + 1}".encode())
-                bitmaps.append(bitmap)
+                buffer = (ctypes.c_ubyte * len(raw)).from_buffer_copy(raw)
+                wrapper = self.library.mtmd_helper_bitmap_init_from_buf(
+                    self.context, buffer, len(raw), False, options
+                )
+                if not wrapper.bitmap:
+                    raise ValueError(f"libmtmd could not decode image {index + 1}")
+                # The request schema accepts still images only, so video_ctx should stay null.
+                if wrapper.video_ctx:
+                    self.library.mtmd_bitmap_free(wrapper.bitmap)
+                    raise ValueError("Video input is not supported by the decisions API")
+                bitmaps.append(wrapper.bitmap)
                 backing.append(buffer)
             array = (c_void_p * len(bitmaps))(*bitmaps) if bitmaps else None
             input_text = MtmdInputText(raw_text, len(raw_text), False, True)
