@@ -324,7 +324,6 @@ class LlamaBackend:
             "batches": batches,
             "generated_tokens": 0,
             "image_count": len(images),
-            "vision_mrope": self.vision.uses_mrope,
         }
         if self._lowest_free is not None:
             timing["peak_device_bytes"] = self.peak_device_bytes()
