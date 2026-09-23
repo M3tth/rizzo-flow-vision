@@ -36,6 +36,9 @@ class Compiled:
     tokens: list[int]
     slots: list[int]
     prompt_sha256: str
+    # For multimodal requests the common prompt prefix is evaluated by libmtmd once; this is
+    # the exact rendered tail to append on each branched sequence.
+    suffix_text: str | None = None
 
 
 def canonical(value) -> str:
@@ -44,14 +47,22 @@ def canonical(value) -> str:
     )
 
 
-def render_state(state) -> str:
-    """Shared head of the user message; identical for every question, so it is prefilled once."""
+def render_state(state, media_marker: str | None = None, images=()) -> str:
+    """Shared evidence block; images become libmtmd markers inside the same reusable prefix."""
     # Free text goes between the tags as is; structured state, or text imitating the closing
     # tag, falls back to JSON inside the tags.
     if isinstance(state, str) and "</evidence>" not in state.lower():
         body = state.strip()
     else:
         body = json.dumps(state, ensure_ascii=False, indent=1)
+    if images:
+        if not media_marker:
+            raise ValueError("This backend does not support image evidence")
+        visual = []
+        for index, image in enumerate(images, start=1):
+            label = image.label or f"Document image {index}"
+            visual.append(f"[{label}]\n{media_marker}")
+        body = "\n".join(part for part in (body, *visual) if part)
     return f"<evidence>\n{body}\n</evidence>"
 
 
@@ -64,8 +75,9 @@ def render_question(instruction: str, descriptions: list[str]) -> str:
     return f"\n\nQuestion: {instruction}\n\nOptions:\n{options}\n\n{CLOSING}"
 
 
-def compile_request(tokenizer, request: Request, ctx: int) -> tuple[list[int], list[Compiled]]:
-    state_text = render_state(request.state)
+def compile_request(tokenizer, request: Request, ctx: int, media_marker: str | None = None):
+    vision = bool(request.images)
+    state_text = render_state(request.state, media_marker, request.images)
     compiled = []
     state_prefix = None
     for key, question in request.questions.items():
@@ -103,17 +115,32 @@ def compile_request(tokenizer, request: Request, ctx: int) -> tuple[list[int], l
             slots.append(encoded[0])
         if len(set(slots)) != len(slots):
             raise ValueError("Answer token collision")
-        # Tokenize the entire evidence boundary, remove its final token for BPE merges,
-        # then verify it against every complete prompt. Never infer boundaries by length.
         if prompt.count(state_text) != 1:
             raise ValueError("Cannot uniquely locate evidence in the chat template")
         boundary = prompt.index(state_text) + len(state_text)
-        prefix = tokenizer.encode(prompt[:boundary], add_special_tokens=False)[:-1]
-        while prefix and tokens[: len(prefix)] != prefix:
-            prefix.pop()
+        if vision:
+            # libmtmd must see the media marker in the shared prefix. The boundary is textual
+            # rather than token-based because image embeddings do not have ordinary token IDs.
+            prefix = prompt[:boundary]
+            suffix_text = prompt[boundary:]
+        else:
+            # Tokenize the entire evidence boundary, remove its final token for BPE merges,
+            # then verify it against every complete prompt. Never infer boundaries by length.
+            prefix = tokenizer.encode(prompt[:boundary], add_special_tokens=False)[:-1]
+            while prefix and tokens[: len(prefix)] != prefix:
+                prefix.pop()
+            suffix_text = None
         if state_prefix is None:
             state_prefix = prefix
         elif state_prefix != prefix:
             raise ValueError("State prefix differs between questions")
-        compiled.append(Compiled(key, tokens, slots, hashlib.sha256(prompt.encode()).hexdigest()))
-    return state_prefix or [], compiled
+        compiled.append(
+            Compiled(
+                key,
+                tokens,
+                slots,
+                hashlib.sha256(prompt.encode()).hexdigest(),
+                suffix_text,
+            )
+        )
+    return state_prefix if state_prefix is not None else ("" if vision else []), compiled
