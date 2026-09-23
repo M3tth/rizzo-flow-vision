@@ -20,8 +20,8 @@ LOGO = Path(__file__).with_name("logo.png")
 def create_app(engine, api_key=None):
     app = FastAPI(
         title="Rizzo Flow",
-        version="0.2.0",
-        description="Typed decisions with a local Spark-X2.5 model; no text generation.",
+        version="0.3.0",
+        description="Typed local text or vision decisions from logits; no text generation.",
     )
     api_key = api_key if api_key is not None else os.environ.get(API_KEY_ENV)
 
