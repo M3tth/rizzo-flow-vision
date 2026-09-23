@@ -1,5 +1,7 @@
 """Strict public request contract. Model outputs never supply JSON or field names."""
 
+import base64
+import binascii
 import json
 from typing import Annotated, Literal
 
@@ -8,6 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue, StringConstraints,
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=8000)]
 Number = Annotated[float, Field(allow_inf_nan=False, ge=-1e100, le=1e100)]
 MAX_SLOTS = 26  # every candidate, special ones included, is one uppercase answer letter
+MAX_IMAGES = 8
+MAX_IMAGE_BYTES = 16 * 1024 * 1024
 
 
 class Strict(BaseModel):
@@ -92,15 +96,45 @@ Question = Annotated[
 ]
 
 
+class ImageInput(Strict):
+    """One image transported inside the JSON request.
+
+    The API deliberately accepts bytes, not URLs or server-side paths: document data never needs
+    to leave the caller/server boundary and a request cannot read arbitrary files from the host.
+    """
+
+    data_base64: str
+    mime_type: Literal["image/jpeg", "image/png", "image/webp", "image/bmp"] | None = None
+    label: Annotated[str, StringConstraints(strip_whitespace=True, max_length=128)] | None = None
+
+    @model_validator(mode="after")
+    def valid_image(self):
+        # Fast upper bound before allocating the decoded buffer.
+        if not self.data_base64 or len(self.data_base64) > ((MAX_IMAGE_BYTES + 2) // 3) * 4 + 8:
+            raise ValueError(f"Image must be non-empty and at most {MAX_IMAGE_BYTES >> 20} MiB")
+        try:
+            raw = base64.b64decode(self.data_base64, validate=True)
+        except (binascii.Error, ValueError) as error:
+            raise ValueError("Image data_base64 is not valid base64") from error
+        if not raw or len(raw) > MAX_IMAGE_BYTES:
+            raise ValueError(f"Image must be non-empty and at most {MAX_IMAGE_BYTES >> 20} MiB")
+        return self
+
+    def bytes(self) -> bytes:
+        return base64.b64decode(self.data_base64, validate=True)
+
+
 class Request(Strict):
     state: str | dict[str, JsonValue] | list[JsonValue]
+    images: list[ImageInput] = Field(default_factory=list, max_length=MAX_IMAGES)
     questions: dict[str, Question] = Field(min_length=1, max_length=64)
     mode: Literal["shared", "direct"] = "shared"
 
     @model_validator(mode="after")
     def valid_state(self):
-        if not self.state or (isinstance(self.state, str) and not self.state.strip()):
-            raise ValueError("State must not be empty")
+        state_empty = not self.state or (isinstance(self.state, str) and not self.state.strip())
+        if state_empty and not self.images:
+            raise ValueError("State must not be empty unless at least one image is supplied")
         rendered = json.dumps(self.state, ensure_ascii=False, allow_nan=False)
         if len(rendered.encode()) > 256_000:
             raise ValueError("State exceeds 256 KB; no silent truncation")
