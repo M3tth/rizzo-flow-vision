@@ -3,7 +3,16 @@ import json
 import sys
 from pathlib import Path
 
-from .config import (DEFAULT_QUANT, DEFAULT_SIZE, MODELS, QUANTS, VISION_MODELS, download_gguf, download_model, download_vision)
+from .config import (
+    DEFAULT_QUANT,
+    DEFAULT_SIZE,
+    MODELS,
+    QUANTS,
+    VISION_MODELS,
+    download_gguf,
+    download_model,
+    download_vision,
+)
 from .llama_release import ACCELERATORS
 from .loader import BACKENDS, DEVICES
 
@@ -44,7 +53,11 @@ def main():
         "download", help="Download the pinned llama.cpp runtime for this machine and the weights"
     )
     download.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
-    download.add_argument("--vision", choices=tuple(VISION_MODELS), help="Download a pinned multimodal model + projector pair")
+    download.add_argument(
+        "--vision",
+        choices=tuple(VISION_MODELS),
+        help="Download a pinned multimodal model + projector pair",
+    )
     download.add_argument("--backend", choices=BACKENDS, default="llama")
     download.add_argument("--quant", choices=QUANTS, default=DEFAULT_QUANT, help="GGUF file")
     download.add_argument(
@@ -67,10 +80,18 @@ def main():
     for name in ("decide", "serve", "evaluate"):
         p = commands.add_parser(name)
         p.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
-        p.add_argument("--vision", choices=tuple(VISION_MODELS), help="Use a pinned multimodal model + projector pair")
+        p.add_argument(
+            "--vision",
+            choices=tuple(VISION_MODELS),
+            help="Use a pinned multimodal model + projector pair",
+        )
         p.add_argument("--backend", choices=BACKENDS, default="llama")
         p.add_argument("--model", type=Path, help="GGUF file (MLX: checkpoint directory)")
-        p.add_argument("--mmproj", type=Path, help="Vision projector GGUF for multimodal llama.cpp models")
+        p.add_argument(
+            "--mmproj",
+            type=Path,
+            help="Vision projector GGUF for multimodal llama.cpp models",
+        )
         p.add_argument("--quant", choices=QUANTS, help=f"Pinned GGUF file; default {DEFAULT_QUANT}")
         p.add_argument("--bits", type=int, choices=(4, 8), help="MLX backend only")
         p.add_argument(
