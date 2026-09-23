@@ -68,6 +68,7 @@ def main():
         p.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
         p.add_argument("--backend", choices=BACKENDS, default="llama")
         p.add_argument("--model", type=Path, help="GGUF file (MLX: checkpoint directory)")
+        p.add_argument("--mmproj", type=Path, help="Vision projector GGUF for multimodal llama.cpp models")
         p.add_argument("--quant", choices=QUANTS, help=f"Pinned GGUF file; default {DEFAULT_QUANT}")
         p.add_argument("--bits", type=int, choices=(4, 8), help="MLX backend only")
         p.add_argument(
@@ -148,6 +149,7 @@ def main():
             ctx=args.ctx,
             batch_size=args.batch_size,
             threads=args.threads,
+            mmproj=args.mmproj,
         )
         calibration = Calibration.from_file(args.calibration) if args.calibration else None
         engine = Engine(backend, ctx=args.ctx, calibration=calibration)
