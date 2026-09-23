@@ -292,13 +292,28 @@ class LlamaBackend:
                 finally:
                     session.drop(1)
         else:
+            # Direct mode intentionally recomputes the image-bearing prefix for every question.
+            # A single shared question takes this path too, but still evaluates media and suffix
+            # separately: the final logits row then belongs only to the text suffix and is not
+            # affected by how many embedding tokens the image produced.
             for job in jobs:
                 session.clear()
-                full_prompt = prefix + job.suffix_text
-                end, tokens, row = self.vision.evaluate(
-                    full_prompt,
+                start, prefix_tokens, _ = self.vision.evaluate(
+                    prefix,
                     images,
                     start=0,
+                    sequence=0,
+                    logits_last=False,
+                )
+                if start > self.input_ctx:
+                    raise ValueError(
+                        f"Question {job.id}: multimodal prefix uses {start} positions; "
+                        f"context limit is {self.input_ctx}"
+                    )
+                end, suffix_tokens, row = self.vision.evaluate(
+                    job.suffix_text,
+                    [],
+                    start=start,
                     sequence=0,
                     logits_last=True,
                 )
@@ -310,7 +325,7 @@ class LlamaBackend:
                 if row is None:
                     raise ValueError(f"Question {job.id}: no logits were produced")
                 result[job.id] = session.logits(row, job.slots)
-                evaluated_tokens += tokens
+                evaluated_tokens += prefix_tokens + suffix_tokens
                 batches += 1
 
         session.synchronize()
