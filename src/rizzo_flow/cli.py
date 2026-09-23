@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from .config import DEFAULT_QUANT, DEFAULT_SIZE, MODELS, QUANTS, download_gguf, download_model
+from .config import (DEFAULT_QUANT, DEFAULT_SIZE, MODELS, QUANTS, VISION_MODELS, download_gguf, download_model, download_vision)
 from .llama_release import ACCELERATORS
 from .loader import BACKENDS, DEVICES
 
@@ -44,6 +44,7 @@ def main():
         "download", help="Download the pinned llama.cpp runtime for this machine and the weights"
     )
     download.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
+    download.add_argument("--vision", choices=tuple(VISION_MODELS), help="Download a pinned multimodal model + projector pair")
     download.add_argument("--backend", choices=BACKENDS, default="llama")
     download.add_argument("--quant", choices=QUANTS, default=DEFAULT_QUANT, help="GGUF file")
     download.add_argument(
@@ -66,6 +67,7 @@ def main():
     for name in ("decide", "serve", "evaluate"):
         p = commands.add_parser(name)
         p.add_argument("--size", choices=tuple(MODELS), default=DEFAULT_SIZE)
+        p.add_argument("--vision", choices=tuple(VISION_MODELS), help="Use a pinned multimodal model + projector pair")
         p.add_argument("--backend", choices=BACKENDS, default="llama")
         p.add_argument("--model", type=Path, help="GGUF file (MLX: checkpoint directory)")
         p.add_argument("--mmproj", type=Path, help="Vision projector GGUF for multimodal llama.cpp models")
@@ -101,6 +103,17 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "download":
+            if args.vision:
+                if args.backend == "mlx":
+                    raise ValueError("--vision requires the llama backend")
+                if args.only != "weights":
+                    from .llama_release import install
+                    print(install(args.runtime, progress))
+                if args.only != "runtime":
+                    model_path, mmproj_path = download_vision(args.vision, args.destination, progress)
+                    print(model_path)
+                    print(mmproj_path)
+                return
             if args.backend == "mlx":
                 print(download_model(args.destination, args.size))
                 return
@@ -150,6 +163,7 @@ def main():
             batch_size=args.batch_size,
             threads=args.threads,
             mmproj=args.mmproj,
+            vision=args.vision,
         )
         calibration = Calibration.from_file(args.calibration) if args.calibration else None
         engine = Engine(backend, ctx=args.ctx, calibration=calibration)
