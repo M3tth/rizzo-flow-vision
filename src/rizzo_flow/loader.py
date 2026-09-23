@@ -43,9 +43,14 @@ def load_backend(
         )
     if vision:
         if vision not in VISION_MODELS:
-            raise ValueError(f"Unknown vision model {vision}; choose one of: {', '.join(VISION_MODELS)}")
+            raise ValueError(
+                f"Unknown vision model {vision}; choose one of: {', '.join(VISION_MODELS)}"
+            )
         if model or mmproj or quant:
-            raise ValueError("--vision selects both model and projector; do not combine it with --model, --mmproj or --quant")
+            raise ValueError(
+                "--vision selects both model and projector; do not combine it with "
+                "--model, --mmproj or --quant"
+            )
         spec = VISION_MODELS[vision]
         model, mmproj = spec.model_path, spec.mmproj_path
     if bits:
