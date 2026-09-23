@@ -22,10 +22,13 @@ def load_backend(
     ctx=8192,
     batch_size=4,
     threads=None,
+    mmproj=None,
 ):
     if backend not in BACKENDS:
         raise ValueError(f"Backend must be one of: {', '.join(BACKENDS)}")
     if backend == "mlx":
+        if mmproj:
+            raise ValueError("--mmproj is supported only by the llama backend")
         if quant:
             raise ValueError("--quant selects a GGUF file (llama backend); with MLX use --bits 4|8")
         if device not in MLX_DEVICES:
@@ -55,6 +58,7 @@ def load_backend(
         ctx=ctx,
         batch_size=batch_size,
         threads=threads,
+        mmproj=mmproj,
     )
 
 
