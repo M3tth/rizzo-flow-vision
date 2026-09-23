@@ -248,6 +248,7 @@ class LlamaBackend:
         result = {}
         prefix_seconds = 0.0
         evaluated_tokens = 0
+        shared_prefix_tokens = 0
         batches = 0
         reuse = mode == "shared" and bool(prefix) and len(jobs) > 1
 
@@ -264,6 +265,7 @@ class LlamaBackend:
                     f"Multimodal prefix uses {start} positions; context limit is {self.input_ctx}"
                 )
             evaluated_tokens += prefix_tokens
+            shared_prefix_tokens = prefix_tokens
 
             # Reuse one branch at a time. Image encoding/prefill dominates document workloads;
             # suffix batching can be added later without changing the public contract.
@@ -316,7 +318,7 @@ class LlamaBackend:
         timing = {
             "inference_seconds": time.perf_counter() - started,
             "prefill_seconds": prefix_seconds,
-            "shared_prefix_tokens": evaluated_tokens if reuse and not batches else 0,
+            "shared_prefix_tokens": shared_prefix_tokens,
             "evaluated_tokens_including_padding": evaluated_tokens,
             "logical_input_tokens": sum(len(job.tokens) for job in jobs),
             "batches": batches,
